@@ -16,4 +16,7 @@ export class User {
 
   @Prop({ required: true, enum: ['barterer', 'broker', 'admin'] })
   user_type: 'barterer' | 'broker' | 'admin';
+
+  @Prop({ trim: true })
+  profile_picture?: string;
 export const UserSchema = SchemaFactory.createForClass(User);
