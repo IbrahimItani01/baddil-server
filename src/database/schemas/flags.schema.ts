@@ -11,4 +11,6 @@ export class Flag {
   @Prop({ type: String, enum: ['user', 'barter'], required: true })
   type: 'user' | 'barter';
 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  owner_id?: Types.ObjectId;
 export const FlagSchema = SchemaFactory.createForClass(Flag);
