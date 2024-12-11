@@ -20,4 +20,8 @@ export class Flag {
   @Prop({ type: String, required: true })
   reason: string;
 
+  @Prop({ type: String, enum: ['active', 'resolved'], default: 'active' })
+  status: 'active' | 'resolved';
+}
+
 export const FlagSchema = SchemaFactory.createForClass(Flag);
