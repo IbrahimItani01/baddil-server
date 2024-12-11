@@ -7,6 +7,14 @@ export type DisputeDocument = Dispute & Document;
 export class Dispute {
   @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
   users_involved: Types.ObjectId[];
+
+  @Prop({
+    type: String,
+    enum: ['active', 'unresolved', 'resolved'],
+    default: 'active',
+  })
+  status: 'active' | 'unresolved' | 'resolved';
+
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
