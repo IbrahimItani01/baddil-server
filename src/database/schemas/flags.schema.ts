@@ -7,4 +7,8 @@ export type FlagDocument = Flag & Document;
 export class Flag {
   @Prop({ type: Types.ObjectId, required: true })
   flagged_id: Types.ObjectId;
+
+  @Prop({ type: String, enum: ['user', 'barter'], required: true })
+  type: 'user' | 'barter';
+
 export const FlagSchema = SchemaFactory.createForClass(Flag);
