@@ -15,6 +15,9 @@ export class Dispute {
   })
   status: 'active' | 'unresolved' | 'resolved';
 
+  @Prop({ type: Date, default: null })
+  resolved_at: Date | null;
+
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
