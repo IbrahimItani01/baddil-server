@@ -5,3 +5,6 @@ export type NotificationDocument = Notification & Document;
 
 @Schema({ timestamps: true })
 export class Notification {
+}
+
+export const NotificationSchema = SchemaFactory.createForClass(Notification);
