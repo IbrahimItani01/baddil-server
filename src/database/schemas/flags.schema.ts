@@ -3,3 +3,6 @@ import { Document, Types } from 'mongoose';
 
 export type FlagDocument = Flag & Document;
 
+@Schema({ timestamps: true })
+export class Flag {
+}
