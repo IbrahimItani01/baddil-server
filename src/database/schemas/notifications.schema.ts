@@ -11,6 +11,9 @@ export class Notification {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   sent_by: Types.ObjectId;
 
+  @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
+  sent_to: Types.ObjectId[];
+
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
