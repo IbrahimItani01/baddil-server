@@ -66,4 +66,6 @@ export class User {
     provider_profile_picture?: string;
     auth_provider: string;
   };
+  @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
+  notifications: Types.ObjectId[];
 export const UserSchema = SchemaFactory.createForClass(User);
