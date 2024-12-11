@@ -18,6 +18,9 @@ export class Dispute {
   @Prop({ type: Date, default: null })
   resolved_at: Date | null;
 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  resolved_by?: Types.ObjectId;
+
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
