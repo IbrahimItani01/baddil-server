@@ -3,3 +3,5 @@ import { Document, Types } from 'mongoose';
 
 export type NotificationDocument = Notification & Document;
 
+@Schema({ timestamps: true })
+export class Notification {
