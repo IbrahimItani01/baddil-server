@@ -51,4 +51,19 @@ export class User {
     notifications: boolean;
   };
 
+  @Prop({
+    type: {
+      provider_id: { type: String, required: false },
+      provider_email: { type: String, required: false },
+      provider_profile_picture: { type: String, required: false },
+      auth_provider: { type: String, default: 'google' },
+    },
+    required: false,
+  })
+  auth_provider?: {
+    provider_id?: string;
+    provider_email?: string;
+    provider_profile_picture?: string;
+    auth_provider: string;
+  };
 export const UserSchema = SchemaFactory.createForClass(User);
