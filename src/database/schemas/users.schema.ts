@@ -19,4 +19,11 @@ export class User {
 
   @Prop({ trim: true })
   profile_picture?: string;
+
+  @Prop({
+    enum: ['active', 'banned', 'flagged'],
+    default: 'active',
+  })
+  status: 'active' | 'banned' | 'flagged';
+
 export const UserSchema = SchemaFactory.createForClass(User);
