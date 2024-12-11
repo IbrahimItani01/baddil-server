@@ -24,6 +24,8 @@ export class Dispute {
   @Prop({ type: String, required: false })
   resolution_details?: string;
 
+  @Prop({ type: String, required: true })
+  reason: string;
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
