@@ -17,4 +17,7 @@ export class Flag {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   flagged_by: Types.ObjectId;
 
+  @Prop({ type: String, required: true })
+  reason: string;
+
 export const FlagSchema = SchemaFactory.createForClass(Flag);
