@@ -13,4 +13,8 @@ export class Flag {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   owner_id?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  flagged_by: Types.ObjectId;
+
 export const FlagSchema = SchemaFactory.createForClass(Flag);
