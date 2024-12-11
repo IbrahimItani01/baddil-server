@@ -26,6 +26,9 @@ export class Dispute {
 
   @Prop({ type: String, required: true })
   reason: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  monitored_by: Types.ObjectId;
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
