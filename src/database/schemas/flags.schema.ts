@@ -5,4 +5,4 @@ export type FlagDocument = Flag & Document;
 
 @Schema({ timestamps: true })
 export class Flag {
-}
+export const FlagSchema = SchemaFactory.createForClass(Flag);
