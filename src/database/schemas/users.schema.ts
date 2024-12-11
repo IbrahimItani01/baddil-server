@@ -66,6 +66,25 @@ export class User {
     provider_profile_picture?: string;
     auth_provider: string;
   };
+
   @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
   notifications: Types.ObjectId[];
+
+  @Prop({
+    type: {
+      number: { type: String, required: false },
+      verified: { type: Boolean, default: false },
+      verification_code: { type: String, required: false },
+      verification_expiry: { type: Date, required: false },
+    },
+    required: false,
+  })
+  phone_number?: {
+    number?: string;
+    verified: boolean;
+    verification_code?: string;
+    verification_expiry?: Date;
+  };
+}
+
 export const UserSchema = SchemaFactory.createForClass(User);
