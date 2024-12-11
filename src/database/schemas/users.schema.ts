@@ -26,4 +26,29 @@ export class User {
   })
   status: 'active' | 'banned' | 'flagged';
 
+  @Prop({
+    type: {
+      language: {
+        type: String,
+        enum: ['french', 'english'],
+        default: 'english',
+      },
+      theme: {
+        type: String,
+        enum: ['dark', 'light'],
+        default: 'light',
+      },
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+    },
+    required: false,
+  })
+  settings: {
+    language: 'french' | 'english';
+    theme: 'dark' | 'light';
+    notifications: boolean;
+  };
+
 export const UserSchema = SchemaFactory.createForClass(User);
