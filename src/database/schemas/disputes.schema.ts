@@ -21,6 +21,9 @@ export class Dispute {
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })
   resolved_by?: Types.ObjectId;
 
+  @Prop({ type: String, required: false })
+  resolution_details?: string;
+
 }
 
 export const DisputeSchema = SchemaFactory.createForClass(Dispute);
