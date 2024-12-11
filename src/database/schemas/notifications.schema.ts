@@ -8,6 +8,9 @@ export class Notification {
   @Prop({ required: true, trim: true })
   message: string;
 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  sent_by: Types.ObjectId;
+
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
