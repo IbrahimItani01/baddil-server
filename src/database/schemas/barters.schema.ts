@@ -5,6 +5,14 @@ export type BarterDocument = Barter & Document;
 
 @Schema({ timestamps: true })  
 export class Barter {
+  @Prop({
+    type: String,
+    enum: ['ongoing', 'completed', 'rejected'],
+    default: 'ongoing',
+    required: true,
+  })
+  status: 'ongoing' | 'completed' | 'rejected';
+
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
