@@ -17,6 +17,20 @@ export class Company {
   @Prop({ default: 0 })
   disputes_count: number;
 
+  @Prop({
+    type: {
+      admins_count: { type: Number, default: 0 },
+      brokers_count: { type: Number, default: 0 },
+      barterers_count: { type: Number, default: 0 },
+    },
+    _id: false,
+  })
+  users: {
+    admins_count: number;
+    brokers_count: number;
+    barterers_count: number;
+  };
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
