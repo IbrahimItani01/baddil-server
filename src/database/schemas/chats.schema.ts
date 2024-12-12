@@ -5,3 +5,6 @@ export type ChatDocument = Chat & Document;
 
 @Schema({ timestamps: true })
 export class Chat {
+}
+
+export const ChatSchema = SchemaFactory.createForClass(Chat);
