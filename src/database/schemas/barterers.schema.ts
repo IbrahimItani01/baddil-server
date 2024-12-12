@@ -23,6 +23,23 @@ export class Barterer {
     plan_id: Types.ObjectId;
   };
 
+  @Prop({
+    type: {
+      current_tier: { type: Types.ObjectId, ref: 'Company', required: true },
+      progress: { type: Number, required: true, default: 0 },
+      trades_left: { type: Number, required: true, default: 0 },
+      date_reached: { type: Date, required: true },
+      next_tier: { type: Types.ObjectId, ref: 'Company', required: false },
+    },
+  })
+  tier: {
+    current_tier: Types.ObjectId;
+    progress: number;
+    trades_left: number;
+    date_reached: Date;
+    next_tier?: Types.ObjectId;
+  };
+
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
