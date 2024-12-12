@@ -40,6 +40,27 @@ export class Barter {
   })
   reviews: { side: 'initiator' | 'receiver'; review_text: string }[]; 
 
+  @Prop({
+    type: {
+      meetup_id: { type: Types.ObjectId, ref: 'Meetup', required: true },
+      status: {
+        type: String,
+        enum: ['scheduled', 'ongoing', 'cancelled', 'success'],
+        required: true,
+      },
+      location: { type: String, required: true },
+      qr_code: { type: String, required: true }, 
+      date: { type: Date, required: true }, 
+    },
+    required: false,
+  })
+  meetup: {
+    meetup_id: Types.ObjectId; 
+    status: 'scheduled' | 'ongoing' | 'cancelled' | 'success'; 
+    location: string; 
+    qr_code: string; 
+    date: Date; 
+  };
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
