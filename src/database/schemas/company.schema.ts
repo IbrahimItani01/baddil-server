@@ -31,6 +31,20 @@ export class Company {
     barterers_count: number;
   };
 
+  @Prop({
+    type: {
+      min_success_rate: { type: Number, required: true },
+      min_average_rating: { type: Number, required: true },
+      min_total_trades: { type: Number, required: true },
+    },
+    _id: false,
+  })
+  vip_criteria: {
+    min_success_rate: number;
+    min_average_rating: number;
+    min_total_trades: number;
+  };
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
