@@ -5,6 +5,9 @@ export type ChatDocument = Chat & Document;
 
 @Schema({ timestamps: true })
 export class Chat {
+  @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
+  users_involved: Types.ObjectId[];
+
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
