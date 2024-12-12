@@ -75,6 +75,21 @@ export class Barterer {
     total_value: number;
   };
 
+  @Prop({
+    type: {
+      success_probability: [
+        {
+          _id: { type: Types.ObjectId },
+          item_id: { type: Types.ObjectId, ref: 'Item', required: true },
+          suggested_item_id: {
+            type: Types.ObjectId,
+            ref: 'Item',
+            required: true,
+          },
+          probability: { type: Number, required: true },
+          created_at: { type: Date, default: Date.now, required: true },
+        },
+      ],
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
