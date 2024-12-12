@@ -61,6 +61,15 @@ export class Broker {
           },
           required: true,
         },
+        client_item: {
+          type: {
+            barter_id: { type: Types.ObjectId, ref: 'Barter', required: true },
+            name: { type: String, required: true },
+            condition: { type: String, required: true },
+            category: { type: String, required: true },
+          },
+          required: true,
+        },
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
