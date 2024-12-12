@@ -40,6 +40,41 @@ export class Barterer {
     next_tier?: Types.ObjectId;
   };
 
+  @Prop({
+    type: {
+      items: [
+        {
+          item_id: { type: Types.ObjectId, ref: 'Item', required: true },
+          name: { type: String, required: true },
+          category: { type: String, required: true },
+          condition: {
+            type: String,
+            enum: ['new', 'refurbished', 'used'],
+            required: true,
+          },
+          description: { type: String, required: false },
+          estimated_value: { type: Number, required: true },
+          created_at: { type: Date, default: Date.now, required: true },
+          images: { type: [String], required: false }, // Array of image URLs
+        },
+      ],
+      total_value: { type: Number, required: true, default: 0 },
+    },
+  })
+  wallet: {
+    items: {
+      item_id: Types.ObjectId;
+      name: string;
+      category: string;
+      condition: 'new' | 'refurbished' | 'used';
+      description?: string;
+      estimated_value: number;
+      created_at: Date;
+      images?: string[];
+    }[];
+    total_value: number;
+  };
+
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
