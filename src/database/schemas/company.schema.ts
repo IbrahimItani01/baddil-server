@@ -135,6 +135,28 @@ export class Company {
     };
   };
 
+  @Prop({
+    type: [
+      {
+        name: { type: String, required: true },
+        target_user_type: {
+          type: String,
+          enum: ['broker', 'barterer'],
+          required: true,
+        },
+        monthly_price: { type: Number, required: true },
+        features: { type: [String], default: [] },
+      },
+    ],
+    _id: false,
+  })
+  subscription_plans: {
+    name: string;
+    target_user_type: 'broker' | 'barterer';
+    monthly_price: number;
+    features: string[];
+  }[];
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
