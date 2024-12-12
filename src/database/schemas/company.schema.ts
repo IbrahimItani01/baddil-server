@@ -8,6 +8,9 @@ export class Company {
   @Prop({ required: false, default: 'Baddĭl' })
   name: string;
 
+  @Prop({ default: 0 })
+  notification_count: number;
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
