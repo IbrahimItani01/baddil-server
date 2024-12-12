@@ -118,6 +118,9 @@ export class Broker {
     }[];
   }[];
 
+  @Prop({ type: Number, required: true, default: 0 })
+  progress: number;
+
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
