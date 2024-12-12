@@ -3,22 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, 
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('DB_URL'),
-      }),
-      inject: [ConfigService],
-    }),
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     uri: configService.get('DB_URL'),
+    //   }),
+    //   inject: [ConfigService],
+    // }),
   ],
   controllers: [AppController],
-  providers: [AppService, Logger],
+  providers: [AppService],
 })
 export class AppModule {}
