@@ -47,6 +47,9 @@ export class Broker {
     };
   };
 
+  @Prop({
+    type: [
+      {
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
