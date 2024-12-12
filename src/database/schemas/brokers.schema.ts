@@ -5,3 +5,6 @@ export type BrokerDocument = Broker & Document;
 
 @Schema({ timestamps: true })
 export class Broker {
+}
+
+export const BrokerSchema = SchemaFactory.createForClass(Broker);
