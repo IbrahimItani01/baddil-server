@@ -131,12 +131,26 @@ export class Broker {
   }[];
 
   @Prop({
-    type: String,
-    enum: ['ongoing', 'onHold', 'cancelled'],
-    required: true,
+    type: [
+      {
+        client_id: { type: Types.ObjectId, ref: 'User', required: true },
+        rating: {
+          type: String,
+          enum: ['1', '2', '3', '4', '5'],
+          required: true,
+        },
+        message: { type: String, required: false },
+        date: { type: Date, required: true },
+      },
+    ],
+    required: false,
   })
-  status: 'ongoing' | 'onHold' | 'cancelled';
-
+  ratings: {
+    client_id: Types.ObjectId;
+    rating: '1' | '2' | '3' | '4' | '5';
+    message?: string;
+    date: Date;
+  }[];
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
