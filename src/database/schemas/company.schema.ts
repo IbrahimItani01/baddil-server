@@ -76,6 +76,26 @@ export class Company {
             },
           ],
         },
+      },
+      expenses: {
+        total_expenses: { type: Number, default: 0 },
+        details: {
+          broker_payouts: [
+            {
+              broker_id: { type: Types.ObjectId, ref: 'User', required: true },
+              monthly_payout_percentage: { type: Number, required: true },
+            },
+          ],
+          maintenance: { type: Number, default: 0 },
+          operational_costs: {
+            salaries: { type: Number, default: 0 },
+            office_expenses: { type: Number, default: 0 },
+          },
+        },
+      },
+    },
+    _id: false,
+  })
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
