@@ -121,6 +121,13 @@ export class Broker {
   @Prop({ type: Number, required: true, default: 0 })
   progress: number;
 
+  @Prop({
+    type: String,
+    enum: ['ongoing', 'onHold', 'cancelled'],
+    required: true,
+  })
+  status: 'ongoing' | 'onHold' | 'cancelled';
+
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
