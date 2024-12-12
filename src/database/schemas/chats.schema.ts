@@ -32,6 +32,9 @@ export class Chat {
     sent_date: Date;
     status: 'sent' | 'read' | 'received';
   }[];
+
+  @Prop({ type: Boolean, required: true, default: false })
+  handled_by_ai: boolean;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
