@@ -49,6 +49,33 @@ export class Company {
     type: {
       incomes: {
         total_revenue: { type: Number, default: 0 },
+        sources: {
+          subscriptions: {
+            brokers: { type: Number, default: 0 },
+            barterers: { type: Number, default: 0 },
+          },
+          broker_commissions: {
+            platform_percentage: { type: Number, required: true },
+            broker_earnings: [
+              {
+                broker_id: {
+                  type: Types.ObjectId,
+                  ref: 'User',
+                  required: true,
+                },
+                earnings_by_month: { type: Number, default: 0 },
+              },
+            ],
+            total_commissions: { type: Number, default: 0 },
+          },
+          partnerships: [
+            {
+              partner_name: { type: String, required: true },
+              contract_period: { type: String, required: true },
+              value: { type: Number, required: true },
+            },
+          ],
+        },
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
