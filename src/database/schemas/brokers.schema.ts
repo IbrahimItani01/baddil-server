@@ -50,6 +50,17 @@ export class Broker {
   @Prop({
     type: [
       {
+        client_id: { type: Types.ObjectId, ref: 'User', required: true },
+        budget: { type: Number, required: true },
+        client_goal: {
+          type: {
+            name: { type: String, required: true },
+            condition: { type: String, required: true },
+            category: { type: String, required: true },
+            details: { type: String, required: false },
+          },
+          required: true,
+        },
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
