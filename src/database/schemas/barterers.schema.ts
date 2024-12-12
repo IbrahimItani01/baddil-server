@@ -90,6 +90,25 @@ export class Barterer {
           created_at: { type: Date, default: Date.now, required: true },
         },
       ],
+      auto_trade: {
+        enabled: { type: Boolean, required: true, default: false },
+        data: [
+          {
+            _id: { type: Types.ObjectId },
+            item_id: { type: Types.ObjectId, ref: 'Item', required: true },
+            status: {
+              type: String,
+              enum: ['ongoing', 'completed', 'userPending', 'aborted'],
+              required: true,
+            },
+            started_on: { type: Date, default: Date.now, required: true },
+            finalized_on: { type: Date, required: false },
+            chats: [{ type: Types.ObjectId, ref: 'Chat', required: false }],
+          },
+        ],
+      },
+    },
+  })
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
