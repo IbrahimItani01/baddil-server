@@ -13,6 +13,9 @@ export class Barter {
   })
   status: 'ongoing' | 'completed' | 'rejected';
 
+  @Prop({ type: [Types.ObjectId], ref: 'Item', required: true })
+  initiator_items: Types.ObjectId[]; 
+
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
