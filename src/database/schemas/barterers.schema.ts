@@ -109,6 +109,27 @@ export class Barterer {
       },
     },
   })
+  ai_assistance: {
+    success_probability: {
+      _id: Types.ObjectId;
+      item_id: Types.ObjectId;
+      suggested_item_id: Types.ObjectId;
+      probability: number;
+      created_at: Date;
+    }[];
+    auto_trade: {
+      enabled: boolean;
+      data: {
+        _id: Types.ObjectId;
+        item_id: Types.ObjectId;
+        status: 'ongoing' | 'completed' | 'userPending' | 'aborted';
+        started_on: Date;
+        finalized_on?: Date;
+        chats: Types.ObjectId[];
+      }[];
+    };
+  };
+
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
