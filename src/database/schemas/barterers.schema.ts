@@ -130,6 +130,28 @@ export class Barterer {
     };
   };
 
+  @Prop({
+    type: [
+      {
+        broker_id: { type: Types.ObjectId, ref: 'User', required: true },
+        hired_on: { type: Date, required: true },
+        contract_termination_date: { type: Date, required: false },
+        goal_to_barter: { type: String, required: true },
+        starting_item_id: { type: Types.ObjectId, ref: 'Item', required: true },
+        contract_budget: { type: Number, required: true },
+      },
+    ],
+    required: false,
+  })
+  hired_brokers: {
+    broker_id: Types.ObjectId;
+    hired_on: Date;
+    contract_termination_date?: Date;
+    goal_to_barter: string;
+    starting_item_id: Types.ObjectId;
+    contract_budget: number;
+  }[];
+
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
