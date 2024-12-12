@@ -21,6 +21,32 @@ export class Broker {
     is_vip: boolean;
     validated_at?: Date | null;
   };
+
+  @Prop({
+    type: {
+      success_rate: { type: Number, required: true, default: 0 },
+      completed_barters: { type: Number, required: true, default: 0 },
+      earnings: {
+        type: {
+          total: { type: Number, required: true, default: 0 },
+          from_clients: { type: Number, required: true, default: 0 },
+          from_baddil: { type: Number, required: true, default: 0 },
+        },
+        required: true,
+      },
+    },
+    required: true,
+  })
+  performance: {
+    success_rate: number;
+    completed_barters: number;
+    earnings: {
+      total: number;
+      from_clients: number;
+      from_baddil: number;
+    };
+  };
+
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
