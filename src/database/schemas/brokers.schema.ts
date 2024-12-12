@@ -11,6 +11,16 @@ export class Broker {
   @Prop({ type: Number, required: true })
   rate_per_hour: number;
 
+  @Prop({
+    type: {
+      is_vip: { type: Boolean, required: true, default: false },
+      validated_at: { type: Date, required: false, default: null },
+    },
+  })
+  vip_status: {
+    is_vip: boolean;
+    validated_at?: Date | null;
+  };
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
