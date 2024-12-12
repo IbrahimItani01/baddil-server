@@ -19,6 +19,12 @@ export class Barter {
   @Prop({ type: [Types.ObjectId], ref: 'Item', required: true })
   receiver_items: Types.ObjectId[]; 
 
+  @Prop({ type: Date, required: false })
+  completed_at: Date; 
+
+  @Prop({ type: Number, enum: [1, 2, 3, 4, 5], required: false })
+  rating: 1 | 2 | 3 | 4 | 5; 
+
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
