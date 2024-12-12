@@ -70,6 +70,30 @@ export class Broker {
           },
           required: true,
         },
+        process: {
+          type: [
+            {
+              process_id: { type: String, required: true },
+              title: { type: String, required: true },
+              from_barter_id: {
+                type: Types.ObjectId,
+                ref: 'Barter',
+                required: true,
+              },
+              to_barter_id: {
+                type: Types.ObjectId,
+                ref: 'Barter',
+                required: true,
+              },
+              details: { type: String, required: false },
+            },
+          ],
+          required: false,
+        },
+      },
+    ],
+    required: false,
+  })
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
