@@ -25,6 +25,21 @@ export class Barter {
   @Prop({ type: Number, enum: [1, 2, 3, 4, 5], required: false })
   rating: 1 | 2 | 3 | 4 | 5; 
 
+  @Prop({
+    type: [
+      {
+        side: {
+          type: String,
+          enum: ['initiator', 'receiver'],
+          required: true,
+        },
+        review_text: { type: String, required: true },
+      },
+    ],
+    required: false,
+  })
+  reviews: { side: 'initiator' | 'receiver'; review_text: string }[]; 
+
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
