@@ -45,6 +45,10 @@ export class Company {
     min_total_trades: number;
   };
 
+  @Prop({
+    type: {
+      incomes: {
+        total_revenue: { type: Number, default: 0 },
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
