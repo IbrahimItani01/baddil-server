@@ -155,6 +155,8 @@ export class Barterer {
   @Prop({ type: [Types.ObjectId], ref: 'Chat', default: [] })
   chats_history: Types.ObjectId[];
 
+  @Prop({ type: [Types.ObjectId], ref: 'Barter', default: [] })
+  barters: Types.ObjectId[];
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
