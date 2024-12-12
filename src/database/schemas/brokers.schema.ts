@@ -151,6 +151,12 @@ export class Broker {
     message?: string;
     date: Date;
   }[];
+  @Prop({
+    type: [Types.ObjectId],
+    ref: 'Chat',
+    default: [],
+  })
+  chats_history: Types.ObjectId[];
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
