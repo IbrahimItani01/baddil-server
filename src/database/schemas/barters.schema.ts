@@ -16,6 +16,9 @@ export class Barter {
   @Prop({ type: [Types.ObjectId], ref: 'Item', required: true })
   initiator_items: Types.ObjectId[]; 
 
+  @Prop({ type: [Types.ObjectId], ref: 'Item', required: true })
+  receiver_items: Types.ObjectId[]; 
+
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
