@@ -152,6 +152,9 @@ export class Barterer {
     contract_budget: number;
   }[];
 
+  @Prop({ type: [Types.ObjectId], ref: 'Chat', default: [] })
+  chats_history: Types.ObjectId[];
+
 }
 
 export const BartererSchema = SchemaFactory.createForClass(Barterer);
