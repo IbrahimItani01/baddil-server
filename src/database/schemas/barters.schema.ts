@@ -3,3 +3,5 @@ import { Document, Types } from 'mongoose';
 
 export type BarterDocument = Barter & Document;
 
+@Schema({ timestamps: true })  
+export class Barter {
