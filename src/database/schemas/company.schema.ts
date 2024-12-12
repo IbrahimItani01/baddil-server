@@ -11,6 +11,9 @@ export class Company {
   @Prop({ default: 0 })
   notification_count: number;
 
+  @Prop({ default: 0 })
+  flags_count: number;
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
