@@ -96,6 +96,45 @@ export class Company {
     },
     _id: false,
   })
+  finances: {
+    incomes: {
+      total_revenue: number;
+      sources: {
+        subscriptions: {
+          brokers: number;
+          barterers: number;
+        };
+        broker_commissions: {
+          platform_percentage: number;
+          broker_earnings: {
+            broker_id: Types.ObjectId;
+            earnings_by_month: number;
+          }[];
+          total_commissions: number;
+        };
+        partnerships: {
+          partner_name: string;
+          contract_period: string;
+          value: number;
+        }[];
+      };
+    };
+    expenses: {
+      total_expenses: number;
+      details: {
+        broker_payouts: {
+          broker_id: Types.ObjectId;
+          monthly_payout_percentage: number;
+        }[];
+        maintenance: number;
+        operational_costs: {
+          salaries: number;
+          office_expenses: number;
+        };
+      };
+    };
+  };
+
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
