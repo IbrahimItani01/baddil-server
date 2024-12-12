@@ -5,3 +5,6 @@ export type BarterDocument = Barter & Document;
 
 @Schema({ timestamps: true })  
 export class Barter {
+}
+
+export const BarterSchema = SchemaFactory.createForClass(Barter);
