@@ -5,6 +5,8 @@ export type BrokerDocument = Broker & Document;
 
 @Schema({ timestamps: true })
 export class Broker {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user_id: Types.ObjectId;
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
