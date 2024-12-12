@@ -157,6 +157,26 @@ export class Company {
     features: string[];
   }[];
 
+  @Prop({
+    type: [
+      {
+        name: { type: String, required: true },
+        order: { type: Number, required: true },
+        min_trades_to_reach: { type: Number, required: true },
+        icon_url: { type: String, required: true },
+      },
+    ],
+    _id: false,
+  })
+  tiers: {
+    name: string;
+    order: number;
+    min_trades_to_reach: number;
+    icon_url: string;
+  }[];
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  updated_last_by: Types.ObjectId;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
