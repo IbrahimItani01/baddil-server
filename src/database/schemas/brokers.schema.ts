@@ -94,6 +94,30 @@ export class Broker {
     ],
     required: false,
   })
+  clients: {
+    client_id: Types.ObjectId;
+    budget: number;
+    client_goal: {
+      name: string;
+      condition: string;
+      category: string;
+      details?: string;
+    };
+    client_item: {
+      barter_id: Types.ObjectId;
+      name: string;
+      condition: string;
+      category: string;
+    };
+    process?: {
+      process_id: string;
+      title: string;
+      from_barter_id: Types.ObjectId;
+      to_barter_id: Types.ObjectId;
+      details?: string;
+    }[];
+  }[];
+
 }
 
 export const BrokerSchema = SchemaFactory.createForClass(Broker);
