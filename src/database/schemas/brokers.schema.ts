@@ -90,6 +90,14 @@ export class Broker {
           ],
           required: false,
         },
+        progress: { type: Number, required: true, default: 0 },
+        status: {
+          type: String,
+          enum: ['ongoing', 'onHold', 'cancelled'],
+          required: true,
+        },
+        created_at: { type: Date, default: Date.now, required: true },
+        updated_at: { type: Date, default: Date.now, required: true },
       },
     ],
     required: false,
@@ -116,10 +124,11 @@ export class Broker {
       to_barter_id: Types.ObjectId;
       details?: string;
     }[];
+    progress: number;
+    status: 'ongoing' | 'onHold' | 'cancelled';
+    created_at: Date;
+    updated_at: Date;
   }[];
-
-  @Prop({ type: Number, required: true, default: 0 })
-  progress: number;
 
   @Prop({
     type: String,
