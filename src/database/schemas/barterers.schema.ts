@@ -1,15 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import {
-  ItemCondition,
-  AutoTradeStatus,
-} from '../../utils/enums.utils'; 
+  AutoTradeData,
+  AutoTradeDataSchema,
+  WalletItem,
+  WalletItemSchema,
+} from '../subSchemas/barterers.subSchema';
 
 export type BartererDocument = Barterer & Document;
 
 @Schema({ timestamps: true })
 export class Barterer {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   user_id: Types.ObjectId;
 
   @Prop({
@@ -46,36 +48,12 @@ export class Barterer {
 
   @Prop({
     type: {
-      items: [
-        {
-          item_id: { type: Types.ObjectId, ref: 'Item', required: true },
-          name: { type: String, required: true },
-          category: { type: String, required: true },
-          condition: {
-            type: String,
-            enum: Object.values(ItemCondition),
-            required: true,
-          },
-          description: { type: String, required: false },
-          estimated_value: { type: Number, required: true },
-          created_at: { type: Date, default: Date.now, required: true },
-          images: { type: [String], required: false }, 
-        },
-      ],
+      items: [WalletItemSchema],
       total_value: { type: Number, required: true, default: 0 },
     },
   })
   wallet: {
-    items: {
-      item_id: Types.ObjectId;
-      name: string;
-      category: string;
-      condition: ItemCondition;
-      description?: string;
-      estimated_value: number;
-      created_at: Date;
-      images?: string[];
-    }[];
+    items: WalletItem[];
     total_value: number;
   };
 
@@ -96,20 +74,7 @@ export class Barterer {
       ],
       auto_trade: {
         enabled: { type: Boolean, required: true, default: false },
-        data: [
-          {
-            _id: { type: Types.ObjectId },
-            item_id: { type: Types.ObjectId, ref: 'Item', required: true },
-            status: {
-              type: String,
-              enum: Object.values(AutoTradeStatus),
-              required: true,
-            },
-            started_on: { type: Date, default: Date.now, required: true },
-            finalized_on: { type: Date, required: false },
-            chats: [{ type: Types.ObjectId, ref: 'Chat', required: false }],
-          },
-        ],
+        data: [AutoTradeDataSchema],
       },
     },
   })
@@ -123,14 +88,7 @@ export class Barterer {
     }[];
     auto_trade: {
       enabled: boolean;
-      data: {
-        _id: Types.ObjectId;
-        item_id: Types.ObjectId;
-        status: AutoTradeStatus;
-        started_on: Date;
-        finalized_on?: Date;
-        chats: Types.ObjectId[];
-      }[];
+      data: AutoTradeData[];
     };
   };
 
@@ -145,7 +103,6 @@ export class Barterer {
         contract_budget: { type: Number, required: true },
       },
     ],
-    required: false,
   })
   hired_brokers: {
     broker_id: Types.ObjectId;
