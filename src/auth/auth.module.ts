@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { BarterersModule } from 'src/modules/barterers/barterers.module';
 import { BrokersModule } from 'src/modules/brokers/brokers.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -21,3 +22,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     BarterersModule,
     BrokersModule,
     UsersModule,
+  ],
+  controllers: [AuthController],
+  providers: [AuthService],
+})
+export class AuthModule {}
