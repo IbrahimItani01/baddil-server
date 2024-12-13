@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { TargetUserType } from 'src/utils/enums.utils';
+import {
+  FinancesSchema,
+  SubscriptionPlanSchema,
+  TierSchema,
+  UsersSchema,
+  VipCriteriaSchema,
+} from '../subSchemas/company.subSchema';
 
 export type CompanyDocument = Company & Document;
 
@@ -18,85 +25,21 @@ export class Company {
   @Prop({ default: 0 })
   disputes_count: number;
 
-  @Prop({
-    type: {
-      admins_count: { type: Number, default: 0 },
-      brokers_count: { type: Number, default: 0 },
-      barterers_count: { type: Number, default: 0 },
-    },
-    _id: false,
-  })
+  @Prop({ type: UsersSchema, _id: false })
   users: {
     admins_count: number;
     brokers_count: number;
     barterers_count: number;
   };
 
-  @Prop({
-    type: {
-      min_success_rate: { type: Number, required: true },
-      min_average_rating: { type: Number, required: true },
-      min_total_trades: { type: Number, required: true },
-    },
-    _id: false,
-  })
+  @Prop({ type: VipCriteriaSchema, _id: false })
   vip_criteria: {
     min_success_rate: number;
     min_average_rating: number;
     min_total_trades: number;
   };
 
-  @Prop({
-    type: {
-      incomes: {
-        total_revenue: { type: Number, default: 0 },
-        sources: {
-          subscriptions: {
-            brokers: { type: Number, default: 0 },
-            barterers: { type: Number, default: 0 },
-          },
-          broker_commissions: {
-            platform_percentage: { type: Number, required: true },
-            broker_earnings: [
-              {
-                broker_id: {
-                  type: Types.ObjectId,
-                  ref: 'User',
-                  required: true,
-                },
-                earnings_by_month: { type: Number, default: 0 },
-              },
-            ],
-            total_commissions: { type: Number, default: 0 },
-          },
-          partnerships: [
-            {
-              partner_name: { type: String, required: true },
-              contract_period: { type: String, required: true },
-              value: { type: Number, required: true },
-            },
-          ],
-        },
-      },
-      expenses: {
-        total_expenses: { type: Number, default: 0 },
-        details: {
-          broker_payouts: [
-            {
-              broker_id: { type: Types.ObjectId, ref: 'User', required: true },
-              monthly_payout_percentage: { type: Number, required: true },
-            },
-          ],
-          maintenance: { type: Number, default: 0 },
-          operational_costs: {
-            salaries: { type: Number, default: 0 },
-            office_expenses: { type: Number, default: 0 },
-          },
-        },
-      },
-    },
-    _id: false,
-  })
+  @Prop({ type: FinancesSchema, _id: false })
   finances: {
     incomes: {
       total_revenue: number;
@@ -136,21 +79,7 @@ export class Company {
     };
   };
 
-  @Prop({
-    type: [
-      {
-        name: { type: String, required: true },
-        target_user_type: {
-          type: String,
-          enum: Object.values(TargetUserType),
-          required: true,
-        },
-        monthly_price: { type: Number, required: true },
-        features: { type: [String], default: [] },
-      },
-    ],
-    _id: false,
-  })
+  @Prop({ type: [SubscriptionPlanSchema], _id: false })
   subscription_plans: {
     name: string;
     target_user_type: TargetUserType;
@@ -158,17 +87,7 @@ export class Company {
     features: string[];
   }[];
 
-  @Prop({
-    type: [
-      {
-        name: { type: String, required: true },
-        order: { type: Number, required: true },
-        min_trades_to_reach: { type: Number, required: true },
-        icon_url: { type: String, required: true },
-      },
-    ],
-    _id: false,
-  })
+  @Prop({ type: [TierSchema], _id: false })
   tiers: {
     name: string;
     order: number;
