@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { ClientStatus, Rating } from 'src/utils/enums.utils';
 
 export type BrokerDocument = Broker & Document;
 
@@ -93,7 +94,7 @@ export class Broker {
         progress: { type: Number, required: true, default: 0 },
         status: {
           type: String,
-          enum: ['ongoing', 'onHold', 'cancelled'],
+          enum: Object.values(ClientStatus),
           required: true,
         },
         created_at: { type: Date, default: Date.now, required: true },
@@ -125,7 +126,7 @@ export class Broker {
       details?: string;
     }[];
     progress: number;
-    status: 'ongoing' | 'onHold' | 'cancelled';
+    status: ClientStatus;
     created_at: Date;
     updated_at: Date;
   }[];
@@ -136,7 +137,7 @@ export class Broker {
         client_id: { type: Types.ObjectId, ref: 'User', required: true },
         rating: {
           type: String,
-          enum: ['1', '2', '3', '4', '5'],
+          enum: Object.values(Rating),
           required: true,
         },
         message: { type: String, required: false },
@@ -147,7 +148,7 @@ export class Broker {
   })
   ratings: {
     client_id: Types.ObjectId;
-    rating: '1' | '2' | '3' | '4' | '5';
+    rating: Rating;
     message?: string;
     date: Date;
   }[];
