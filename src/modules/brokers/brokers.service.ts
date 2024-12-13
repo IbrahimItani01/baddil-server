@@ -5,3 +5,7 @@ import { Broker, BrokerDocument } from 'src/database/schemas/brokers.schema';
 
 @Injectable()
 export class BrokersService {
+  constructor(
+    @InjectModel(Broker.name) private brokerModel: Model<BrokerDocument>,
+  ) {}
+
