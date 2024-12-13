@@ -1,21 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { UserLanguage, UserTheme } from 'src/utils/enums.utils';
+import { UserLanguageEnum, UserThemeEnum } from 'src/utils/enums.utils';
 
 @Schema()
 export class Settings {
   @Prop({
     type: String,
-    enum: Object.values(UserLanguage),
-    default: UserLanguage.English,
+    enum: Object.values(UserLanguageEnum),
+    default: UserLanguageEnum.English,
   })
-  language: UserLanguage;
+  language: UserLanguageEnum;
 
   @Prop({
     type: String,
-    enum: Object.values(UserTheme),
-    default: UserTheme.Light,
+    enum: Object.values(UserThemeEnum),
+    default: UserThemeEnum.Light,
   })
-  theme: UserTheme;
+  theme: UserThemeEnum;
 
   @Prop({ type: Boolean, default: true })
   notifications: boolean;
