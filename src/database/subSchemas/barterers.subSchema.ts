@@ -137,3 +137,13 @@ export class ProStatus {
 }
 
 export const ProStatusSchema = SchemaFactory.createForClass(ProStatus);
+@Schema()
+export class Wallet {
+  @Prop({ type: [WalletItemSchema], required: false })
+  items: WalletItem[];
+
+  @Prop({ type: Number, required: true, default: 0 })
+  total_value: number;
+}
+
+export const WalletSchema = SchemaFactory.createForClass(Wallet);
