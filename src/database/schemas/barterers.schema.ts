@@ -1,5 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import {
+  ItemCondition,
+  AutoTradeStatus,
+} from '../../utils/enums.utils'; 
 
 export type BartererDocument = Barterer & Document;
 
@@ -49,13 +53,13 @@ export class Barterer {
           category: { type: String, required: true },
           condition: {
             type: String,
-            enum: ['new', 'refurbished', 'used'],
+            enum: Object.values(ItemCondition),
             required: true,
           },
           description: { type: String, required: false },
           estimated_value: { type: Number, required: true },
           created_at: { type: Date, default: Date.now, required: true },
-          images: { type: [String], required: false }, // Array of image URLs
+          images: { type: [String], required: false }, 
         },
       ],
       total_value: { type: Number, required: true, default: 0 },
@@ -66,7 +70,7 @@ export class Barterer {
       item_id: Types.ObjectId;
       name: string;
       category: string;
-      condition: 'new' | 'refurbished' | 'used';
+      condition: ItemCondition;
       description?: string;
       estimated_value: number;
       created_at: Date;
@@ -98,7 +102,7 @@ export class Barterer {
             item_id: { type: Types.ObjectId, ref: 'Item', required: true },
             status: {
               type: String,
-              enum: ['ongoing', 'completed', 'userPending', 'aborted'],
+              enum: Object.values(AutoTradeStatus),
               required: true,
             },
             started_on: { type: Date, default: Date.now, required: true },
@@ -122,7 +126,7 @@ export class Barterer {
       data: {
         _id: Types.ObjectId;
         item_id: Types.ObjectId;
-        status: 'ongoing' | 'completed' | 'userPending' | 'aborted';
+        status: AutoTradeStatus;
         started_on: Date;
         finalized_on?: Date;
         chats: Types.ObjectId[];
