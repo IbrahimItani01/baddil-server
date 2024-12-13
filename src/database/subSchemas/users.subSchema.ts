@@ -72,3 +72,14 @@ export class PasswordForget {
 }
 
 const PasswordForgetSchema = SchemaFactory.createForClass(PasswordForget);
+
+@Schema({ _id: false })
+export class Password {
+  @Prop({ required: true, trim: true }) 
+  current_password: string;
+
+  @Prop({ type: PasswordForgetSchema, default: {} }) 
+  password_forget: PasswordForget;
+}
+
+export const PasswordSchema = SchemaFactory.createForClass(Password);
