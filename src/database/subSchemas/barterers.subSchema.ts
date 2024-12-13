@@ -80,3 +80,25 @@ export class SuccessProbability {
 
 export const SuccessProbabilitySchema =
   SchemaFactory.createForClass(SuccessProbability);
+Schema();
+export class HiredBroker {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  broker_id: Types.ObjectId;
+
+  @Prop({ type: Date, required: true })
+  hired_on: Date;
+
+  @Prop({ type: Date, required: false })
+  contract_termination_date?: Date;
+
+  @Prop({ type: String, required: true })
+  goal_to_barter: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Item', required: true })
+  starting_item_id: Types.ObjectId;
+
+  @Prop({ type: Number, required: true })
+  contract_budget: number;
+}
+
+export const HiredBrokerSchema = SchemaFactory.createForClass(HiredBroker);
