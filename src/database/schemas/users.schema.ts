@@ -6,6 +6,11 @@ import {
   UserTheme,
   UserType,
 } from 'src/utils/enums.utils';
+import {
+  AuthProviderSchema,
+  PhoneNumberSchema,
+  SettingsSchema,
+} from '../subSchemas/users.subSchema';
 
 export type UserDocument = User & Document;
 
@@ -32,40 +37,14 @@ export class User {
   })
   status: UserStatus;
 
-  @Prop({
-    type: {
-      language: {
-        type: String,
-        enum: Object.values(UserLanguage),
-        default: UserLanguage.English,
-      },
-      theme: {
-        type: String,
-        enum: Object.values(UserTheme),
-        default: UserTheme.Light,
-      },
-      notifications: {
-        type: Boolean,
-        default: true,
-      },
-    },
-    required: false,
-  })
+  @Prop({ type: SettingsSchema, _id: false })
   settings: {
     language: UserLanguage;
     theme: UserTheme;
     notifications: boolean;
   };
 
-  @Prop({
-    type: {
-      provider_id: { type: String, required: false },
-      provider_email: { type: String, required: false },
-      provider_profile_picture: { type: String, required: false },
-      auth_provider: { type: String, default: 'google' },
-    },
-    required: false,
-  })
+  @Prop({ type: AuthProviderSchema, _id: false })
   auth_provider?: {
     provider_id?: string;
     provider_email?: string;
@@ -76,15 +55,7 @@ export class User {
   @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
   notifications: Types.ObjectId[];
 
-  @Prop({
-    type: {
-      number: { type: String, required: false },
-      verified: { type: Boolean, default: false },
-      verification_code: { type: String, required: false },
-      verification_expiry: { type: Date, required: false },
-    },
-    required: false,
-  })
+  @Prop({ type: PhoneNumberSchema, _id: false })
   phone_number?: {
     number?: string;
     verified: boolean;
