@@ -83,7 +83,7 @@ export class Finances {
         broker_payouts: [
           {
             broker_id: { type: Types.ObjectId, ref: 'User', required: true },
-            monthly_payout_percentage: { type: Number, required: true },
+            monthly_payout_amount: { type: Number, required: true },
           },
         ],
         maintenance: { type: Number, default: 0 },
