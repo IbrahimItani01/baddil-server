@@ -1,30 +1,30 @@
-export enum ItemCondition {
+export enum ItemConditionEnum {
   New = 'new',
   Refurbished = 'refurbished',
   Used = 'used',
 }
 
-export enum AutoTradeStatus {
+export enum AutoTradeStatusEnum {
   Ongoing = 'ongoing',
   Completed = 'completed',
   UserPending = 'userPending',
   Aborted = 'aborted',
 }
 
-export enum BarterStatus {
+export enum BarterStatusEnum {
   Ongoing = 'ongoing',
   Completed = 'completed',
   Rejected = 'rejected',
 }
 
-export enum MeetupStatus {
+export enum MeetupStatusEnum {
   Scheduled = 'scheduled',
   Ongoing = 'ongoing',
   Cancelled = 'cancelled',
   Success = 'success',
 }
 
-export enum Rating {
+export enum RatingEnum {
   One = 1,
   Two = 2,
   Three = 3,
@@ -32,62 +32,62 @@ export enum Rating {
   Five = 5,
 }
 
-export enum ReviewSide {
+export enum ReviewSideEnum {
   Initiator = 'initiator',
   Receiver = 'receiver',
 }
 
-export enum ClientStatus {
+export enum ClientStatusEnum {
   Ongoing = 'ongoing',
   OnHold = 'onHold',
   Cancelled = 'cancelled',
 }
 
-export enum MessageStatus {
+export enum MessageStatusEnum {
   Sent = 'sent',
   Read = 'read',
   Received = 'received',
 }
 
-export enum TargetUserType {
+export enum TargetUserTypeEnum {
   Broker = 'broker',
   Barterer = 'barterer',
 }
 
-export enum DisputeStatus {
+export enum DisputeStatusEnum {
   Active = 'active',
   Unresolved = 'unresolved',
   Resolved = 'resolved',
 }
 
-export enum FlagType {
+export enum FlagTypeEnum {
   User = 'user',
   Barter = 'barter',
 }
 
-export enum FlagStatus {
+export enum FlagStatusEnum {
   Active = 'active',
   Resolved = 'resolved',
 }
 
-export enum UserType {
+export enum UserTypeEnum {
   Barterer = 'barterer',
   Broker = 'broker',
   Admin = 'admin',
 }
 
-export enum UserStatus {
+export enum UserStatusEnum {
   Active = 'active',
   Banned = 'banned',
   Flagged = 'flagged',
 }
 
-export enum UserLanguage {
+export enum UserLanguageEnum {
   French = 'french',
   English = 'english',
 }
 
-export enum UserTheme {
+export enum UserThemeEnum {
   Dark = 'dark',
   Light = 'light',
 }
