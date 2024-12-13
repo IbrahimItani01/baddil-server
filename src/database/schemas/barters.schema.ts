@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { BarterStatus, Rating } from 'src/utils/enums.utils';
 import {
-  BarterStatus,
-  MeetupStatus,
-  Rating,
-  ReviewSide,
-} from 'src/utils/enums.utils';
-import { ReviewSchema, MeetupSchema } from '../subSchemas/barters.subSchema';
+  ReviewSchema,
+  MeetupSchema,
+  Meetup,
+  Review,
+} from '../subSchemas/barters.subSchema';
 
 export type BarterDocument = Barter & Document;
 
@@ -40,19 +40,13 @@ export class Barter {
     type: [ReviewSchema],
     required: false,
   })
-  reviews: { side: ReviewSide; review_text: string }[];
+  reviews: Review[];
 
   @Prop({
     type: MeetupSchema,
     required: false,
   })
-  meetup: {
-    meetup_id: Types.ObjectId;
-    status: MeetupStatus;
-    location: string;
-    qr_code: string;
-    date: Date;
-  };
+  meetup: Meetup;
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
