@@ -18,3 +18,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
+    BarterersModule,
+    BrokersModule,
+    UsersModule,
