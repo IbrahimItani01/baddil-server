@@ -91,3 +91,7 @@ export enum UserThemeEnum {
   Dark = 'dark',
   Light = 'light',
 }
+export enum ApiResponseStatusEnum {
+  Success = 'success',
+  Failed = 'failed',
+}
