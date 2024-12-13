@@ -121,3 +121,19 @@ export class Tier {
 }
 
 export const TierSchema = SchemaFactory.createForClass(Tier);
+@Schema()
+export class ProStatus {
+  @Prop({ type: Boolean, required: true, default: false })
+  is_pro: boolean;
+
+  @Prop({ type: Date, required: false })
+  activated_on?: Date;
+
+  @Prop({ type: Date, required: false })
+  expires_on?: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'Company', required: false })
+  plan_id?: Types.ObjectId;
+}
+
+export const ProStatusSchema = SchemaFactory.createForClass(ProStatus);
