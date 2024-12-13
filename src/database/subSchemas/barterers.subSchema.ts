@@ -147,3 +147,13 @@ export class Wallet {
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet);
+@Schema()
+export class AutoTrade {
+  @Prop({ type: Boolean, required: true, default: false })
+  enabled: boolean;
+
+  @Prop({ type: [AutoTradeDataSchema], required: true })
+  data: AutoTradeData[];
+}
+
+export const AutoTradeSchema = SchemaFactory.createForClass(AutoTrade);
