@@ -2,10 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import {
   BarterStatus,
+  MeetupStatus,
   Rating,
   ReviewSide,
-  MeetupStatus,
-} from '../../utils/enums.utils';
+} from 'src/utils/enums.utils';
+import { ReviewSchema, MeetupSchema } from '../subSchemas/barters.subSchema';
 
 export type BarterDocument = Barter & Document;
 
@@ -36,32 +37,13 @@ export class Barter {
   rating: Rating;
 
   @Prop({
-    type: [
-      {
-        side: {
-          type: String,
-          enum: Object.values(ReviewSide),
-          required: true,
-        },
-        review_text: { type: String, required: true },
-      },
-    ],
+    type: [ReviewSchema],
     required: false,
   })
   reviews: { side: ReviewSide; review_text: string }[];
 
   @Prop({
-    type: {
-      meetup_id: { type: Types.ObjectId, ref: 'Meetup', required: true },
-      status: {
-        type: String,
-        enum: Object.values(MeetupStatus),
-        required: true,
-      },
-      location: { type: String, required: true },
-      qr_code: { type: String, required: true },
-      date: { type: Date, required: true },
-    },
+    type: MeetupSchema,
     required: false,
   })
   meetup: {
