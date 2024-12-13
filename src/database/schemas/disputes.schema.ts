@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { DisputeStatus } from 'src/utils/enums.utils';
+import { DisputeStatusEnum } from 'src/utils/enums.utils';
 
 export type DisputeDocument = Dispute & Document;
 
@@ -11,10 +11,10 @@ export class Dispute {
 
   @Prop({
     type: String,
-    enum: Object.values(DisputeStatus),
-    default: DisputeStatus.Active,
+    enum: Object.values(DisputeStatusEnum),
+    default: DisputeStatusEnum.Active,
   })
-  status: DisputeStatus;
+  status: DisputeStatusEnum;
 
   @Prop({ type: Date, default: null })
   resolved_at: Date | null;

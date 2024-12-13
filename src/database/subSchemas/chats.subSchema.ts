@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { MessageStatus } from 'src/utils/enums.utils';
+import { MessageStatusEnum } from 'src/utils/enums.utils';
 
 @Schema()
 export class Message {
@@ -18,11 +18,11 @@ export class Message {
 
   @Prop({
     type: String,
-    enum: Object.values(MessageStatus),
-    default: MessageStatus.Sent,
+    enum: Object.values(MessageStatusEnum),
+    default: MessageStatusEnum.Sent,
     required: true,
   })
-  status: MessageStatus;
+  status: MessageStatusEnum;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

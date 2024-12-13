@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { AutoTradeStatus, ItemCondition } from 'src/utils/enums.utils';
+import { AutoTradeStatusEnum, ItemConditionEnum } from 'src/utils/enums.utils';
 
 /**
  * Represents an item in a user's wallet.
@@ -10,7 +10,7 @@ import { AutoTradeStatus, ItemCondition } from 'src/utils/enums.utils';
  *   item_id: new Types.ObjectId(),
  *   name: 'Vintage Watch',
  *   category: 'Accessories',
- *   condition: ItemCondition.Good,
+ *   condition: ItemConditionEnum.Good,
  *   description: 'A classic vintage watch in good condition.',
  *   estimated_value: 150,
  *   created_at: new Date(),
@@ -30,10 +30,10 @@ export class WalletItem {
 
   @Prop({
     type: String,
-    enum: Object.values(ItemCondition),
+    enum: Object.values(ItemConditionEnum),
     required: true,
   })
-  condition: ItemCondition;
+  condition: ItemConditionEnum;
 
   @Prop({ type: String, required: false })
   description: string;
@@ -56,7 +56,7 @@ export const WalletItemSchema = SchemaFactory.createForClass(WalletItem);
  * @example
  * const autoTradeData = new AutoTradeData({
  *   item_id: new Types.ObjectId(),
- *   status: AutoTradeStatus.Pending,
+ *   status: AutoTradeStatusEnum.Pending,
  *   started_on: new Date(),
  *   chats: []
  * });
@@ -71,10 +71,10 @@ export class AutoTradeData {
 
   @Prop({
     type: String,
-    enum: Object.values(AutoTradeStatus),
+    enum: Object.values(AutoTradeStatusEnum),
     required: true,
   })
-  status: AutoTradeStatus;
+  status: AutoTradeStatusEnum;
 
   @Prop({ type: Date, default: Date.now, required: true })
   started_on: Date;

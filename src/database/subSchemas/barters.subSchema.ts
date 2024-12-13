@@ -1,15 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ReviewSide, MeetupStatus } from 'src/utils/enums.utils'; // Correct usage of enums for sub-schemas
+import { ReviewSideEnum, MeetupStatusEnum } from 'src/utils/enums.utils'; // Correct usage of enums for sub-schemas
 
 @Schema()
 export class Review {
   @Prop({
     type: String,
-    enum: Object.values(ReviewSide),
+    enum: Object.values(ReviewSideEnum),
     required: true,
   })
-  side: ReviewSide;
+  side: ReviewSideEnum;
 
   @Prop({ type: String, required: true })
   review_text: string;
@@ -24,10 +24,10 @@ export class Meetup {
 
   @Prop({
     type: String,
-    enum: Object.values(MeetupStatus),
+    enum: Object.values(MeetupStatusEnum),
     required: true,
   })
-  status: MeetupStatus;
+  status: MeetupStatusEnum;
 
   @Prop({ type: String, required: true })
   location: string;

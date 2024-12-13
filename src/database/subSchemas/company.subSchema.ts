@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { TargetUserType } from 'src/utils/enums.utils';
+import { TargetUserTypeEnum } from 'src/utils/enums.utils';
 
 @Schema()
 export class Users {
@@ -92,10 +92,10 @@ export class SubscriptionPlan {
 
   @Prop({
     type: String,
-    enum: Object.values(TargetUserType),
+    enum: Object.values(TargetUserTypeEnum),
     required: true,
   })
-  target_user_type: TargetUserType;
+  target_user_type: TargetUserTypeEnum;
 
   @Prop({ type: Number, required: true })
   monthly_price: number;
