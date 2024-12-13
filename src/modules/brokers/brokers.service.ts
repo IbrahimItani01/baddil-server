@@ -14,3 +14,7 @@ export class BrokersService {
     return newBroker.save();
   }
 
+  async findByUserId(userId: Types.ObjectId) {
+    return this.brokerModel.findOne({ user_id: userId }).exec();
+  }
+}
