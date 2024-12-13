@@ -37,11 +37,25 @@ export class Finances {
       total_revenue: { type: Number, default: 0 },
       sources: {
         subscriptions: {
-          brokers: { type: Number, default: 0 },
-          barterers: { type: Number, default: 0 },
+          brokers: [
+            {
+              broker_id: { type: Types.ObjectId, ref: 'User', required: true },
+              plan_id: { type: Types.ObjectId, ref: 'Company', required: true },
+              created_at: { type: Date, default: Date.now },
+              value: { type: Number, required: true },
+            },
+          ],
+          barterers: [
+            {
+              barterer_id: { type: Types.ObjectId, ref: 'User', required: true },
+              plan_id: { type: Types.ObjectId, ref: 'Company', required: true },
+              created_at: { type: Date, default: Date.now },
+              value: { type: Number, required: true },
+            },
+          ],
         },
         broker_commissions: {
-          platform_percentage: { type: Number, required: true },
+          platform_percentage: { type: Number, required: true, default: 5 },
           broker_earnings: [
             {
               broker_id: { type: Types.ObjectId, ref: 'User', required: true },
@@ -84,6 +98,7 @@ export class Finances {
 }
 
 export const FinancesSchema = SchemaFactory.createForClass(Finances);
+
 
 @Schema()
 export class SubscriptionPlan {
