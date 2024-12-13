@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { MessageStatus } from 'src/utils/enums.utils';
+import { MessageSchema } from '../subSchemas/chats.subSchema';
 
 export type ChatDocument = Chat & Document;
 
@@ -10,20 +11,7 @@ export class Chat {
   users_involved: Types.ObjectId[];
 
   @Prop({
-    type: [
-      {
-        message_id: { type: Types.ObjectId, required: true },
-        sender: { type: Types.ObjectId, ref: 'User', required: true },
-        content: { type: String, required: true },
-        sent_date: { type: Date, default: Date.now, required: true },
-        status: {
-          type: String,
-          enum: Object.values(MessageStatus),
-          default: MessageStatus.Sent,
-          required: true,
-        },
-      },
-    ],
+    type: [MessageSchema],
     required: true,
   })
   messages: {
