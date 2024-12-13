@@ -157,3 +157,19 @@ export class AutoTrade {
 }
 
 export const AutoTradeSchema = SchemaFactory.createForClass(AutoTrade);
+@Schema({ timestamps: true })
+export class AiAssistance {
+  @Prop({
+    type: [SuccessProbabilitySchema], // Reference to SuccessProbabilitySchema
+    required: true,
+  })
+  success_probability: SuccessProbability[];
+
+  @Prop({
+    type: AutoTradeSchema, // Reference to AutoTradeSchema
+    required: true,
+  })
+  auto_trade: AutoTrade;
+}
+
+export const AiAssistanceSchema = SchemaFactory.createForClass(AiAssistance);
