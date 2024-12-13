@@ -1,14 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import {
-  UserLanguage,
-  UserStatus,
-  UserTheme,
-  UserType,
+  UserStatusEnum,
+  UserTypeEnum,
 } from 'src/utils/enums.utils';
 import {
+  AuthProvider,
   AuthProviderSchema,
+  PhoneNumber,
   PhoneNumberSchema,
+  Settings,
   SettingsSchema,
 } from '../subSchemas/users.subSchema';
 
@@ -25,43 +26,29 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true, enum: Object.values(UserType) })
-  user_type: UserType;
+  @Prop({ required: true, enum: Object.values(UserTypeEnum) })
+  user_type: UserTypeEnum;
 
   @Prop({ trim: true })
   profile_picture?: string;
 
   @Prop({
-    enum: Object.values(UserStatus),
-    default: UserStatus.Active,
+    enum: Object.values(UserStatusEnum),
+    default: UserStatusEnum.Active,
   })
-  status: UserStatus;
+  status: UserStatusEnum;
 
   @Prop({ type: SettingsSchema, _id: false })
-  settings: {
-    language: UserLanguage;
-    theme: UserTheme;
-    notifications: boolean;
-  };
+  settings: Settings;
 
   @Prop({ type: AuthProviderSchema, _id: false })
-  auth_provider?: {
-    provider_id?: string;
-    provider_email?: string;
-    provider_profile_picture?: string;
-    auth_provider: string;
-  };
+  auth_provider?: AuthProvider;
 
   @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
   notifications: Types.ObjectId[];
 
   @Prop({ type: PhoneNumberSchema, _id: false })
-  phone_number?: {
-    number?: string;
-    verified: boolean;
-    verification_code?: string;
-    verification_expiry?: Date;
-  };
+  phone_number?: PhoneNumber;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
