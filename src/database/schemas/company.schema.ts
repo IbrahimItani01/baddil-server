@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { TargetUserType } from 'src/utils/enums.utils';
 
 export type CompanyDocument = Company & Document;
 
@@ -141,7 +142,7 @@ export class Company {
         name: { type: String, required: true },
         target_user_type: {
           type: String,
-          enum: ['broker', 'barterer'],
+          enum: Object.values(TargetUserType),
           required: true,
         },
         monthly_price: { type: Number, required: true },
@@ -152,7 +153,7 @@ export class Company {
   })
   subscription_plans: {
     name: string;
-    target_user_type: 'broker' | 'barterer';
+    target_user_type: TargetUserType;
     monthly_price: number;
     features: string[];
   }[];
