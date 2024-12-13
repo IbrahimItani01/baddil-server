@@ -77,3 +77,16 @@ export class Earnings {
 }
 
 export const EarningsSchema = SchemaFactory.createForClass(Earnings);
+@Schema()
+export class Performance {
+  @Prop({ type: Number, required: true, default: 0 })
+  success_rate: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  completed_barters: number;
+
+  @Prop({ type: EarningsSchema, required: true })
+  earnings: Earnings;
+}
+
+export const PerformanceSchema = SchemaFactory.createForClass(Performance);
