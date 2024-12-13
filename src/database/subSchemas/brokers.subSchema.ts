@@ -125,3 +125,23 @@ export class Client {
 }
 
 export const ClientSchema = SchemaFactory.createForClass(Client);
+@Schema()
+export class Rating {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  client_id: Types.ObjectId;
+
+  @Prop({
+    type: String,
+    enum: Object.values(RatingEnum),
+    required: true,
+  })
+  rating: RatingEnum;
+
+  @Prop({ type: String, required: false })
+  message?: string;
+
+  @Prop({ type: Date, required: true })
+  date: Date;
+}
+
+export const RatingSchema = SchemaFactory.createForClass(Rating);
