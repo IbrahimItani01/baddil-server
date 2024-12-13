@@ -1,8 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { ClientStatus, Rating } from 'src/utils/enums.utils';
+import {
+  ClientGoalSchema,
+  ClientItemSchema,
+  ProcessSchema,
+} from '../subSchemas/brokers.subSchema';
 
-export type BrokerDocument = Broker & Document;
+export type BrokerDocument = Broker & Document; 
 
 @Schema({ timestamps: true })
 export class Broker {
@@ -53,48 +58,13 @@ export class Broker {
       {
         client_id: { type: Types.ObjectId, ref: 'User', required: true },
         budget: { type: Number, required: true },
-        client_goal: {
-          type: {
-            name: { type: String, required: true },
-            condition: { type: String, required: true },
-            category: { type: String, required: true },
-            details: { type: String, required: false },
-          },
-          required: true,
-        },
-        client_item: {
-          type: {
-            barter_id: { type: Types.ObjectId, ref: 'Barter', required: true },
-            name: { type: String, required: true },
-            condition: { type: String, required: true },
-            category: { type: String, required: true },
-          },
-          required: true,
-        },
-        process: {
-          type: [
-            {
-              process_id: { type: String, required: true },
-              title: { type: String, required: true },
-              from_barter_id: {
-                type: Types.ObjectId,
-                ref: 'Barter',
-                required: true,
-              },
-              to_barter_id: {
-                type: Types.ObjectId,
-                ref: 'Barter',
-                required: true,
-              },
-              details: { type: String, required: false },
-            },
-          ],
-          required: false,
-        },
+        client_goal: { type: ClientGoalSchema, required: true },
+        client_item: { type: ClientItemSchema, required: true },
+        process: { type: [ProcessSchema], required: false },
         progress: { type: Number, required: true, default: 0 },
         status: {
           type: String,
-          enum: Object.values(ClientStatus),
+          enum: Object.values(ClientStatus), 
           required: true,
         },
         created_at: { type: Date, default: Date.now, required: true },
@@ -126,7 +96,7 @@ export class Broker {
       details?: string;
     }[];
     progress: number;
-    status: ClientStatus;
+    status: ClientStatus; 
     created_at: Date;
     updated_at: Date;
   }[];
@@ -137,7 +107,7 @@ export class Broker {
         client_id: { type: Types.ObjectId, ref: 'User', required: true },
         rating: {
           type: String,
-          enum: Object.values(Rating),
+          enum: Object.values(Rating), 
           required: true,
         },
         message: { type: String, required: false },
@@ -148,10 +118,11 @@ export class Broker {
   })
   ratings: {
     client_id: Types.ObjectId;
-    rating: Rating;
+    rating: Rating; 
     message?: string;
     date: Date;
   }[];
+
   @Prop({
     type: [Types.ObjectId],
     ref: 'Chat',
