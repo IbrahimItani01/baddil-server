@@ -64,3 +64,16 @@ export class VipStatus {
 }
 
 export const VipStatusSchema = SchemaFactory.createForClass(VipStatus);
+@Schema()
+export class Earnings {
+  @Prop({ type: Number, required: true, default: 0 })
+  total: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  from_clients: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  from_baddil: number;
+}
+
+export const EarningsSchema = SchemaFactory.createForClass(Earnings);
