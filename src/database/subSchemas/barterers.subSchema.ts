@@ -60,3 +60,23 @@ export class AutoTradeData {
 }
 
 export const AutoTradeDataSchema = SchemaFactory.createForClass(AutoTradeData);
+@Schema()
+export class SuccessProbability {
+  @Prop({ type: Types.ObjectId })
+  _id: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Item', required: true })
+  item_id: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Item', required: true })
+  suggested_item_id: Types.ObjectId;
+
+  @Prop({ type: Number, required: true })
+  probability: number;
+
+  @Prop({ type: Date, default: Date.now, required: true })
+  created_at: Date;
+}
+
+export const SuccessProbabilitySchema =
+  SchemaFactory.createForClass(SuccessProbability);
