@@ -102,3 +102,22 @@ export class HiredBroker {
 }
 
 export const HiredBrokerSchema = SchemaFactory.createForClass(HiredBroker);
+@Schema()
+export class Tier {
+  @Prop({ type: Types.ObjectId, ref: 'Company', required: true })
+  current_tier: Types.ObjectId;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  progress: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  trades_left: number;
+
+  @Prop({ type: Date, required: true })
+  date_reached: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'Company', required: false })
+  next_tier?: Types.ObjectId;
+}
+
+export const TierSchema = SchemaFactory.createForClass(Tier);
