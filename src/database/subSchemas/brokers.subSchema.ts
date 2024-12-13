@@ -90,3 +90,38 @@ export class Performance {
 }
 
 export const PerformanceSchema = SchemaFactory.createForClass(Performance);
+@Schema()
+export class Client {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  client_id: Types.ObjectId;
+
+  @Prop({ type: Number, required: true })
+  budget: number;
+
+  @Prop({ type: ClientGoalSchema, required: true })
+  client_goal: ClientGoal;
+
+  @Prop({ type: ClientItemSchema, required: true })
+  client_item: ClientItem;
+
+  @Prop({ type: [ProcessSchema], required: false })
+  process?: Process[];
+
+  @Prop({ type: Number, required: true, default: 0 })
+  progress: number;
+
+  @Prop({
+    type: String,
+    enum: Object.values(ClientStatusEnum),
+    required: true,
+  })
+  status: ClientStatusEnum;
+
+  @Prop({ type: Date, default: Date.now, required: true })
+  created_at: Date;
+
+  @Prop({ type: Date, default: Date.now, required: true })
+  updated_at: Date;
+}
+
+export const ClientSchema = SchemaFactory.createForClass(Client);
