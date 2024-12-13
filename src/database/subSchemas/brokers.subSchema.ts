@@ -54,3 +54,13 @@ export class Process {
 }
 
 export const ProcessSchema = SchemaFactory.createForClass(Process);
+@Schema()
+export class VipStatus {
+  @Prop({ type: Boolean, required: true, default: false })
+  is_vip: boolean;
+
+  @Prop({ type: Date, required: false, default: null })
+  validated_at?: Date | null;
+}
+
+export const VipStatusSchema = SchemaFactory.createForClass(VipStatus);
