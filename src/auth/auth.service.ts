@@ -67,19 +67,23 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password as unknown as string);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.password.current_password as unknown as string,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    
     if (user.status === 'banned') {
       throw new BadRequestException('This account is banned');
     }
 
-    
-    const payload = { sub: user._id, email: user.email, user_type: user.user_type };
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      user_type: user.user_type,
+    };
     const token = this.jwtService.sign(payload);
 
     
