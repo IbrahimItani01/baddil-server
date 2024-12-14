@@ -18,19 +18,19 @@ export class Broker {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   rate_per_hour: number;
 
-  @Prop({ type: VipStatusSchema, required: true })
+  @Prop({ type: VipStatusSchema, default: {} })
   vip_status: VipStatus;
 
-  @Prop({ type: PerformanceSchema, required: true })
+  @Prop({ type: PerformanceSchema, default: {} })
   performance: Performance;
 
-  @Prop({ type: [ClientSchema], required: false })
+  @Prop({ type: [ClientSchema], default: [] })
   clients: Client[];
 
-  @Prop({ type: [RatingSchema], required: false })
+  @Prop({ type: [RatingSchema], default: [] })
   ratings: Rating[];
 
   @Prop({

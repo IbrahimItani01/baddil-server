@@ -86,7 +86,7 @@ export class Performance {
   @Prop({ type: Number, required: true, default: 0 })
   completed_barters: number;
 
-  @Prop({ type: EarningsSchema, required: true })
+  @Prop({ type: EarningsSchema, required: true,default:{} })
   earnings: Earnings;
 }
 
