@@ -40,3 +40,12 @@ export class AuthService {
 
     
     let specificDocument = null;
+    if (user_type === 'barterer') {
+      await this.barterersService.create(userId);
+      specificDocument = await this.barterersService.findByUserId(userId);
+    } else if (user_type === 'broker') {
+      await this.brokersService.create(userId);
+      specificDocument = await this.brokersService.findByUserId(userId);
+    }
+
+    
