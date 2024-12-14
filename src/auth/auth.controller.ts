@@ -28,3 +28,26 @@ export class AuthController {
     }
   }
 
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    try {
+      const result = await this.authService.login(email, password);
+
+      return new ApiResponseDto(
+        ApiResponseStatusEnum.Success,
+        'Login successful',
+        result,
+      );
+    } catch (error) {
+      return new ApiResponseDto(
+        ApiResponseStatusEnum.Failed,
+        error.message,
+        null,
+      );
+    }
+  }
+}
