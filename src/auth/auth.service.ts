@@ -7,3 +7,12 @@ import { Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly barterersService: BarterersService,
+    private readonly brokersService: BrokersService,
+    private readonly jwtService: JwtService, 
+  ) {}
+
