@@ -68,3 +68,8 @@ export class AuthService {
     }
 
     
+    if (user.status === 'banned') {
+      throw new BadRequestException('This account is banned');
+    }
+
+    
