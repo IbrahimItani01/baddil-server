@@ -1,4 +1,11 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/modules/users/dto/createUser.dto';
 import { ApiResponseDto } from 'src/utils/apiResponse.dto';
@@ -20,11 +27,11 @@ export class AuthController {
         result,
       );
     } catch (error) {
-      return new ApiResponseDto(
-        ApiResponseStatusEnum.Failed,
-        error.message,
-        null,
-      );
+      throw new BadRequestException({
+        status: ApiResponseStatusEnum.Failed,
+        message: error.message || 'Registration failed',
+        data: null,
+      });
     }
   }
 
@@ -43,11 +50,11 @@ export class AuthController {
         result,
       );
     } catch (error) {
-      return new ApiResponseDto(
-        ApiResponseStatusEnum.Failed,
-        error.message,
-        null,
-      );
+      throw new BadRequestException({
+        status: ApiResponseStatusEnum.Failed,
+        message: error.message || 'Login failed',
+        data: null,
+      });
     }
   }
 }
