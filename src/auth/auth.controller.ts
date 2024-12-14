@@ -4,3 +4,7 @@ import { CreateUserDto } from 'src/modules/users/dto/createUser.dto';
 import { ApiResponseDto } from 'src/utils/apiResponse.dto';
 import { ApiResponseStatusEnum } from 'src/utils/enums.utils';
 
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
