@@ -56,9 +56,12 @@ export class AuthService {
         user,
         specificDocument,
       };
+    } catch (error) {
+      throw new BadRequestException('Registration failed', error);
+    }
   }
+
   async login(email: string, password: string) {
-    
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
