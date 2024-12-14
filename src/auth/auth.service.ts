@@ -49,3 +49,8 @@ export class AuthService {
     }
 
     
+    return {
+      user,
+      specificDocument,
+    };
+  }
