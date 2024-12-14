@@ -8,3 +8,23 @@ import { ApiResponseStatusEnum } from 'src/utils/enums.utils';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() createUserDto: CreateUserDto) {
+    try {
+      const result = await this.authService.register(createUserDto);
+
+      return new ApiResponseDto(
+        ApiResponseStatusEnum.Success,
+        'User registered successfully',
+        result,
+      );
+    } catch (error) {
+      return new ApiResponseDto(
+        ApiResponseStatusEnum.Failed,
+        error.message,
+        null,
+      );
+    }
+  }
+
