@@ -36,3 +36,7 @@ export class AuthService {
       password: hashedPassword, 
       user_type,
     });
+    const userId = user._id as Types.ObjectId;
+
+    
+    let specificDocument = null;
