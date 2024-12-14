@@ -9,3 +9,9 @@ export class BarterersService {
     @InjectModel(Barterer.name) private bartererModel: Model<BartererDocument>,
   ) {}
 
+  async create(userId: Types.ObjectId): Promise<Barterer> {
+    const newBarterer = new this.bartererModel({ user_id:userId });
+    return newBarterer.save();
+  }
+  
+
