@@ -9,8 +9,8 @@ export class BrokersService {
     @InjectModel(Broker.name) private brokerModel: Model<BrokerDocument>,
   ) {}
 
-  async create(brokerData: Types.ObjectId): Promise<Broker> {
-    const newBroker = new this.brokerModel(brokerData);
+  async create(userId: Types.ObjectId): Promise<Broker> {
+    const newBroker = new this.brokerModel({ user_id:userId });
     return newBroker.save();
   }
 
