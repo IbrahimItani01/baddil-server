@@ -1,10 +1,15 @@
 import {
-  IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsString,
   Matches,
+  ValidateNested,
+  IsEnum,
+  IsEmail,
+  IsOptional,
+  IsBoolean,
+  IsDate,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { UserTypeEnum } from 'src/utils/enums.utils';
 
 export class PasswordForgetDto {
