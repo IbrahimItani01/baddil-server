@@ -15,3 +15,7 @@ export class BarterersService {
   }
   
 
+  async findByUserId(userId: Types.ObjectId) {
+    return this.bartererModel.findOne({ user_id: userId }).exec();
+  }
+}
