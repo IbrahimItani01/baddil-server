@@ -43,7 +43,19 @@ export class PasswordDto {
   password_forget?: PasswordForgetDto;
 }
 
+export class CreateUserDto {
+  @IsString()
   @IsNotEmpty()
+  name: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ValidateNested()
+  @Type(() => PasswordDto)
+  password: PasswordDto;
+
   @IsEnum(UserTypeEnum)
-  user_type: UserTypeEnum;
+  user_type: string;
 }
