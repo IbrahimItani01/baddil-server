@@ -29,12 +29,19 @@ export class PasswordForgetDto {
   @IsDate()
   reset_expires_at?: Date;
 }
+export class PasswordDto {
   @IsString()
+  @IsNotEmpty()
   @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/, {
     message:
       'Password must be at least 12 characters long, include at least one uppercase letter, one number, and one special character',
   })
-  readonly password: string;
+  current_password: string;
+
+  @ValidateNested()
+  @Type(() => PasswordForgetDto)
+  password_forget?: PasswordForgetDto;
+}
 
   @IsNotEmpty()
   @IsEnum(UserTypeEnum)
