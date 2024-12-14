@@ -16,3 +16,5 @@ export class AuthService {
     private readonly jwtService: JwtService, 
   ) {}
 
+  async register(createUserDto: CreateUserDto) {
+    const { name, email, password, user_type } = createUserDto;
