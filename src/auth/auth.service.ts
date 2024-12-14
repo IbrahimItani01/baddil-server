@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/modules/users/dto/createUser.dto';
 import { BarterersService } from 'src/modules/barterers/barterers.service';
 import { BrokersService } from 'src/modules/brokers/brokers.service';
@@ -13,7 +17,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly barterersService: BarterersService,
     private readonly brokersService: BrokersService,
-    private readonly jwtService: JwtService, 
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
