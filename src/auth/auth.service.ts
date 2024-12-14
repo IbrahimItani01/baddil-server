@@ -54,3 +54,5 @@ export class AuthService {
       specificDocument,
     };
   }
+  async login(email: string, password: string) {
+    
