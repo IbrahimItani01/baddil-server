@@ -7,11 +7,23 @@ import {
 } from 'class-validator';
 import { UserTypeEnum } from 'src/utils/enums.utils';
 
-export class CreateUserDto {
-  @IsEmail({}, { message: 'Invalid email address' })
-  readonly email: string;
+export class PasswordForgetDto {
+  @IsOptional()
+  @IsBoolean()
+  is_reset_active?: boolean;
+
+  @IsOptional()
   @IsString()
-  readonly name: string;
+  new_password?: string;
+
+  @IsOptional()
+  @IsString()
+  verification_code?: string;
+
+  @IsOptional()
+  @IsDate()
+  reset_expires_at?: Date;
+}
   @IsString()
   @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/, {
     message:
