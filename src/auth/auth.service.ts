@@ -29,34 +29,33 @@ export class AuthService {
       throw new BadRequestException('Email is already registered');
     }
 
-    
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    try {
+      const hashedPassword = await bcrypt.hash(password.current_password, 10);
 
-    
-    const user = await this.usersService.create({
-      name,
-      email,
-      password: hashedPassword, 
-      user_type,
-    });
-    const userId = user._id as Types.ObjectId;
+      const user = await this.usersService.create({
+        name,
+        email,
+        password: {
+          current_password: hashedPassword,
+          password_forget: password.password_forget,
+        },
+        user_type,
+      });
+      const userId = user._id as Types.ObjectId;
 
-    
-    let specificDocument = null;
-    if (user_type === 'barterer') {
-      await this.barterersService.create(userId);
-      specificDocument = await this.barterersService.findByUserId(userId);
-    } else if (user_type === 'broker') {
-      await this.brokersService.create(userId);
-      specificDocument = await this.brokersService.findByUserId(userId);
-    }
+      let specificDocument = null;
+      if (user_type === 'barterer') {
+        await this.barterersService.create(userId);
+        specificDocument = await this.barterersService.findByUserId(userId);
+      } else if (user_type === 'broker') {
+        await this.brokersService.create(userId);
+        specificDocument = await this.brokersService.findByUserId(userId);
+      }
 
-    
-    return {
-      user,
-      specificDocument,
-    };
+      return {
+        user,
+        specificDocument,
+      };
   }
   async login(email: string, password: string) {
     
