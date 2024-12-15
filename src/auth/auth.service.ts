@@ -15,12 +15,19 @@ import axios from 'axios';
 
 @Injectable()
 export class AuthService {
+  private firebaseApiKey: string;
+
   constructor(
-    private readonly usersService: UsersService,
+    @Inject('FIREBASE_ADMIN_INJECTOR')
+    private readonly firebaseAuth: admin.auth.Auth,
+    public readonly usersService: UsersService,
     private readonly barterersService: BarterersService,
     private readonly brokersService: BrokersService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.firebaseApiKey = this.configService.get<string>('FIREBASE_API_KEY');
+  }
 
   async register(createUserDto: CreateUserDto) {
     const { name, email, password, user_type } = createUserDto;
