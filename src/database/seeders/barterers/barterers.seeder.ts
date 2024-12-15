@@ -15,3 +15,5 @@ export class BarterersSeeder {
     @InjectModel(Broker.name) private readonly brokerModel: Model<BrokerDocument>,
   ) {}
 
+  async seedBarterers(): Promise<BartererDocument[]> {
+    const bartererUsers = await this.userModel.find({ user_type: 'barterer' });
