@@ -41,3 +41,16 @@ export class BarterersSeeder {
         }));
 
         const walletItemIds = walletItems.map((item) => item.item_id);
+
+        // Determine hired brokers
+        const hiredBrokers = (isPro ? brokers.slice(0, faker.number.int({ min: 1, max: 5 })) : brokers.slice(0, 1)).map(
+          (broker) => ({
+            broker_id: broker._id as Types.ObjectId,
+            hired_on: faker.date.past(),
+            contract_termination_date: faker.date.future(),
+            goal_to_barter: faker.commerce.productName(),
+            starting_item_id: faker.helpers.arrayElement(walletItemIds), // Pick an actual wallet item ID
+            contract_budget: faker.number.int({ min: 100, max: 1000 }),
+          }),
+        );
+
