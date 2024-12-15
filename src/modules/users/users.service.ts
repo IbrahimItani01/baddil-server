@@ -43,7 +43,7 @@ export class UsersService {
     return newUser.save();
   }
 
-  async findById(id: string): Promise<UserDocument | null> {
-    return this.userModel.findById(id).exec();
+  async findUserById(userId: string): Promise<Partial<User> | null> {
+    return this.userModel.findById(userId, '-password').lean().exec();
   }
 }
