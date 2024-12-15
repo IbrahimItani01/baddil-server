@@ -77,12 +77,16 @@ export class AuthService {
       const userId = user._id as Types.ObjectId;
 
       let specificDocument = null;
-      if (user_type === 'barterer') {
-        await this.barterersService.create(userId);
-        specificDocument = await this.barterersService.findByUserId(userId);
-      } else if (user_type === 'broker') {
-        await this.brokersService.create(userId);
-        specificDocument = await this.brokersService.findByUserId(userId);
+
+      const userTypeServiceMap = {
+        barterer: this.barterersService,
+        broker: this.brokersService,
+      };
+
+      const specificService = userTypeServiceMap[user_type];
+      if (specificService) {
+        await specificService.create(userId);
+        specificDocument = await specificService.findByUserId(userId);
       }
 
       return {
