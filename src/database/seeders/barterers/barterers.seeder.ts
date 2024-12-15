@@ -20,4 +20,8 @@ export class BarterersSeeder {
 
     const barterers = await Promise.all(
       bartererUsers.map(async (user) => {
-  }
+        const bartererData = await this.bartererModel.findOne({ user_id: user._id });
+        if (!bartererData) {
+          return null;
+        }
+
