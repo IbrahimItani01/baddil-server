@@ -56,30 +56,3 @@ export class PhoneNumber {
 }
 
 export const PhoneNumberSchema = SchemaFactory.createForClass(PhoneNumber);
-@Schema({ _id: false })
-export class PasswordForget {
-  @Prop({ default: false }) 
-  is_reset_active: boolean;
-
-  @Prop({ trim: true, default: null }) 
-  new_password?: string;
-
-  @Prop({ trim: true, default: null }) 
-  verification_code?: string;
-
-  @Prop({ default: null }) 
-  reset_expires_at?: Date;
-}
-
-const PasswordForgetSchema = SchemaFactory.createForClass(PasswordForget);
-
-@Schema({ _id: false })
-export class Password {
-  @Prop({ required: true, trim: true }) 
-  current_password: string;
-
-  @Prop({ type: PasswordForgetSchema, default: {} }) 
-  password_forget: PasswordForget;
-}
-
-export const PasswordSchema = SchemaFactory.createForClass(Password);

@@ -2,10 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { UserStatusEnum, UserTypeEnum } from 'src/utils/enums.utils';
 import {
-  AuthProvider,
-  AuthProviderSchema,
-  Password,
-  PasswordSchema,
   PhoneNumber,
   PhoneNumberSchema,
   Settings,
@@ -22,8 +18,8 @@ export class User {
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
   email: string;
 
-  @Prop({ type: PasswordSchema, required: true }) 
-  password: Password;
+  @Prop({ required: true, unique: true })
+  firebase_uid: string; 
 
   @Prop({ required: true, enum: Object.values(UserTypeEnum) })
   user_type: UserTypeEnum;
@@ -40,14 +36,15 @@ export class User {
   @Prop({ type: SettingsSchema, _id: false })
   settings: Settings;
 
-  @Prop({ type: AuthProviderSchema, _id: false })
-  auth_provider?: AuthProvider;
-
   @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
   notifications: Types.ObjectId[];
 
   @Prop({ type: PhoneNumberSchema, _id: false })
   phone_number?: PhoneNumber;
+
+  
+  @Prop({ required: false}) 
+  password?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
