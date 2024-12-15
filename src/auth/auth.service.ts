@@ -66,14 +66,14 @@ export class AuthService {
       }
 
       const user = await this.usersService.create({
+        firebase_uid: firebaseUser.uid,
         name,
         email,
-        password: {
-          current_password: hashedPassword,
-          password_forget: password.password_forget,
-        },
+        password: null,
         user_type,
+        profile_picture: firebaseUser.photoURL || null,
       });
+
       const userId = user._id as Types.ObjectId;
 
       let specificDocument = null;
