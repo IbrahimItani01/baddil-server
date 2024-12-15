@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Barterer, BartererDocument } from 'src/database/schemas/barterers.schema';
 
 @Injectable()
-export class BrokerSeeder {
+export class BrokersSeeder {
   constructor(
     @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
@@ -97,3 +97,7 @@ export class BrokerSeeder {
       }),
     );
 
+    // Filter out null entries in case some brokers couldn't be seeded
+    return this.brokerModel.insertMany(brokers.filter((broker) => broker !== null));
+  }
+}
