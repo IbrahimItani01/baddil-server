@@ -40,3 +40,4 @@ export class BarterersSeeder {
           images: [faker.image.url()],
         }));
 
+        const walletItemIds = walletItems.map((item) => item.item_id);
