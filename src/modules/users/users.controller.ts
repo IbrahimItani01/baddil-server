@@ -30,4 +30,37 @@ export class UsersController {
     return this.usersService.updateUser(userId, updateData);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch('me/settings')
+  async updateSettings(@Req() req: any, @Body() settingsData: any) {
+    const userId = req.user.id;
+
+    if (!settingsData || Object.keys(settingsData).length === 0) {
+      throw new BadRequestException('No settings data provided');
+    }
+
+    const updateData = Object.keys(settingsData).reduce((acc, key) => {
+      acc[`settings.${key}`] = settingsData[key];
+      return acc;
+    }, {});
+
+    try {
+      const updatedUser = await this.usersService.updateUser(
+        userId,
+        updateData,
+      );
+
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+
+      return {
+        status: 'success',
+        message: 'Settings updated successfully',
+        data: updatedUser,
+      };
+    } catch (error) {
+      throw new BadRequestException('Failed to update settings', error.message);
+    }
+  }
 }
