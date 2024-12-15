@@ -124,6 +124,18 @@ export class AuthService {
           throw new UnauthorizedException('Wrong password');
         }
 
+        user = await this.usersService.findByFirebaseUid(firebaseUser.uid);
+      } else {
+        const decodedToken =
+          await this.firebaseAuth.verifyIdToken(emailOrIdToken);
+        const firebase_uid = decodedToken.uid;
+
+        user = await this.usersService.findByFirebaseUid(firebase_uid);
+      }
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
 
     if (user.status === 'banned') {
       throw new BadRequestException('This account is banned');
