@@ -16,3 +16,12 @@ import {
 } from 'src/utils/enums.utils';
 import { v4 as uuidv4 } from 'uuid';
 import { Barterer, BartererDocument } from 'src/database/schemas/barterers.schema';
+
+@Injectable()
+export class BrokerSeeder {
+  constructor(
+    @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Barterer.name) private readonly bartererModel: Model<BartererDocument>,
+  ) {}
+
