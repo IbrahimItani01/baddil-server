@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/database/schemas/users.schema';
@@ -6,9 +10,9 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-      ) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
@@ -39,7 +43,10 @@ export class UsersService {
       userData.password = hashedPassword;
     }
 
-    const newUser = new this.userModel(userData);
+    const newUser = new this.userModel({
+      ...userData,
+    });
+
     return newUser.save();
   }
 
