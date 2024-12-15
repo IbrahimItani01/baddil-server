@@ -62,7 +62,6 @@ export class AutoTradeData {
 
 export const AutoTradeDataSchema = SchemaFactory.createForClass(AutoTradeData);
 
-
 @Schema()
 export class SuccessProbability {
   @Prop({ type: Types.ObjectId })
@@ -81,9 +80,8 @@ export class SuccessProbability {
   created_at: Date;
 }
 
-export const SuccessProbabilitySchema = SchemaFactory.createForClass(SuccessProbability);
-
-
+export const SuccessProbabilitySchema =
+  SchemaFactory.createForClass(SuccessProbability);
 
 @Schema()
 export class HiredBroker {
@@ -133,13 +131,18 @@ export class ProStatus {
   @Prop({ type: Boolean, required: true, default: false })
   is_pro: boolean;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date, required: false, default: null })
   activated_on?: Date;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date, required: false, default: null })
   expires_on?: Date;
 
-  @Prop({ type: Types.ObjectId, ref: 'Company', required: false })
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Company',
+    required: false,
+    default: null,
+  })
   plan_id?: Types.ObjectId;
 }
 
@@ -176,7 +179,7 @@ export class AiAssistance {
   success_probability: SuccessProbability[];
 
   @Prop({
-    type: AutoTradeSchema, 
+    type: AutoTradeSchema,
     required: true,
   })
   auto_trade: AutoTrade;
