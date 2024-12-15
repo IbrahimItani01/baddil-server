@@ -137,9 +137,9 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
 
-    if (user.status === 'banned') {
-      throw new BadRequestException('This account is banned');
-    }
+      if (user.status === 'banned') {
+        throw new BadRequestException('This account is banned');
+      }
 
     const payload = {
       sub: user._id,
