@@ -6,9 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { BarterersModule } from 'src/modules/barterers/barterers.module';
 import { BrokersModule } from 'src/modules/brokers/brokers.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
