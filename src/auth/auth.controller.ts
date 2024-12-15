@@ -51,22 +51,22 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
+    @Body('emailOrIdToken') emailOrIdToken: string,
+    @Body('password') password?: string,
   ) {
     try {
-      const result = await this.authService.login(email, password);
-
-      return new ApiResponseDto(
-        ApiResponseStatusEnum.Success,
-        'Login successful',
-        result,
-      );
+      const result = await this.authService.login(emailOrIdToken, password);
+      return {
+        status: ApiResponseStatusEnum.Success,
+        message: 'Login successful',
+        data: result,
+      };
     } catch (error) {
       throw new BadRequestException({
         status: ApiResponseStatusEnum.Failed,
-        message: error.message || 'Login failed',
-        data: null,
+        message: error.response?.message || 'Authentication failed',
+        error: error.response?.error || 'Request failed with status code 400',
+        statusCode: error.response?.statusCode || 401,
       });
     }
   }
