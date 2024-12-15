@@ -25,3 +25,5 @@ export class BarterersSeeder {
           return null;
         }
 
+        const brokers = await this.brokerModel.find();
+        const isPro = bartererData.pro_status.is_pro;
