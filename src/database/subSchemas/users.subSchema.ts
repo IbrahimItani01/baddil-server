@@ -42,16 +42,16 @@ export const AuthProviderSchema = SchemaFactory.createForClass(AuthProvider);
 
 @Schema()
 export class PhoneNumber {
-  @Prop({ type: String, required: false })
+  @Prop({ type: String, required: false, default: null })
   number?: string;
 
   @Prop({ type: Boolean, default: false })
   verified: boolean;
 
-  @Prop({ type: String, required: false })
+  @Prop({ type: String, required: false, default: null })
   verification_code?: string;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date, required: false, default: null })
   verification_expiry?: Date;
 }
 
