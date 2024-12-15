@@ -33,13 +33,13 @@ export class User {
   })
   status: UserStatusEnum;
 
-  @Prop({ type: SettingsSchema, _id: false })
+  @Prop({ type: SettingsSchema, _id: false, default: () => ({}) })
   settings: Settings;
 
   @Prop({ type: [Types.ObjectId], ref: 'Notification', default: [] })
   notifications: Types.ObjectId[];
 
-  @Prop({ type: PhoneNumberSchema, _id: false })
+  @Prop({ type: PhoneNumberSchema, _id: false, default: () => ({}) })
   phone_number?: PhoneNumber;
 
   
