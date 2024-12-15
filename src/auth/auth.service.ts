@@ -43,7 +43,17 @@ export class AuthService {
     }
 
     try {
-      const hashedPassword = await bcrypt.hash(password.current_password, 10);
+      let firebaseUser;
+
+      if (googleToken) {
+        try {
+          const decodedToken =
+            await this.firebaseAuth.verifyIdToken(googleToken);
+          firebaseUser = decodedToken;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+          throw new UnauthorizedException('Invalid Google token');
+        }
 
       const user = await this.usersService.create({
         name,
