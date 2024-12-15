@@ -53,4 +53,30 @@ export class UsersService {
   async findUserById(userId: string): Promise<Partial<User> | null> {
     return this.userModel.findById(userId, '-password').lean().exec();
   }
+
+  async updateUser(
+    userId: string,
+    updateData: Partial<User>,
+  ): Promise<User | null> {
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(
+          userId,
+          { $set: updateData },
+          { new: true, runValidators: true },
+        )
+        .lean()
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+
+      return updatedUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new BadRequestException('Failed to update user');
+    }
+  }
+  
 }
