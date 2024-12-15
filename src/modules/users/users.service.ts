@@ -18,6 +18,27 @@ export class UsersService {
     return this.userModel.findOne({ firebase_uid: firebaseUid }).exec();
   }
 
+  async create(userData: {
+    firebase_uid: string;
+    name: string;
+    email: string;
+    user_type: string;
+    profile_picture?: string;
+    password?: string;
+  }): Promise<UserDocument> {
+    const existingUser = await this.userModel.findOne({
+      $or: [{ email: userData.email }, { firebase_uid: userData.firebase_uid }],
+    });
+
+    if (existingUser) {
+      throw new Error('User already exists with this email or Firebase UID');
+    }
+
+    if (userData.password) {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      userData.password = hashedPassword;
+    }
+
     const newUser = new this.userModel(userData);
     return newUser.save();
   }
