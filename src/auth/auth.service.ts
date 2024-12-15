@@ -69,7 +69,6 @@ export class AuthService {
         firebase_uid: firebaseUser.uid,
         name,
         email,
-        password: null,
         user_type,
         profile_picture: firebaseUser.photoURL || null,
       });
