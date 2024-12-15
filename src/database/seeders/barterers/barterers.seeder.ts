@@ -54,3 +54,59 @@ export class BarterersSeeder {
           }),
         );
 
+        const barterer = {
+          user_id: user._id as Types.ObjectId,
+          pro_status: {
+            is_pro: isPro,
+            activated_on: isPro ? faker.date.recent() : undefined,
+            expires_on: isPro ? faker.date.future() : undefined,
+            plan_id: bartererData.pro_status.plan_id || new Types.ObjectId(),
+          },
+          tier: {
+            current_tier: new Types.ObjectId(),
+            progress: faker.number.int({ min: 0, max: 100 }),
+            trades_left: faker.number.int({ min: 0, max: 10 }),
+            date_reached: faker.date.past(),
+            next_tier: new Types.ObjectId(),
+          },
+          wallet: {
+            items: walletItems,
+            total_value: walletItems.reduce((acc, item) => acc + item.estimated_value, 0),
+          },
+          ai_assistance: {
+            success_probability: Array.from({ length: 3 }).map(() => ({
+              _id: new Types.ObjectId(),
+              item_id: new Types.ObjectId(),
+              suggested_item_id: new Types.ObjectId(),
+              probability: faker.number.float({ min: 0, max: 1 }),
+              created_at: faker.date.recent(),
+            })),
+            auto_trade: {
+              enabled: faker.datatype.boolean(),
+              data: Array.from({ length: 2 }).map(() => ({
+                _id: new Types.ObjectId(),
+                item_id: new Types.ObjectId(),
+                status: faker.helpers.arrayElement([
+                  AutoTradeStatusEnum.Ongoing,
+                  AutoTradeStatusEnum.Completed,
+                  AutoTradeStatusEnum.UserPending,
+                  AutoTradeStatusEnum.Aborted,
+                ]),
+                started_on: faker.date.recent(),
+                finalized_on: faker.datatype.boolean() ? faker.date.recent() : undefined,
+                chats: [new Types.ObjectId()],
+              })),
+            },
+          },
+          hired_brokers: hiredBrokers,
+          chats_history: [new Types.ObjectId(), new Types.ObjectId()],
+          barters: [new Types.ObjectId(), new Types.ObjectId()],
+        };
+
+        return barterer;
+      }),
+    );
+
+    return this.bartererModel.insertMany(barterers.filter((barterer) => barterer !== null));
+  }
+}
