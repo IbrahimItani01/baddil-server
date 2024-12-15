@@ -29,10 +29,14 @@ export class AuthService {
     this.firebaseApiKey = this.configService.get<string>('FIREBASE_API_KEY');
   }
 
-  async register(createUserDto: CreateUserDto) {
-    const { name, email, password, user_type } = createUserDto;
-
-    
+  async register(
+    name: string,
+    email: string,
+    user_type: string,
+    profile_picture?: string,
+    password?: string,
+    googleToken?: string,
+  ) {
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
       throw new BadRequestException('Email is already registered');
