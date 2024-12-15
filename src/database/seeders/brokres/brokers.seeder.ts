@@ -29,3 +29,14 @@ export class BrokerSeeder {
     const brokerUsers = await this.userModel.find({ user_type: 'broker' });
 
     const brokers = await Promise.all(
+      brokerUsers.map(async (user) => {
+        // Find barterer who hired this broker
+        const barterer = await this.bartererModel.findOne({
+          'hired_brokers.broker_id': user._id,
+        });
+
+        // Ensure there's a barterer and associate their id with the broker
+        if (!barterer) {
+          return null; // If no barterer found, skip this broker
+        }
+
