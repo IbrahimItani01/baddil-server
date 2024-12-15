@@ -27,3 +27,16 @@ export class BarterersSeeder {
 
         const brokers = await this.brokerModel.find();
         const isPro = bartererData.pro_status.is_pro;
+
+        // Generate wallet items
+        const walletItems = Array.from({ length: faker.number.int({ min: 1, max: 5 }) }).map(() => ({
+          item_id: new Types.ObjectId(),
+          name: faker.commerce.productName(),
+          category: faker.commerce.department(),
+          condition: faker.helpers.arrayElement([ItemConditionEnum.New, ItemConditionEnum.Refurbished, ItemConditionEnum.Used]),
+          description: faker.commerce.productDescription(),
+          estimated_value: faker.number.int({ min: 10, max: 1000 }),
+          created_at: faker.date.past(),
+          images: [faker.image.url()],
+        }));
+
