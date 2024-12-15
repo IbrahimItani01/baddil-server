@@ -54,6 +54,16 @@ export class AuthService {
         } catch (error) {
           throw new UnauthorizedException('Invalid Google token');
         }
+      } else if (password) {
+        firebaseUser = await this.firebaseAuth.createUser({
+          email,
+          password,
+          displayName: name,
+          photoURL: profile_picture || undefined,
+        });
+      } else {
+        throw new BadRequestException('Password or Google token is required');
+      }
 
       const user = await this.usersService.create({
         name,
