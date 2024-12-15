@@ -17,3 +17,7 @@ export class BarterersSeeder {
 
   async seedBarterers(): Promise<BartererDocument[]> {
     const bartererUsers = await this.userModel.find({ user_type: 'barterer' });
+
+    const barterers = await Promise.all(
+      bartererUsers.map(async (user) => {
+  }
