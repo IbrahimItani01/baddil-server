@@ -141,12 +141,12 @@ export class AuthService {
         throw new BadRequestException('This account is banned');
       }
 
-    const payload = {
-      sub: user._id,
-      email: user.email,
-      user_type: user.user_type,
-    };
-    const token = this.jwtService.sign(payload);
+      const payload = {
+        sub: user._id,
+        email: user.email,
+        user_type: user.user_type,
+      };
+      const token = this.jwtService.sign(payload);
 
     return {
       token,
