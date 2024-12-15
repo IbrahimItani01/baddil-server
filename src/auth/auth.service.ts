@@ -75,7 +75,6 @@ export class AuthService {
       });
 
       const userId = user._id as Types.ObjectId;
-
       let specificDocument = null;
 
       const userTypeServiceMap = {
@@ -90,27 +89,41 @@ export class AuthService {
       }
 
       return {
-        user,
-        specificDocument,
+        status: 'success',
+        message: 'Registration successful',
+        data: {
+          user,
+          specificDocument,
+        },
       };
     } catch (error) {
-      throw new BadRequestException('Registration failed', error);
+      throw new BadRequestException('Registration failed', error.message);
     }
   }
 
-  async login(email: string, password: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+  async login(emailOrIdToken: string, password?: string) {
+    try {
+      let user;
 
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      user.password.current_password as unknown as string,
-    );
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+      if (password) {
+        const firebaseUser =
+          await this.firebaseAuth.getUserByEmail(emailOrIdToken);
+
+        if (!firebaseUser) {
+          throw new UnauthorizedException('Invalid email or password');
+        }
+
+        const signInWithPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
+        const response = await axios.post(signInWithPasswordUrl, {
+          email: emailOrIdToken,
+          password,
+          returnSecureToken: true,
+        });
+
+        if (!response.data.idToken) {
+          throw new UnauthorizedException('Wrong password');
+        }
+
 
     if (user.status === 'banned') {
       throw new BadRequestException('This account is banned');
