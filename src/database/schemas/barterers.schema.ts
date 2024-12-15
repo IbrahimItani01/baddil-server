@@ -23,6 +23,7 @@ export class Barterer {
   @Prop({
     type: ProStatusSchema,
     required: false,
+    default: () => ({}),
   })
   pro_status: ProStatus;
 
