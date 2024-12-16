@@ -30,3 +30,8 @@ export class DisputesSeeder {
       .find({ user_type: 'admin' })
       .select('_id');
 
+    if (barterers.length === 0 || admins.length === 0) {
+      console.error("⚠️ Error seeding disputes")
+      return;
+    }
+
