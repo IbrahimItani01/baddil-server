@@ -8,3 +8,10 @@ import {
   NotificationDocument,
 } from '../../schemas/notifications.schema';
 
+@Injectable()
+export class NotificationsSeeder {
+  constructor(
+    @InjectModel(Notification.name)
+    private notificationModel: Model<NotificationDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
