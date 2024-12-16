@@ -1,4 +1,3 @@
-
 import { NestFactory } from '@nestjs/core';
 import { CompanySeeder } from './company/company.seeder';
 import { UsersSeeder } from './users/users.seeder';
@@ -17,7 +16,6 @@ async function seedDatabase() {
   try {
     console.log('🛠️ Starting database seeding...');
 
-    
     const companySeeder = app.get(CompanySeeder);
     const usersSeeder = app.get(UsersSeeder);
     const barterersSeeder = app.get(BarterersSeeder);
@@ -30,7 +28,6 @@ async function seedDatabase() {
 
     console.log('🧹 Clearing existing data...');
 
-    
     const companyModel = companySeeder.getModel();
     const userModel = usersSeeder.getModel();
     const bartererModel = barterersSeeder.getModel();
@@ -52,17 +49,25 @@ async function seedDatabase() {
       flagModel.deleteMany({}),
       notificationModel.deleteMany({}),
     ]);
+
     console.log('✅ Database cleared. Starting to seed data...');
 
-    
     await companySeeder.seed();
-    await usersSeeder.seed(100); 
+    await usersSeeder.seed(100);
     await barterersSeeder.seed();
     await brokersSeeder.seed();
-    await bartersSeeder.seed(15); 
+    await bartersSeeder.seed(15);
     await chatsSeeder.seed();
     await disputesSeeder.seed();
     await flagsSeeder.seed();
     await notificationsSeeder.seed();
 
     console.log('🎉 Database seeding completed successfully!');
+  } catch (error) {
+    console.error('❌ Error during database seeding:', error);
+  } finally {
+    await app.close();
+  }
+}
+
+seedDatabase();
