@@ -13,10 +13,14 @@ import { Broker, BrokerDocument } from '../../schemas/brokers.schema';
 @Injectable()
 export class BarterersSeeder {
   constructor(
-    @InjectModel(Barterer.name) private readonly bartererModel: Model<BartererDocument>,
+    @InjectModel(Barterer.name)private readonly bartererModel: Model<BartererDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Broker.name) private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
   ) {}
+  getModel(): Model<BartererDocument> {
+    return this.bartererModel;
+  }
+
 
   async seedBarterers(): Promise<BartererDocument[]> {
     const bartererUsers = await this.userModel.find({ user_type: 'barterer' });
