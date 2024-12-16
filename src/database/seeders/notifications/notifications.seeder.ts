@@ -20,3 +20,8 @@ export class NotificationsSeeder {
     return this.notificationModel;
   }
 
+  async seed() {
+    const existingNotifications = await this.notificationModel.countDocuments();
+    if (existingNotifications > 0) {
+      return;
+    }
