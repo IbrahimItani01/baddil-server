@@ -61,3 +61,14 @@ export class ChatsSeeder {
       }
     }
 
+    try {
+      const createdChats = await this.chatModel.insertMany(chats, {
+        ordered: true,
+      });
+      console.log('✅ Chat seeding completed successfully!');
+      return createdChats;
+    } catch (err) {
+      console.error('⚠️ Error inserting chats:', err.message);
+      return [];
+    }
+  }
