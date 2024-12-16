@@ -60,3 +60,7 @@ export class DisputesSeeder {
       });
     }
 
+    await this.disputeModel.insertMany(disputes);
+    console.log('✅ Disputes seeded successfully!');
+  }
+}
