@@ -15,3 +15,7 @@ export class FlagsSeeder {
     @InjectModel(Barter.name) private barterModel: Model<BarterDocument>,
   ) {}
 
+  getModel(): Model<FlagDocument> {
+    return this.flagModel;
+  }
+
