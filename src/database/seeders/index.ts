@@ -11,3 +11,10 @@ import { FlagsSeeder } from './flags/flags.seeder';
 import { NotificationsSeeder } from './notifications/notifications.seeder';
 import { SeedersModule } from './seeders.module';
 
+async function seedDatabase() {
+  const app = await NestFactory.createApplicationContext(SeedersModule);
+
+  try {
+    console.log('🛠️ Starting database seeding...');
+
+    
