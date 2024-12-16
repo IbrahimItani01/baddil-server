@@ -93,3 +93,7 @@ export class CompanySeeder {
       updated_last_by: new Types.ObjectId(),
     };
 
+    await this.companyModel.create(companyData);
+    console.log('✅ Company document seeded successfully!');
+  }
+}
