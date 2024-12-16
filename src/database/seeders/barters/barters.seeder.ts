@@ -16,3 +16,7 @@ export class BartersSeeder {
     private readonly barterModel: Model<BarterDocument>,
   ) {}
 
+  getModel(): Model<BarterDocument> {
+    return this.barterModel;
+  }
+
