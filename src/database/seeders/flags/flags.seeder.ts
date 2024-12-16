@@ -36,3 +36,13 @@ export class FlagsSeeder {
 
     const admins = await this.userModel.find({ user_type: 'Admin' }, '_id');
     const adminIds = admins.map((admin) => admin._id);
+
+    if (
+      userIds.length === 0 ||
+      barterIds.length === 0 ||
+      adminIds.length === 0
+    ) {
+      console.error("⚠️ Error seeding flags")
+      return;
+    }
+
