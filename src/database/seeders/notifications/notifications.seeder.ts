@@ -34,6 +34,7 @@ export class NotificationsSeeder {
     const brokers = await this.userModel.find({ user_type: 'broker' }, '_id');
 
     if (admins.length === 0 || barterers.length === 0 || brokers.length === 0) {
+      console.error("⚠️ Error seeding notifications: a user type is empty in db")
       return;
     }
 
