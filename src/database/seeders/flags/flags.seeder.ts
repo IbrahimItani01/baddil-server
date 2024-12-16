@@ -60,3 +60,7 @@ export class FlagsSeeder {
       };
     });
 
+    await this.flagModel.insertMany(flags);
+    console.log('✅ Flags seeded successfully!');
+  }
+}
