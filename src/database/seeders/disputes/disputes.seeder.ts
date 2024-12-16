@@ -35,3 +35,28 @@ export class DisputesSeeder {
       return;
     }
 
+    const disputes = [];
+    for (let i = 0; i < 10; i++) {
+      const usersInvolved = faker.helpers.arrayElements(
+        barterers,
+        faker.number.int({ min: 2, max: 5 }),
+      );
+      const monitoredBy = faker.helpers.arrayElement(admins)._id;
+      const resolvedBy = faker.datatype.boolean()
+        ? faker.helpers.arrayElement(admins)._id
+        : undefined;
+      const resolvedAt = resolvedBy ? faker.date.past() : null;
+
+      disputes.push({
+        users_involved: usersInvolved.map((user) => user._id),
+        status: resolvedBy
+          ? DisputeStatusEnum.Resolved
+          : DisputeStatusEnum.Active,
+        resolved_at: resolvedAt,
+        resolved_by: resolvedBy,
+        resolution_details: resolvedBy ? faker.lorem.sentence() : undefined,
+        reason: faker.lorem.sentence(),
+        monitored_by: monitoredBy,
+      });
+    }
+
