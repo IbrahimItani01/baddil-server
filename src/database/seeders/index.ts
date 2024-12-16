@@ -27,3 +27,28 @@ async function seedDatabase() {
     const disputesSeeder = app.get(DisputesSeeder);
     const flagsSeeder = app.get(FlagsSeeder);
     const notificationsSeeder = app.get(NotificationsSeeder);
+
+    console.log('🧹 Clearing existing data...');
+
+    
+    const companyModel = companySeeder.getModel();
+    const userModel = usersSeeder.getModel();
+    const bartererModel = barterersSeeder.getModel();
+    const brokerModel = brokersSeeder.getModel();
+    const barterModel = bartersSeeder.getModel();
+    const chatModel = chatsSeeder.getModel();
+    const disputeModel = disputesSeeder.getModel();
+    const flagModel = flagsSeeder.getModel();
+    const notificationModel = notificationsSeeder.getModel();
+
+    await Promise.all([
+      companyModel.deleteMany({}),
+      userModel.deleteMany({}),
+      bartererModel.deleteMany({}),
+      brokerModel.deleteMany({}),
+      barterModel.deleteMany({}),
+      chatModel.deleteMany({}),
+      disputeModel.deleteMany({}),
+      flagModel.deleteMany({}),
+      notificationModel.deleteMany({}),
+    ]);
