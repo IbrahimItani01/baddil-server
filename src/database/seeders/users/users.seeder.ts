@@ -17,6 +17,7 @@ export class UsersSeeder {
     return this.userModel;
   }
 
+  async seed(count: number): Promise<void> {
     const promises = Array.from({ length: count }).map(async () => {
       const fakeUser = {
         name: faker.person.fullName(),
