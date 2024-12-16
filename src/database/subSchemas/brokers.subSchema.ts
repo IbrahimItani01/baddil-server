@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ClientStatusEnum, RatingEnum } from 'src/utils/enums.utils';
+import { ClientStatusEnum, RatingEnum } from '../../utils/enums.utils';
 
 @Schema()
 export class ClientGoal {

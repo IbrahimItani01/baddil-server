@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { ReviewSideEnum, MeetupStatusEnum } from 'src/utils/enums.utils'; // Correct usage of enums for sub-schemas
+import { ReviewSideEnum, MeetupStatusEnum } from '../../utils/enums.utils'; // Correct usage of enums for sub-schemas
 
 @Schema()
 export class Review {

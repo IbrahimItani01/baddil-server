@@ -5,14 +5,14 @@ import {
   Inject,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/modules/users/users.service';
-import { BarterersService } from 'src/modules/barterers/barterers.service';
-import { BrokersService } from 'src/modules/brokers/brokers.service';
 import { Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as admin from 'firebase-admin';
 import axios from 'axios';
 
+import { UsersService } from '../modules/users/users.service';
+import { BarterersService } from '../modules/barterers/barterers.service';
+import { BrokersService } from '../modules/brokers/brokers.service';
 @Injectable()
 export class AuthService {
   private firebaseApiKey: string;

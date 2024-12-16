@@ -7,7 +7,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiResponseStatusEnum } from 'src/utils/enums.utils';
+import { ApiResponseStatusEnum } from '../utils/enums.utils';
 
 @Controller('auth')
 export class AuthController {

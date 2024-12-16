@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from 'src/modules/users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { BarterersModule } from 'src/modules/barterers/barterers.module';
-import { BrokersModule } from 'src/modules/brokers/brokers.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from 'src/utils/strategies/jwt.strategy';
-import { PassportModule } from '@nestjs/passport';
+import { UsersModule } from '../modules/users/users.module';
+import { BarterersModule } from '../modules/barterers/barterers.module';
+import { BrokersModule } from '../modules/brokers/brokers.module';
+import { JwtStrategy } from '../utils/strategies/jwt.strategy';
 
 @Module({
   imports: [

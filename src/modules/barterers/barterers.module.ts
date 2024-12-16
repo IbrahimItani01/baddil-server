@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { BarterersController } from './barterers.controller';
 import { BarterersService } from './barterers.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Barterer, BartererSchema } from 'src/database/schemas/barterers.schema';
+import { Barterer, BartererSchema } from '../../database/schemas/barterers.schema';
 
 @Module({
   imports: [

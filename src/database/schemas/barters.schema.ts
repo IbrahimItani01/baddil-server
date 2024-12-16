@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { BarterStatusEnum, RatingEnum } from 'src/utils/enums.utils';
+import { BarterStatusEnum, RatingEnum } from '../../utils/enums.utils';
 import {
   ReviewSchema,
   MeetupSchema,

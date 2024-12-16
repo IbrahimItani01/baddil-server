@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { DisputeStatusEnum } from 'src/utils/enums.utils';
+import { DisputeStatusEnum } from '../../utils/enums.utils';
 
 export type DisputeDocument = Dispute & Document;
 

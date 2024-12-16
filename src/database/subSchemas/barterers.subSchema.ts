@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { AutoTradeStatusEnum, ItemConditionEnum } from 'src/utils/enums.utils';
+import { AutoTradeStatusEnum, ItemConditionEnum } from '../../utils/enums.utils';
 
 @Schema()
 export class WalletItem {
