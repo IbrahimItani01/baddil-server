@@ -18,3 +18,12 @@ async function seedDatabase() {
     console.log('🛠️ Starting database seeding...');
 
     
+    const companySeeder = app.get(CompanySeeder);
+    const usersSeeder = app.get(UsersSeeder);
+    const barterersSeeder = app.get(BarterersSeeder);
+    const brokersSeeder = app.get(BrokersSeeder);
+    const bartersSeeder = app.get(BartersSeeder);
+    const chatsSeeder = app.get(ChatsSeeder);
+    const disputesSeeder = app.get(DisputesSeeder);
+    const flagsSeeder = app.get(FlagsSeeder);
+    const notificationsSeeder = app.get(NotificationsSeeder);
