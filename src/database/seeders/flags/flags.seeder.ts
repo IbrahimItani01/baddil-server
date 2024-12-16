@@ -46,3 +46,17 @@ export class FlagsSeeder {
       return;
     }
 
+    const flags = Array.from({ length: 20 }, () => {
+      const isUserFlag = faker.datatype.boolean();
+
+      return {
+        flagged_id: isUserFlag
+          ? faker.helpers.arrayElement(userIds)
+          : faker.helpers.arrayElement(barterIds),
+        type: isUserFlag ? FlagTypeEnum.User : FlagTypeEnum.Barter,
+        flagged_by: faker.helpers.arrayElement(adminIds),
+        reason: faker.lorem.sentence(),
+        status: faker.helpers.arrayElement(Object.values(FlagStatusEnum)),
+      };
+    });
+
