@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { FirebaseAdminModule } from './auth/firebase/firebase.module';
 import { UsersModule } from './modules/users/users.module';
+import { SeedersModule } from './database/seeders/seeders.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     FirebaseAdminModule,
     UsersModule,
+    SeedersModule
   ],
   controllers: [AppController],
   providers: [AppService],
