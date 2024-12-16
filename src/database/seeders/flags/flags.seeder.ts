@@ -19,3 +19,20 @@ export class FlagsSeeder {
     return this.flagModel;
   }
 
+  async seed() {
+    const existingFlags = await this.flagModel.countDocuments();
+    if (existingFlags > 0) {
+      return;
+    }
+
+    const users = await this.userModel.find(
+      { user_type: { $in: ['broker', 'barterer'] } },
+      '_id',
+    );
+    const userIds = users.map((user) => user._id);
+
+    const barters = await this.barterModel.find({}, '_id');
+    const barterIds = barters.map((barter) => barter._id);
+
+    const admins = await this.userModel.find({ user_type: 'Admin' }, '_id');
+    const adminIds = admins.map((admin) => admin._id);
