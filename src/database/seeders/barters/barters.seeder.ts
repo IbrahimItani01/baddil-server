@@ -9,3 +9,10 @@ import { Barter, BarterDocument } from '../../schemas/barters.schema';
 
 const ratingValues = Object.values(RatingEnum).filter(value => typeof value === 'number') as number[];
 
+@Injectable()
+export class BartersSeeder {
+  constructor(
+    @InjectModel(Barter.name)
+    private readonly barterModel: Model<BarterDocument>,
+  ) {}
+
