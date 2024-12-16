@@ -120,3 +120,10 @@ export class BrokersSeeder {
       }),
     );
 
+    const seededBrokers = await this.brokerModel.insertMany(
+      brokers.filter((broker) => broker !== null),
+    );
+    console.log(`✅ ${seededBrokers.length} brokers have been seeded!`);
+    return seededBrokers;
+  }
+}
