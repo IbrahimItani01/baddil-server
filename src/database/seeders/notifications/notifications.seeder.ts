@@ -53,3 +53,7 @@ export class NotificationsSeeder {
       };
     });
 
+    await this.notificationModel.insertMany(notifications);
+    console.log('✅ Notifications seeded successfully!');
+  }
+}
