@@ -24,3 +24,8 @@ export class BrokersSeeder {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Barterer.name)private readonly bartererModel: Model<BartererDocument>,
   ) {}
+
+  getModel(): Model<BrokerDocument> {
+    return this.brokerModel;
+  }
+
