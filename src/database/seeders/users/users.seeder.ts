@@ -28,17 +28,14 @@ export class UsersSeeder {
       };
 
       try {
-        const response = await axios.post(this.registerUrl, fakeUser);
-        console.log(`User registered:`, response.data.data);
+        await axios.post(this.registerUrl, fakeUser);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error(
-          `Failed to register user:`,
-          error.response?.data || error.message,
-        );
+        console.error("⚠️ Error creating user")
       }
     });
 
     await Promise.all(promises);
-    console.log(`${count} users have been seeded!`);
+    console.log(`✅ ${count} users have been seeded!`);
   }
 }
