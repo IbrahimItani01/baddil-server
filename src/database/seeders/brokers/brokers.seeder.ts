@@ -17,3 +17,10 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Barterer, BartererDocument } from '../../schemas/barterers.schema';
 
+@Injectable()
+export class BrokersSeeder {
+  constructor(
+    @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Barterer.name)private readonly bartererModel: Model<BartererDocument>,
+  ) {}
