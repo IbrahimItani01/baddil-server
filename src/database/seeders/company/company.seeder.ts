@@ -8,3 +8,7 @@ import { Company, CompanyDocument } from "../../schemas/company.schema";
 export class CompanySeeder {
   constructor(@InjectModel(Company.name) private companyModel: Model<CompanyDocument>) {}
 
+  getModel(): Model<CompanyDocument> {
+    return this.companyModel;
+  }
+
