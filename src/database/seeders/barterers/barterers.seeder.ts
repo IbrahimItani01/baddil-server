@@ -13,34 +13,43 @@ import { Broker, BrokerDocument } from '../../schemas/brokers.schema';
 @Injectable()
 export class BarterersSeeder {
   constructor(
-    @InjectModel(Barterer.name)private readonly bartererModel: Model<BartererDocument>,
+    @InjectModel(Barterer.name)
+    private readonly bartererModel: Model<BartererDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(Broker.name)
+    private readonly brokerModel: Model<BrokerDocument>,
   ) {}
   getModel(): Model<BartererDocument> {
     return this.bartererModel;
   }
 
-
-  async seedBarterers(): Promise<BartererDocument[]> {
+  async seed(): Promise<BartererDocument[]> {
     const bartererUsers = await this.userModel.find({ user_type: 'barterer' });
 
     const barterers = await Promise.all(
       bartererUsers.map(async (user) => {
-        const bartererData = await this.bartererModel.findOne({ user_id: user._id });
+        const bartererData = await this.bartererModel.findOne({
+          user_id: user._id,
+        });
         if (!bartererData) {
+          console.error('⚠️ No barterer data');
           return null;
         }
 
         const brokers = await this.brokerModel.find();
         const isPro = bartererData.pro_status.is_pro;
 
-        // Generate wallet items
-        const walletItems = Array.from({ length: faker.number.int({ min: 1, max: 5 }) }).map(() => ({
+        const walletItems = Array.from({
+          length: faker.number.int({ min: 1, max: 5 }),
+        }).map(() => ({
           item_id: new Types.ObjectId(),
           name: faker.commerce.productName(),
           category: faker.commerce.department(),
-          condition: faker.helpers.arrayElement([ItemConditionEnum.New, ItemConditionEnum.Refurbished, ItemConditionEnum.Used]),
+          condition: faker.helpers.arrayElement([
+            ItemConditionEnum.New,
+            ItemConditionEnum.Refurbished,
+            ItemConditionEnum.Used,
+          ]),
           description: faker.commerce.productDescription(),
           estimated_value: faker.number.int({ min: 10, max: 1000 }),
           created_at: faker.date.past(),
@@ -49,19 +58,20 @@ export class BarterersSeeder {
 
         const walletItemIds = walletItems.map((item) => item.item_id);
 
-        // Determine hired brokers
-        const hiredBrokers = (isPro ? brokers.slice(0, faker.number.int({ min: 1, max: 5 })) : brokers.slice(0, 1)).map(
-          (broker) => ({
-            broker_id: broker._id as Types.ObjectId,
-            hired_on: faker.date.past(),
-            contract_termination_date: faker.date.future(),
-            goal_to_barter: faker.commerce.productName(),
-            starting_item_id: faker.helpers.arrayElement(walletItemIds), // Pick an actual wallet item ID
-            contract_budget: faker.number.int({ min: 100, max: 1000 }),
-          }),
-        );
+        const hiredBrokers = (
+          isPro
+            ? brokers.slice(0, faker.number.int({ min: 1, max: 5 }))
+            : brokers.slice(0, 1)
+        ).map((broker) => ({
+          broker_id: broker._id as Types.ObjectId,
+          hired_on: faker.date.past(),
+          contract_termination_date: faker.date.future(),
+          goal_to_barter: faker.commerce.productName(),
+          starting_item_id: faker.helpers.arrayElement(walletItemIds),
+          contract_budget: faker.number.int({ min: 100, max: 1000 }),
+        }));
 
-        const barterer = {
+        return {
           user_id: user._id as Types.ObjectId,
           pro_status: {
             is_pro: isPro,
@@ -78,7 +88,10 @@ export class BarterersSeeder {
           },
           wallet: {
             items: walletItems,
-            total_value: walletItems.reduce((acc, item) => acc + item.estimated_value, 0),
+            total_value: walletItems.reduce(
+              (acc, item) => acc + item.estimated_value,
+              0,
+            ),
           },
           ai_assistance: {
             success_probability: Array.from({ length: 3 }).map(() => ({
@@ -100,7 +113,9 @@ export class BarterersSeeder {
                   AutoTradeStatusEnum.Aborted,
                 ]),
                 started_on: faker.date.recent(),
-                finalized_on: faker.datatype.boolean() ? faker.date.recent() : undefined,
+                finalized_on: faker.datatype.boolean()
+                  ? faker.date.recent()
+                  : undefined,
                 chats: [new Types.ObjectId()],
               })),
             },
@@ -109,11 +124,14 @@ export class BarterersSeeder {
           chats_history: [new Types.ObjectId(), new Types.ObjectId()],
           barters: [new Types.ObjectId(), new Types.ObjectId()],
         };
-
-        return barterer;
       }),
     );
 
-    return this.bartererModel.insertMany(barterers.filter((barterer) => barterer !== null));
+    const createdBarterers = await this.bartererModel.insertMany(
+      barterers.filter((barterer) => barterer !== null),
+    );
+
+    console.log(`✅ Inserted ${createdBarterers.length} barterers.`);
+    return createdBarterers;
   }
 }
