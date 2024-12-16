@@ -38,3 +38,18 @@ export class NotificationsSeeder {
       return;
     }
 
+    const notifications = Array.from({ length: 20 }, () => {
+      const sentBy = faker.helpers.arrayElement([admins[0]._id, 'company']);
+      const sentTo = faker.helpers.arrayElement([
+        faker.helpers.arrayElement(barterers),
+        faker.helpers.arrayElement(brokers),
+      ])._id;
+
+      return {
+        message: faker.lorem.sentence(),
+        sent_by: sentBy,
+        sent_to: [sentTo],
+        sent: faker.datatype.boolean(),
+      };
+    });
+
