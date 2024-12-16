@@ -19,3 +19,15 @@ export const SEEDERS = [
   FlagsSeeder,
   NotificationsSeeder,
 ];
+
+export const getModels = (app: any) => [
+  app.get(CompanySeeder).getModel(),
+  app.get(UsersSeeder).getModel(),
+  app.get(BarterersSeeder).getModel(),
+  app.get(BrokersSeeder).getModel(),
+  app.get(BartersSeeder).getModel(),
+  app.get(ChatsSeeder).getModel(),
+  app.get(DisputesSeeder).getModel(),
+  app.get(FlagsSeeder).getModel(),
+  app.get(NotificationsSeeder).getModel(),
+];
