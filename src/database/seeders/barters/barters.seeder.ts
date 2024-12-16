@@ -4,10 +4,12 @@ import { Model, Types } from 'mongoose';
 import { faker } from '@faker-js/faker';
 import { BarterStatusEnum, RatingEnum } from '../../../utils/enums.utils';
 import { MeetupStatusEnum, ReviewSideEnum } from '../../../utils/enums.utils';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { Barter, BarterDocument } from '../../schemas/barters.schema';
 
-const ratingValues = Object.values(RatingEnum).filter(value => typeof value === 'number') as number[];
+const ratingValues = Object.values(RatingEnum).filter(
+  (value) => typeof value === 'number',
+) as number[];
 
 @Injectable()
 export class BartersSeeder {
@@ -66,3 +68,8 @@ export class BartersSeeder {
         console.error('⚠️ Error creating barter:', error.message);
       }
     });
+
+    await Promise.all(promises);
+    console.log(`✅ ${count} barters have been seeded!`);
+  }
+}
