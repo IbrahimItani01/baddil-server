@@ -9,3 +9,14 @@ import { User, UserDocument } from '../../schemas/users.schema';
 import { Message } from '../../subSchemas/chats.subSchema';
 import { MessageStatusEnum } from '../../../utils/enums.utils';
 
+@Injectable()
+export class ChatsSeeder {
+  constructor(
+    @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Broker.name)
+    private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(Barterer.name)
+    private readonly bartererModel: Model<BartererDocument>,
+  ) {}
+
