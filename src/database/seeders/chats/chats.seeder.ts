@@ -24,3 +24,20 @@ export class ChatsSeeder {
     return this.chatModel;
   }
 
+  async seed(): Promise<ChatDocument[]> {
+    const brokers = await this.brokerModel.find().populate('user_id');
+    const barterers = await this.bartererModel.find().populate('user_id');
+    const chats: ChatDocument[] = [];
+
+    for (let i = 0; i < barterers.length - 1; i++) {
+      const sender = barterers[i];
+      const receiver = barterers[i + 1];
+
+      const chatData =
+        Math.random() > 0.5
+          ? await this.createChat(sender.user_id, receiver.user_id, false)
+          : await this.createChat(sender.user_id, receiver.user_id);
+
+      chats.push(chatData);
+    }
+
