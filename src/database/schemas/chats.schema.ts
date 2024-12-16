@@ -6,12 +6,13 @@ export type ChatDocument = Chat & Document;
 
 @Schema({ timestamps: true })
 export class Chat {
-  @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
+  @Prop({ type: [Types.ObjectId], ref: 'User', required: true, default: [] })
   users_involved: Types.ObjectId[];
 
   @Prop({
     type: [MessageSchema],
     required: true,
+    default: [], // Default to an empty array
   })
   messages: Message[];
 
