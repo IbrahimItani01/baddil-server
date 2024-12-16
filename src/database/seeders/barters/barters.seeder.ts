@@ -58,3 +58,11 @@ export class BartersSeeder {
           : null,
       };
 
+      try {
+        const barter = new this.barterModel(fakeBarter);
+        await barter.save();
+        console.log('✅ Barter created:', barter._id);
+      } catch (error) {
+        console.error('⚠️ Error creating barter:', error.message);
+      }
+    });
