@@ -13,3 +13,7 @@ export class DisputesSeeder {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
+  getModel(): Model<DisputeDocument> {
+    return this.disputeModel;
+  }
+
