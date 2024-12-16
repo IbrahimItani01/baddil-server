@@ -4,3 +4,7 @@ import { Model, Types } from 'mongoose';
 import { faker } from '@faker-js/faker';
 import { Company, CompanyDocument } from "../../schemas/company.schema";
 
+@Injectable()
+export class CompanySeeder {
+  constructor(@InjectModel(Company.name) private companyModel: Model<CompanyDocument>) {}
+
