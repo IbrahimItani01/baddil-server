@@ -7,3 +7,10 @@ export const clearDatabase = async (models: Model<any>[]): Promise<void> => {
   console.log('✅ Database cleared.');
 };
 
+export const seedData = async (seeders: { seed: () => Promise<void> }[]): Promise<void> => {
+  console.log('🌱 Starting to seed data...');
+  for (const seeder of seeders) {
+    await seeder.seed();
+  }
+  console.log('🎉 Data seeding completed successfully!');
+};
