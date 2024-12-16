@@ -12,3 +12,10 @@ export class CompanySeeder {
     return this.companyModel;
   }
 
+  async seed() {
+    const existingCompany = await this.companyModel.findOne();
+    if (existingCompany) {
+      console.warn("⚠️ Company document already exists");
+      return; 
+    }
+
