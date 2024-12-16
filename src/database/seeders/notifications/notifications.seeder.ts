@@ -25,3 +25,11 @@ export class NotificationsSeeder {
     if (existingNotifications > 0) {
       return;
     }
+
+    const admins = await this.userModel.find({ user_type: 'admin' }, '_id');
+    const barterers = await this.userModel.find(
+      { user_type: 'barterer' },
+      '_id',
+    );
+    const brokers = await this.userModel.find({ user_type: 'broker' }, '_id');
+
