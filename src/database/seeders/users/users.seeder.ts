@@ -5,10 +5,15 @@ import { UserTypeEnum } from 'src/utils/enums.utils';
 import { generateValidPassword } from 'src/utils/seeders/users.functions';
 
 @Injectable()
-export class UserSeeder {
+export class UsersSeeder {
   private readonly registerUrl = 'http://localhost:8800/api/auth/register';
 
-  async seedUsers(count: number): Promise<void> {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  getModel(): Model<UserDocument> {
+    return this.userModel;
+  }
+
     const promises = Array.from({ length: count }).map(async () => {
       const fakeUser = {
         name: faker.person.fullName(),
