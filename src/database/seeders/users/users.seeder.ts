@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { faker } from '@faker-js/faker';
-import { UserTypeEnum } from 'src/utils/enums.utils';
-import { generateValidPassword } from 'src/utils/seeders/users.functions';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { UserTypeEnum } from '../../../utils/enums.utils';
+import { generateValidPassword } from '../../../utils/seeders/users.functions';
+import { User, UserDocument } from '../../../database/schemas/users.schema';
 
 @Injectable()
 export class UsersSeeder {
