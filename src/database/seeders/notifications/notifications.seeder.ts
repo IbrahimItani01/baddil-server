@@ -15,3 +15,8 @@ export class NotificationsSeeder {
     private notificationModel: Model<NotificationDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
+
+  getModel(): Model<NotificationDocument> {
+    return this.notificationModel;
+  }
+
