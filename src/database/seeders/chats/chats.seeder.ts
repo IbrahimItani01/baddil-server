@@ -51,3 +51,13 @@ export class ChatsSeeder {
       }
     }
 
+    for (const broker of brokers) {
+      for (const client of broker.clients) {
+        const chatData = await this.createChat(
+          broker.user_id,
+          client.client_id,
+        );
+        chats.push(chatData);
+      }
+    }
+
