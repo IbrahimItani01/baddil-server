@@ -41,3 +41,13 @@ export class ChatsSeeder {
       chats.push(chatData);
     }
 
+    for (const barterer of barterers) {
+      for (const hiredBroker of barterer.hired_brokers) {
+        const chatData = await this.createChat(
+          barterer.user_id,
+          hiredBroker.broker_id,
+        );
+        chats.push(chatData);
+      }
+    }
+
