@@ -20,3 +20,7 @@ export class ChatsSeeder {
     private readonly bartererModel: Model<BartererDocument>,
   ) {}
 
+  getModel(): Model<ChatDocument> {
+    return this.chatModel;
+  }
+
