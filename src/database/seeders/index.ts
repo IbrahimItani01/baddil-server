@@ -52,3 +52,17 @@ async function seedDatabase() {
       flagModel.deleteMany({}),
       notificationModel.deleteMany({}),
     ]);
+    console.log('✅ Database cleared. Starting to seed data...');
+
+    
+    await companySeeder.seed();
+    await usersSeeder.seed(100); 
+    await barterersSeeder.seed();
+    await brokersSeeder.seed();
+    await bartersSeeder.seed(15); 
+    await chatsSeeder.seed();
+    await disputesSeeder.seed();
+    await flagsSeeder.seed();
+    await notificationsSeeder.seed();
+
+    console.log('🎉 Database seeding completed successfully!');
