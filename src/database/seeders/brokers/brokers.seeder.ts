@@ -29,3 +29,16 @@ export class BrokersSeeder {
     return this.brokerModel;
   }
 
+  async seed(): Promise<BrokerDocument[]> {
+    const brokerUsers = await this.userModel.find({ user_type: 'broker' });
+
+    const brokers = await Promise.all(
+      brokerUsers.map(async (user) => {
+        const barterer = await this.bartererModel.findOne({
+          'hired_brokers.broker_id': user._id,
+        });
+
+        if (!barterer) {
+          console.error("⚠️ Error in finding seeded barterer");
+          return null;
+        }
