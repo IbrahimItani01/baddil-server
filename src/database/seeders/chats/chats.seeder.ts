@@ -72,3 +72,33 @@ export class ChatsSeeder {
       return [];
     }
   }
+
+  private async createChat(
+    user1: Types.ObjectId,
+    user2: Types.ObjectId,
+    withMessages = true,
+  ): Promise<ChatDocument> {
+    const messages: Message[] = [];
+    if (withMessages) {
+      for (let i = 0; i < faker.number.int({ min: 3, max: 10 }); i++) {
+        const message: Message = {
+          message_id: new Types.ObjectId(),
+          sender: faker.helpers.arrayElement([user1, user2]),
+          content: faker.lorem.sentence(),
+          sent_date: faker.date.recent(),
+          status: faker.helpers.arrayElement([
+            MessageStatusEnum.Sent,
+            MessageStatusEnum.Read,
+          ]),
+        };
+        messages.push(message);
+      }
+    }
+
+    return this.chatModel.create({
+      users_involved: [user1, user2],
+      messages,
+      handled_by_ai: faker.datatype.boolean(),
+    });
+  }
+}
