@@ -137,4 +137,28 @@ export class BrokersSeeder {
     console.log(`✅ ${seededBrokers.length} brokers have been seeded!`);
     return seededBrokers;
   }
+
+  async seedSecondCall(): Promise<void> {
+    const brokers = await this.brokerModel.find();
+    const barters = await this.bartererModel.aggregate([
+      { $unwind: '$barters' },
+      { $group: { _id: null, barters: { $push: '$barters' } } },
+    ]);
+
+    const allBarters = barters[0]?.barters || [];
+    for (const broker of brokers) {
+      const randomBarters = faker.helpers.arrayElements(
+        allBarters,
+        faker.number.int({ min: 1, max: 3 }),
+      );
+
+      await this.brokerModel.updateOne(
+        { _id: broker._id },
+        { $set: { barters: randomBarters } },
+      );
+    }
+
+    console.log(`✅ Second call: Populated barters for brokers.`);
+  }
+
 }
