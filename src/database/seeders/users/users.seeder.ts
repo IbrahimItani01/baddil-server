@@ -52,4 +52,12 @@ export class UsersSeeder {
     await Promise.all(promises);
     console.log(`✅ ${count} users have been seeded!`);
   }
+
+  private async createUser(user: any) {
+    try {
+      await axios.post(this.registerUrl, user);
+    } catch (error) {
+      console.error('⚠️ Error creating user', error);
+    }
+  }
 }
