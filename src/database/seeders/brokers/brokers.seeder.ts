@@ -161,4 +161,13 @@ export class BrokersSeeder {
     console.log(`✅ Second call: Populated barters for brokers.`);
   }
 
+  async seed(firstCall: boolean = true): Promise<void> {
+    if (firstCall) {
+      console.log('🚀 Running first call of brokers seeder...');
+      await this.seedFirstCall();
+    } else {
+      console.log('🚀 Running second call of brokers seeder...');
+      await this.seedSecondCall();
+    }
+  }
 }
