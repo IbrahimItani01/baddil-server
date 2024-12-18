@@ -19,9 +19,9 @@ export class CompanySeeder {
   constructor(
     @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,
     @InjectModel(Notification.name)
-    private notificationModel: Model<NotificationDocument>, // Replace 'any' with actual type
-    @InjectModel(Flag.name) private flagModel: Model<FlagDocument>, // Replace 'any' with actual type
-    @InjectModel(Dispute.name) private disputeModel: Model<DisputeDocument>, // Replace 'any' with actual type
+    private notificationModel: Model<NotificationDocument>,
+    @InjectModel(Flag.name) private flagModel: Model<FlagDocument>,
+    @InjectModel(Dispute.name) private disputeModel: Model<DisputeDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
@@ -62,13 +62,13 @@ export class CompanySeeder {
 
     const companyData = {
       name: 'Baddĭl',
-      notification_count: faker.number.int({ min: 0, max: 100 }),
-      flags_count: faker.number.int({ min: 0, max: 50 }),
-      disputes_count: faker.number.int({ min: 0, max: 20 }),
+      notification_count: notificationCount,
+      flags_count: flagsCount,
+      disputes_count: disputesCount,
       users: {
-        admins_count: faker.number.int({ min: 1, max: 10 }),
-        brokers_count: faker.number.int({ min: 5, max: 50 }),
-        barterers_count: faker.number.int({ min: 100, max: 1000 }),
+        admins_count: adminsCount,
+        brokers_count: brokersCount,
+        barterers_count: barterersCount,
       },
       vip_criteria: {
         min_success_rate: faker.number.float({ min: 80, max: 100 }),
@@ -131,7 +131,7 @@ export class CompanySeeder {
           icon_url: faker.image.avatar(),
         },
       ],
-      updated_last_by: new Types.ObjectId(),
+      updated_last_by: randomAdmin._id,
     };
 
     await this.companyModel.create(companyData);
