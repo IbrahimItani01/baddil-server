@@ -33,19 +33,30 @@ export class BrokersSeeder {
     return this.brokerModel;
   }
 
-  async seed(): Promise<BrokerDocument[]> {
+  async seedFirstCall(): Promise<BrokerDocument[]> {
     const brokerUsers = await this.userModel.find({ user_type: 'broker' });
-
     const brokers = await Promise.all(
       brokerUsers.map(async (user) => {
+        const existingBroker = await this.brokerModel.findOne({
+          user_id: user._id,
+        });
+
+        if (existingBroker) {
+          return null;
+        }
+
         const barterer = await this.bartererModel.findOne({
           'hired_brokers.broker_id': user._id,
         });
 
         if (!barterer) {
-          console.error("⚠️ Error in finding seeded barterer");
+          console.error('⚠️ Error in finding seeded barterer');
           return null;
         }
+
+        const brokerChats = await this.chatModel.find({
+          users_involved: { $in: [user._id] },
+        });
 
         const brokerData = {
           user_id: user._id as Types.ObjectId,
@@ -112,12 +123,8 @@ export class BrokersSeeder {
             message: faker.lorem.sentence(),
             date: faker.date.past(),
           })),
-          chats_history: Array.from({
-            length: faker.number.int({ min: 1, max: 3 }),
-          }).map(() => new Types.ObjectId()),
-          barters: Array.from({
-            length: faker.number.int({ min: 1, max: 3 }),
-          }).map(() => new Types.ObjectId()),
+          chats_history: brokerChats.map((chat) => chat._id as Types.ObjectId),
+          barters: [],
         };
 
         return brokerData;
