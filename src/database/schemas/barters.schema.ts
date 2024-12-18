@@ -47,6 +47,9 @@ export class Barter {
     required: false,
   })
   meetup: Meetup;
+
+  @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
+  users_involved: Types.ObjectId[];
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);
