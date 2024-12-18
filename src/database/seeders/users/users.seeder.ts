@@ -23,21 +23,19 @@ export class UsersSeeder {
       UserTypeEnum.Broker,
     ];
 
+    const promises: Promise<any>[] = [];
+
+    for (const userType of userTypes) {
       const fakeUser = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        user_type: faker.helpers.arrayElement(Object.values(UserTypeEnum)),
+        user_type: userType,
         profile_picture: faker.image.avatar(),
-        password: generateValidPassword(),
+        password: 'HelloBaddil12345&%',
       };
+      promises.push(this.createUser(fakeUser));
+    }
 
-      try {
-        await axios.post(this.registerUrl, fakeUser);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
-        console.error("⚠️ Error creating user")
-      }
-    });
 
     await Promise.all(promises);
     console.log(`✅ ${count} users have been seeded!`);
