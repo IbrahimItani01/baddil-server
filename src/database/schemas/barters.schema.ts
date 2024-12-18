@@ -30,7 +30,7 @@ export class Barter {
   completed_at: Date;
 
   @Prop({
-    type: Number,
+    type: String,
     enum: Object.values(RatingEnum),
     required: false,
   })
