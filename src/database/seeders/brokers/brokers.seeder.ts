@@ -4,6 +4,8 @@ import { Model, Types } from 'mongoose';
 import { faker } from '@faker-js/faker';
 import { Broker, BrokerDocument } from '../../schemas/brokers.schema';
 import { User, UserDocument } from '../../schemas/users.schema';
+import { Barterer, BartererDocument } from '../../schemas/barterers.schema';
+import { Chat, ChatDocument } from '../../schemas/chats.schema';
 import {
   Earnings,
   Performance,
@@ -15,14 +17,16 @@ import {
   RatingEnum,
 } from '../../../utils/enums.utils';
 import { v4 as uuidv4 } from 'uuid';
-import { Barterer, BartererDocument } from '../../schemas/barterers.schema';
 
 @Injectable()
 export class BrokersSeeder {
   constructor(
-    @InjectModel(Broker.name)private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(Broker.name)
+    private readonly brokerModel: Model<BrokerDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Barterer.name)private readonly bartererModel: Model<BartererDocument>,
+    @InjectModel(Barterer.name)
+    private readonly bartererModel: Model<BartererDocument>,
+    @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,
   ) {}
 
   getModel(): Model<BrokerDocument> {
