@@ -4,7 +4,6 @@ import { faker } from '@faker-js/faker';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserTypeEnum } from '../../../utils/enums.utils';
-import { generateValidPassword } from '../../../utils/seeders/users.functions';
 import { User, UserDocument } from '../../../database/schemas/users.schema';
 
 @Injectable()
@@ -18,7 +17,12 @@ export class UsersSeeder {
   }
 
   async seed(count: number): Promise<void> {
-    const promises = Array.from({ length: count }).map(async () => {
+    const userTypes = [
+      UserTypeEnum.Admin,
+      UserTypeEnum.Barterer,
+      UserTypeEnum.Broker,
+    ];
+
       const fakeUser = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
