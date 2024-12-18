@@ -38,6 +38,16 @@ export class UsersSeeder {
 
     const remainingCount = count - userTypes.length;
     for (let i = 0; i < remainingCount; i++) {
+      const randomUserType = faker.helpers.arrayElement(userTypes);
+      const fakeUser = {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        user_type: randomUserType,
+        profile_picture: faker.image.avatar(),
+        password: 'HelloBaddil12345&%',
+      };
+      promises.push(this.createUser(fakeUser));
+    }
 
     await Promise.all(promises);
     console.log(`✅ ${count} users have been seeded!`);
