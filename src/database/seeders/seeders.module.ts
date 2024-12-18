@@ -23,11 +23,12 @@ import {
 } from '../schemas/notifications.schema';
 import { DatabaseModule } from '../database.module';
 import { ConfigModule } from '@nestjs/config';
-
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
+    ConfigModule.forRoot({
+      isGlobal: true, 
+    }),
     MongooseModule.forFeature([
       { name: Company.name, schema: CompanySchema },
       { name: User.name, schema: UserSchema },
