@@ -29,11 +29,27 @@ export class CompanySeeder {
     return this.companyModel;
   }
 
-  async seed() {
+  async seed(): Promise<void> {
     const existingCompany = await this.companyModel.findOne();
     if (existingCompany) {
-      console.warn("⚠️ Company document already exists");
-      return; 
+      console.warn('⚠️ Company document already exists');
+      return;
+    }
+
+    const notificationCount = await this.notificationModel.countDocuments();
+    const flagsCount = await this.flagModel.countDocuments();
+    const disputesCount = await this.disputeModel.countDocuments();
+
+    const adminsCount = await this.userModel.countDocuments({
+      user_type: 'admin',
+    });
+    const brokersCount = await this.userModel.countDocuments({
+      user_type: 'broker',
+    });
+    const barterersCount = await this.userModel.countDocuments({
+      user_type: 'barterer',
+    });
+
     }
 
     const companyData = {
