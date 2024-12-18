@@ -50,7 +50,15 @@ export class CompanySeeder {
       user_type: 'barterer',
     });
 
+    const admins = await this.userModel.find({ user_type: 'admin' }, '_id');
+    if (admins.length === 0) {
+      console.error(
+        '⚠️ No Admin users found. Cannot assign `updated_last_by`.',
+      );
+      return;
     }
+
+    const randomAdmin = faker.helpers.arrayElement(admins);
 
     const companyData = {
       name: 'Baddĭl',
