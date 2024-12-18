@@ -36,6 +36,8 @@ export class UsersSeeder {
       promises.push(this.createUser(fakeUser));
     }
 
+    const remainingCount = count - userTypes.length;
+    for (let i = 0; i < remainingCount; i++) {
 
     await Promise.all(promises);
     console.log(`✅ ${count} users have been seeded!`);
