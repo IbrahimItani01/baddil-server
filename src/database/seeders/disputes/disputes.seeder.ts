@@ -17,7 +17,7 @@ export class DisputesSeeder {
     return this.disputeModel;
   }
 
-  async seed() {
+  async seed(count: number = 10) {
     const existingDisputes = await this.disputeModel.find();
     if (existingDisputes.length > 0) {
       return;
@@ -31,24 +31,26 @@ export class DisputesSeeder {
       .select('_id');
 
     if (barterers.length === 0 || admins.length === 0) {
-      console.error("⚠️ Error seeding disputes")
+      console.error('⚠️ Error seeding disputes: No barterers or admins found');
       return;
     }
 
     const disputes = [];
-    for (let i = 0; i < 10; i++) {
-      const usersInvolved = faker.helpers.arrayElements(
-        barterers,
-        faker.number.int({ min: 2, max: 5 }),
-      );
+    for (let i = 0; i < count; i++) {
+      const usersInvolved = faker.helpers
+        .arrayElements(barterers, faker.number.int({ min: 2, max: 5 }))
+        .map((user) => user._id);
+
       const monitoredBy = faker.helpers.arrayElement(admins)._id;
+
       const resolvedBy = faker.datatype.boolean()
         ? faker.helpers.arrayElement(admins)._id
         : undefined;
+
       const resolvedAt = resolvedBy ? faker.date.past() : null;
 
       disputes.push({
-        users_involved: usersInvolved.map((user) => user._id),
+        users_involved: usersInvolved,
         status: resolvedBy
           ? DisputeStatusEnum.Resolved
           : DisputeStatusEnum.Active,
@@ -60,7 +62,11 @@ export class DisputesSeeder {
       });
     }
 
-    await this.disputeModel.insertMany(disputes);
-    console.log('✅ Disputes seeded successfully!');
+    try {
+      await this.disputeModel.insertMany(disputes);
+      console.log(`✅ ${count} Disputes seeded successfully!`);
+    } catch (error) {
+      console.error('❌ Error seeding disputes:', error);
+    }
   }
 }
