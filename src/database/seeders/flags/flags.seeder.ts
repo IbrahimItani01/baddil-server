@@ -19,9 +19,10 @@ export class FlagsSeeder {
     return this.flagModel;
   }
 
-  async seed() {
+  async seed(count: number = 20) {
     const existingFlags = await this.flagModel.countDocuments();
     if (existingFlags > 0) {
+      console.log('⚠️ Flags already exist, skipping seeding.');
       return;
     }
 
@@ -34,7 +35,7 @@ export class FlagsSeeder {
     const barters = await this.barterModel.find({}, '_id');
     const barterIds = barters.map((barter) => barter._id);
 
-    const admins = await this.userModel.find({ user_type: 'Admin' }, '_id');
+    const admins = await this.userModel.find({ user_type: 'admin' }, '_id');
     const adminIds = admins.map((admin) => admin._id);
 
     if (
@@ -42,11 +43,11 @@ export class FlagsSeeder {
       barterIds.length === 0 ||
       adminIds.length === 0
     ) {
-      console.error("⚠️ Error seeding flags")
+      console.error('⚠️ Error: Not enough data to seed flags.');
       return;
     }
 
-    const flags = Array.from({ length: 20 }, () => {
+    const flags = Array.from({ length: count }, () => {
       const isUserFlag = faker.datatype.boolean();
 
       return {
@@ -61,6 +62,6 @@ export class FlagsSeeder {
     });
 
     await this.flagModel.insertMany(flags);
-    console.log('✅ Flags seeded successfully!');
+    console.log(`✅ ${count} flags seeded successfully!`);
   }
 }
