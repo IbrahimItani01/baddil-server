@@ -20,7 +20,7 @@ export class NotificationsSeeder {
     return this.notificationModel;
   }
 
-  async seed() {
+  async seed(count: number = 20) {
     const existingNotifications = await this.notificationModel.countDocuments();
     if (existingNotifications > 0) {
       return;
@@ -38,12 +38,12 @@ export class NotificationsSeeder {
       return;
     }
 
-    const notifications = Array.from({ length: 20 }, () => {
+    const notifications = Array.from({ length: count }, () => {
       const sentBy = faker.helpers.arrayElement([admins[0]._id, 'company']);
       const sentTo = faker.helpers.arrayElement([
-        faker.helpers.arrayElement(barterers),
-        faker.helpers.arrayElement(brokers),
-      ])._id;
+        faker.helpers.arrayElement(barterers)._id,
+        faker.helpers.arrayElement(brokers)._id,
+      ]);
 
       return {
         message: faker.lorem.sentence(),
