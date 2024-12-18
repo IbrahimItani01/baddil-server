@@ -1,12 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { faker } from '@faker-js/faker';
-import { Company, CompanyDocument } from "../../schemas/company.schema";
+import { Company, CompanyDocument } from '../../schemas/company.schema';
+import { User, UserDocument } from '../../schemas/users.schema';
+import { Flag, FlagDocument } from '../../../database/schemas/flags.schema';
+import {
+  Dispute,
+  DisputeDocument,
+} from '../../../database/schemas/disputes.schema';
+import {
+  Notification,
+  NotificationDocument,
+} from '../../../database/schemas/notifications.schema';
 
 @Injectable()
 export class CompanySeeder {
-  constructor(@InjectModel(Company.name) private companyModel: Model<CompanyDocument>) {}
+  constructor(
+    @InjectModel(Company.name) private companyModel: Model<CompanyDocument>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<NotificationDocument>, // Replace 'any' with actual type
+    @InjectModel(Flag.name) private flagModel: Model<FlagDocument>, // Replace 'any' with actual type
+    @InjectModel(Dispute.name) private disputeModel: Model<DisputeDocument>, // Replace 'any' with actual type
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
 
   getModel(): Model<CompanyDocument> {
     return this.companyModel;
