@@ -51,16 +51,5 @@ import { ConfigModule } from '@nestjs/config';
     FlagsSeeder,
     NotificationsSeeder,
   ],
-  exports: [
-    CompanySeeder,
-    UsersSeeder,
-    BarterersSeeder,
-    BrokersSeeder,
-    BartersSeeder,
-    ChatsSeeder,
-    DisputesSeeder,
-    FlagsSeeder,
-    NotificationsSeeder,
-  ],
 })
 export class SeedersModule {}
