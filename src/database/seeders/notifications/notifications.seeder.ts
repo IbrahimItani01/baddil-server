@@ -23,6 +23,7 @@ export class NotificationsSeeder {
   async seed(count: number = 20) {
     const existingNotifications = await this.notificationModel.countDocuments();
     if (existingNotifications > 0) {
+      console.log('⚠️ Notifications already exist. Skipping seeding.');
       return;
     }
 
@@ -33,8 +34,13 @@ export class NotificationsSeeder {
     );
     const brokers = await this.userModel.find({ user_type: 'broker' }, '_id');
 
-    if (admins.length === 0 || barterers.length === 0 || brokers.length === 0) {
-      console.error("⚠️ Error seeding notifications: a user type is empty in db")
+    if (
+      admins.length === 0 ||
+      (barterers.length === 0 && brokers.length === 0)
+    ) {
+      console.error(
+        '⚠️ Error seeding notifications: Missing required user types.',
+      );
       return;
     }
 
@@ -53,7 +59,11 @@ export class NotificationsSeeder {
       };
     });
 
-    await this.notificationModel.insertMany(notifications);
-    console.log('✅ Notifications seeded successfully!');
+    try {
+      await this.notificationModel.insertMany(notifications);
+      console.log(`✅ ${count} notifications seeded successfully!`);
+    } catch (error) {
+      console.error('❌ Error seeding notifications:', error);
+    }
   }
 }
