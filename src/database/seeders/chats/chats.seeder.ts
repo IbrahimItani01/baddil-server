@@ -24,25 +24,31 @@ export class ChatsSeeder {
     return this.chatModel;
   }
 
-  async seed(): Promise<ChatDocument[]> {
+  async seed(count: number = 20): Promise<ChatDocument[]> {
     const brokers = await this.brokerModel.find().populate('user_id');
     const barterers = await this.bartererModel.find().populate('user_id');
+
     const chats: ChatDocument[] = [];
 
-    for (let i = 0; i < barterers.length - 1; i++) {
-      const sender = barterers[i];
-      const receiver = barterers[i + 1];
+    if (barterers.length < 2 || brokers.length === 0) {
+      console.error('⚠️ Error seeding chats: Not enough users in database.');
+      return [];
+    }
 
-      const chatData =
-        Math.random() > 0.5
-          ? await this.createChat(sender.user_id, receiver.user_id, false)
-          : await this.createChat(sender.user_id, receiver.user_id);
+    for (let i = 0; i < count / 3; i++) {
+      const sender = faker.helpers.arrayElement(barterers);
+      const receiver = faker.helpers.arrayElement(
+        barterers.filter((b) => b._id !== sender._id),
+      );
 
+      const chatData = await this.createChat(sender.user_id, receiver.user_id);
       chats.push(chatData);
     }
 
-    for (const barterer of barterers) {
-      for (const hiredBroker of barterer.hired_brokers) {
+    for (let i = 0; i < count / 3; i++) {
+      const barterer = faker.helpers.arrayElement(barterers);
+      if (barterer.hired_brokers?.length > 0) {
+        const hiredBroker = faker.helpers.arrayElement(barterer.hired_brokers);
         const chatData = await this.createChat(
           barterer.user_id,
           hiredBroker.broker_id,
@@ -51,8 +57,10 @@ export class ChatsSeeder {
       }
     }
 
-    for (const broker of brokers) {
-      for (const client of broker.clients) {
+    for (let i = 0; i < count / 3; i++) {
+      const broker = faker.helpers.arrayElement(brokers);
+      if (broker.clients?.length > 0) {
+        const client = faker.helpers.arrayElement(broker.clients);
         const chatData = await this.createChat(
           broker.user_id,
           client.client_id,
@@ -65,7 +73,7 @@ export class ChatsSeeder {
       const createdChats = await this.chatModel.insertMany(chats, {
         ordered: true,
       });
-      console.log('✅ Chat seeding completed successfully!');
+      console.log(`✅ ${count} chats seeded successfully!`);
       return createdChats;
     } catch (err) {
       console.error('⚠️ Error inserting chats:', err.message);
@@ -76,29 +84,29 @@ export class ChatsSeeder {
   private async createChat(
     user1: Types.ObjectId,
     user2: Types.ObjectId,
-    withMessages = true,
   ): Promise<ChatDocument> {
     const messages: Message[] = [];
-    if (withMessages) {
-      for (let i = 0; i < faker.number.int({ min: 3, max: 10 }); i++) {
-        const message: Message = {
-          message_id: new Types.ObjectId(),
-          sender: faker.helpers.arrayElement([user1, user2]),
-          content: faker.lorem.sentence(),
-          sent_date: faker.date.recent(),
-          status: faker.helpers.arrayElement([
-            MessageStatusEnum.Sent,
-            MessageStatusEnum.Read,
-          ]),
-        };
-        messages.push(message);
-      }
+
+    const numberOfMessages = faker.number.int({ min: 3, max: 20 });
+
+    for (let i = 0; i < numberOfMessages; i++) {
+      const message: Message = {
+        message_id: new Types.ObjectId(),
+        sender: faker.helpers.arrayElement([user1, user2]),
+        content: faker.lorem.sentence(),
+        sent_date: faker.date.recent(),
+        status: faker.helpers.arrayElement([
+          MessageStatusEnum.Sent,
+          MessageStatusEnum.Read,
+        ]),
+      };
+      messages.push(message);
     }
 
-    return this.chatModel.create({
+    return {
       users_involved: [user1, user2],
       messages,
       handled_by_ai: faker.datatype.boolean(),
-    });
+    } as unknown as ChatDocument;
   }
 }
