@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { UserStatusEnum, UserTypeEnum } from 'src/utils/enums.utils';
+import { UserStatusEnum, UserTypeEnum } from '../../utils/enums.utils';
 import {
   PhoneNumber,
   PhoneNumberSchema,

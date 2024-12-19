@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { TargetUserTypeEnum } from 'src/utils/enums.utils';
+import { TargetUserTypeEnum } from '../../utils/enums.utils';
 
 @Schema()
 export class Users {

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { UserLanguageEnum, UserThemeEnum } from 'src/utils/enums.utils';
+import { UserLanguageEnum, UserThemeEnum } from '../../utils/enums.utils';
 
 @Schema()
 export class Settings {

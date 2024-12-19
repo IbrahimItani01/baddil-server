@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BrokersController } from './brokers.controller';
 import { BrokersService } from './brokers.service';
-import { Broker, BrokerSchema } from 'src/database/schemas/brokers.schema';
+import { Broker, BrokerSchema } from '../../database/schemas/brokers.schema';
 
 @Module({
   imports: [

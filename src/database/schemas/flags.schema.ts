@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { FlagStatusEnum, FlagTypeEnum } from 'src/utils/enums.utils';
+import { FlagStatusEnum, FlagTypeEnum } from '../../utils/enums.utils';
 
 export type FlagDocument = Flag & Document;
 
@@ -12,8 +12,6 @@ export class Flag {
   @Prop({ type: String, enum: Object.values(FlagTypeEnum), required: true })
   type: FlagTypeEnum;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
-  owner_id?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   flagged_by: Types.ObjectId;

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { BarterStatusEnum, RatingEnum } from 'src/utils/enums.utils';
+import { BarterStatusEnum, RatingEnum } from '../../utils/enums.utils';
 import {
   ReviewSchema,
   MeetupSchema,
@@ -30,7 +30,7 @@ export class Barter {
   completed_at: Date;
 
   @Prop({
-    type: Number,
+    type: String,
     enum: Object.values(RatingEnum),
     required: false,
   })
@@ -47,6 +47,9 @@ export class Barter {
     required: false,
   })
   meetup: Meetup;
+
+  @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
+  users_involved: Types.ObjectId[];
 }
 
 export const BarterSchema = SchemaFactory.createForClass(Barter);

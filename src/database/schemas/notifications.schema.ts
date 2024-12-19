@@ -8,8 +8,17 @@ export class Notification {
   @Prop({ required: true, trim: true })
   message: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  sent_by: Types.ObjectId;
+  @Prop({
+    type: String,
+    required: true,
+    validate: {
+      validator: (value: string) => {
+        return Types.ObjectId.isValid(value) || value === 'company';
+      },
+      message: 'sent_by must be a valid ObjectId or "company".',
+    },
+  })
+  sent_by: string;
 
   @Prop({ type: [Types.ObjectId], ref: 'User', required: true })
   sent_to: Types.ObjectId[];
