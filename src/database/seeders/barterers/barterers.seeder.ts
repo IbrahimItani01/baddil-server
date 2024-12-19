@@ -4,11 +4,12 @@ import { Model, Types } from 'mongoose';
 import { faker } from '@faker-js/faker';
 import { Barterer, BartererDocument } from '../../schemas/barterers.schema';
 import { User, UserDocument } from '../../schemas/users.schema';
+import { Chat, ChatDocument } from '../../schemas/chats.schema';
+import { Barter, BarterDocument } from '../../schemas/barters.schema';
 import {
   AutoTradeStatusEnum,
   ItemConditionEnum,
 } from '../../../utils/enums.utils';
-import { Broker, BrokerDocument } from '../../schemas/brokers.schema';
 
 @Injectable()
 export class BarterersSeeder {
@@ -16,9 +17,11 @@ export class BarterersSeeder {
     @InjectModel(Barterer.name)
     private readonly bartererModel: Model<BartererDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Broker.name)
-    private readonly brokerModel: Model<BrokerDocument>,
+    @InjectModel(Chat.name) private readonly chatModel: Model<ChatDocument>,
+    @InjectModel(Barter.name)
+    private readonly barterModel: Model<BarterDocument>,
   ) {}
+
   getModel(): Model<BartererDocument> {
     return this.bartererModel;
   }
