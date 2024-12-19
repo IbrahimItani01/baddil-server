@@ -11,7 +11,8 @@ import { FlagsSeeder } from './flags/flags.seeder';
 import { NotificationsSeeder } from './notifications/notifications.seeder';
 
 async function seedDatabase() {
-  const app = await NestFactory.createApplicationContext(SeedersModule);
+  const app = await NestFactory.create(SeedersModule);
+  await app.listen(4000);
 
   try {
     console.log('🛠️ Starting database seeding...');
