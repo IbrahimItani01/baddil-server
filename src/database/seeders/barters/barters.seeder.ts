@@ -32,6 +32,55 @@ export class BartersSeeder {
     const barterers = await this.bartererModel.find().populate('wallet.items');
 
     const promises = Array.from({ length: count }).map(async () => {
+      const initiator = faker.helpers.arrayElement([...brokers, ...barterers]);
+      let receiver: BrokerDocument | BartererDocument;
+
+      while (true) {
+        receiver = faker.helpers.arrayElement(
+          [...brokers, ...barterers].filter(
+            (user) => user._id.toString() !== initiator._id.toString(),
+          ),
+        );
+        if (initiator && receiver) break;
+      }
+
+      let initiatorItems: Types.ObjectId[] = [];
+      let receiverItems: Types.ObjectId[] = [];
+
+      if (initiator instanceof Barterer) {
+        initiatorItems = faker.helpers
+          .arrayElements(initiator.wallet.items, 2)
+          .map((item) => item.item_id);
+      } else if (initiator instanceof Broker) {
+        const client = faker.helpers.arrayElement(initiator.clients);
+        if (
+          client &&
+          client.client_id instanceof Barterer &&
+          client.client_id.wallet?.items
+        ) {
+          initiatorItems = faker.helpers
+            .arrayElements(client.client_id.wallet.items, 2)
+            .map((item) => item.item_id);
+        }
+      }
+
+      if (receiver instanceof Barterer) {
+        receiverItems = faker.helpers
+          .arrayElements(receiver.wallet.items, 2)
+          .map((item) => item.item_id);
+      } else if (receiver instanceof Broker) {
+        const client = faker.helpers.arrayElement(receiver.clients);
+        if (
+          client &&
+          client.client_id instanceof Barterer &&
+          client.client_id.wallet?.items
+        ) {
+          receiverItems = faker.helpers
+            .arrayElements(client.client_id.wallet.items, 2)
+            .map((item) => item.item_id);
+        }
+      }
+
       const fakeBarter = {
         status: faker.helpers.arrayElement(Object.values(BarterStatusEnum)),
         initiator_items: [new Types.ObjectId(), new Types.ObjectId()],
