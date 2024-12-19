@@ -189,4 +189,13 @@ export class BarterersSeeder {
     console.log(`✅ Second call: Populated barters array for barterers.`);
   }
 
+  async seed(firstCall: boolean = true): Promise<void> {
+    if (firstCall) {
+      console.log('🚀 Running first call of barterers seeder...');
+      await this.seedFirstCall();
+    } else {
+      console.log('🚀 Running second call of barterers seeder...');
+      await this.seedSecondCall();
+    }
+  }
 }
