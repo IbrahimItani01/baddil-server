@@ -26,6 +26,7 @@ async function seedDatabase() {
     const disputesSeeder = app.get(DisputesSeeder);
     const flagsSeeder = app.get(FlagsSeeder);
     const notificationsSeeder = app.get(NotificationsSeeder);
+
     console.log('🧹 Clearing existing data...');
 
     const companyModel = companySeeder.getModel();
@@ -52,6 +53,40 @@ async function seedDatabase() {
 
     console.log('✅ Database cleared. Starting to seed data...');
 
+    await usersSeeder.seed(10);
+    console.log('✅ Users seeding completed.');
+
+    await disputesSeeder.seed();
+    console.log('✅ Disputes seeding completed.');
+
+    await notificationsSeeder.seed();
+    console.log('✅ Notifications seeding completed.');
+
+    await chatsSeeder.seed();
+    console.log('✅ Chats seeding completed.');
+
+    await barterersSeeder.seed(true);
+    console.log('✅ Barterers (first call) seeding completed.');
+
+    await brokersSeeder.seed(true);
+    console.log('✅ Brokers (first call) seeding completed.');
+
+    await bartersSeeder.seed(15);
+    console.log('✅ Barters seeding completed.');
+
+    await barterersSeeder.seed(false);
+    console.log('✅ Barterers (second call) seeding completed.');
+
+    await brokersSeeder.seed(false);
+    console.log('✅ Brokers (second call) seeding completed.');
+
+    await flagsSeeder.seed();
+    console.log('✅ Flags seeding completed.');
+
+    await companySeeder.seed();
+    console.log('✅ Company seeding completed.');
+
+    console.log('🎉 Database seeding completed successfully!');
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
   } finally {
