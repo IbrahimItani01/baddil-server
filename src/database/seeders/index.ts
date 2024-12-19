@@ -15,19 +15,17 @@ async function seedDatabase() {
   await app.listen(4000);
 
   try {
-    console.log('🛠️ Starting database seeding...');
+    console.log('🛠️ Starting database seeding on port 4000...');
 
-    // Get models and seeders
-    const models = getModels(app);
-    const seeders = SEEDERS.map((Seeder) => app.get(Seeder));
-
-    // Clear the database
-    await clearDatabase(models);
-
-    // Seed the database
-    await seedData(seeders);
-
-    console.log('🚀 Seeding process finished!');
+    const companySeeder = app.get(CompanySeeder);
+    const usersSeeder = app.get(UsersSeeder);
+    const barterersSeeder = app.get(BarterersSeeder);
+    const brokersSeeder = app.get(BrokersSeeder);
+    const bartersSeeder = app.get(BartersSeeder);
+    const chatsSeeder = app.get(ChatsSeeder);
+    const disputesSeeder = app.get(DisputesSeeder);
+    const flagsSeeder = app.get(FlagsSeeder);
+    const notificationsSeeder = app.get(NotificationsSeeder);
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
   } finally {
