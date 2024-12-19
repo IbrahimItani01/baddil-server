@@ -83,13 +83,11 @@ export class BartersSeeder {
 
       const fakeBarter = {
         status: faker.helpers.arrayElement(Object.values(BarterStatusEnum)),
-        initiator_items: [new Types.ObjectId(), new Types.ObjectId()],
-        receiver_items: [new Types.ObjectId(), new Types.ObjectId()],
+        initiator_items: initiatorItems,
+        receiver_items: receiverItems,
         completed_at: faker.datatype.boolean() ? faker.date.past() : null,
 
-        rating: faker.datatype.boolean()
-          ? faker.helpers.arrayElement(ratingValues)
-          : null,
+        rating: faker.helpers.arrayElement(Object.values(RatingEnum)),
 
         reviews: faker.datatype.boolean()
           ? [
@@ -115,14 +113,15 @@ export class BartersSeeder {
               date: faker.date.future(),
             }
           : null,
+
+        users_involved: [initiator._id, receiver._id],
       };
 
       try {
         const barter = new this.barterModel(fakeBarter);
         await barter.save();
-        console.log('✅ Barter created:', barter._id);
       } catch (error) {
-        console.error('⚠️ Error creating barter:', error.message);
+        console.error('⚠️ Error creating barter:', error);
       }
     });
 
