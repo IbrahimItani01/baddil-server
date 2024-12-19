@@ -25,6 +25,12 @@ export class BartersSeeder {
   }
 
   async seed(count: number): Promise<void> {
+    const brokers = await this.brokerModel.find().populate({
+      path: 'clients.client_id',
+    });
+
+    const barterers = await this.bartererModel.find().populate('wallet.items');
+
     const promises = Array.from({ length: count }).map(async () => {
       const fakeBarter = {
         status: faker.helpers.arrayElement(Object.values(BarterStatusEnum)),
