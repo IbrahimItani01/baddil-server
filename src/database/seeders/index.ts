@@ -37,6 +37,21 @@ async function seedDatabase() {
     const disputeModel = disputesSeeder.getModel();
     const flagModel = flagsSeeder.getModel();
     const notificationModel = notificationsSeeder.getModel();
+
+    await Promise.all([
+      companyModel.deleteMany({}),
+      userModel.deleteMany({}),
+      bartererModel.deleteMany({}),
+      brokerModel.deleteMany({}),
+      barterModel.deleteMany({}),
+      chatModel.deleteMany({}),
+      disputeModel.deleteMany({}),
+      flagModel.deleteMany({}),
+      notificationModel.deleteMany({}),
+    ]);
+
+    console.log('✅ Database cleared. Starting to seed data...');
+
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
   } finally {
