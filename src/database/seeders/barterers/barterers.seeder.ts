@@ -169,4 +169,24 @@ export class BarterersSeeder {
     );
     return createdBarterers;
   }
+
+  async seedSecondCall(): Promise<void> {
+    const barterers = await this.bartererModel.find();
+    const barters = await this.barterModel.find();
+
+    for (const barterer of barterers) {
+      const randomBarters = faker.helpers.arrayElements(
+        barters.map((barter) => barter._id),
+        faker.number.int({ min: 1, max: 5 }),
+      );
+
+      await this.bartererModel.updateOne(
+        { _id: barterer._id },
+        { $set: { barters: randomBarters } },
+      );
+    }
+
+    console.log(`✅ Second call: Populated barters array for barterers.`);
+  }
+
 }
