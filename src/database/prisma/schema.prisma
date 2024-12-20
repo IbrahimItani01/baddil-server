@@ -385,3 +385,9 @@ model Barter {
   @@map("barters")
 }
 
+enum BarterStatus {
+  ongoing
+  aborted
+  completed
+}
+
