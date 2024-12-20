@@ -116,3 +116,8 @@ model Setting {
   @@map("settings")
 }
 
+enum Language {
+  english
+  french
+}
+
