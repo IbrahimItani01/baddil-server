@@ -361,3 +361,27 @@ enum DisputeStatus {
   resolved
 }
 
+// Barters Table
+model Barter {
+  id            Int          @id @default(autoincrement())
+  user1_id      Int
+  user2_id      Int
+  user1_item_id Int
+  user2_item_id Int
+  handled_by_ai Boolean      @default(false)
+  status        BarterStatus @default(ongoing)
+  meetup_id     Int?
+  completed_at  DateTime?
+  created_at    DateTime     @default(now())
+
+  user1      User     @relation("User1Barter", fields: [user1_id], references: [id])
+  user2      User     @relation("User2Barter", fields: [user2_id], references: [id])
+  user1_item Item     @relation("User1ItemBarter", fields: [user1_item_id], references: [id])
+  user2_item Item     @relation("User2ItemBarter", fields: [user2_item_id], references: [id])
+  meetup     Meetup?  @relation(fields: [meetup_id], references: [id])
+  Chat       Chat[]
+  Rating     Rating[]
+
+  @@map("barters")
+}
+
