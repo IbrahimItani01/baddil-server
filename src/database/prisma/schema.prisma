@@ -391,3 +391,18 @@ enum BarterStatus {
   completed
 }
 
+// Meetups Table
+model Meetup {
+  id          Int          @id @default(autoincrement())
+  user1_key   String
+  user2_key   String
+  status      MeetupStatus @default(scheduled)
+  location_id Int
+  created_at  DateTime     @default(now())
+
+  location Location @relation(fields: [location_id], references: [id])
+  Barter   Barter[]
+
+  @@map("meetups")
+}
+
