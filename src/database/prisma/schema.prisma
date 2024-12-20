@@ -406,3 +406,8 @@ model Meetup {
   @@map("meetups")
 }
 
+enum MeetupStatus {
+  scheduled
+  verified
+  completed
+}
