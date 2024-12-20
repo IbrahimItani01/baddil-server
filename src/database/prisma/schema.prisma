@@ -41,3 +41,43 @@ enum ExpenseType {
   other
 }
 
+// Users Table
+model User {
+  id              Int      @id @default(autoincrement())
+  profile_picture String? // Path of user image
+  name            String
+  email           String   @unique
+  password        String
+  firebase_uid    String?
+  device_token    String?
+  is_deleted      Boolean  @default(false)
+  user_type_id    Int
+  user_status_id  Int
+  settings_id     Int
+  subscription_id Int?
+  tier_id         Int?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  user_type     UserType          @relation(fields: [user_type_id], references: [id])
+  user_status   UserStatus        @relation(fields: [user_status_id], references: [id])
+  settings      Setting           @relation(fields: [settings_id], references: [id])
+  subscription  SubscriptionPlan? @relation(fields: [subscription_id], references: [id])
+  tier          Tier?             @relation(fields: [tier_id], references: [id])
+  Message       Message[]
+  Chat1         Chat[]            @relation("User1Chats")
+  Chat2         Chat[]            @relation("User2Chats")
+  Wallet        Wallet[]
+  RatingWroteBy Rating[]          @relation("WroteBy")
+  RatingBroker  Rating[]          @relation("Broker")
+  HireBroker    Hire[]            @relation("BrokerHire")
+  HireClient    Hire[]            @relation("ClientHire")
+  DisputeAdmin  Dispute[]         @relation("AdminDispute")
+  DisputeUser1  Dispute[]         @relation("User1Dispute")
+  DisputeUser2  Dispute[]         @relation("User2Dispute")
+  Barter1       Barter[]          @relation("User1Barter")
+  Barter2       Barter[]          @relation("User2Barter")
+
+  @@map("users")
+}
+
