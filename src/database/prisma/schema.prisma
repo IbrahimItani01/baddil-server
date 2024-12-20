@@ -92,3 +92,13 @@ model UserType {
   @@map("user_types")
 }
 
+// User Statuses Table
+model UserStatus {
+  id     Int    @id @default(autoincrement())
+  status String
+
+  users User[]
+
+  @@map("user_statuses")
+}
+
