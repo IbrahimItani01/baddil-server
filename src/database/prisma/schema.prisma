@@ -211,3 +211,18 @@ enum MessageStatus {
   seen
 }
 
+// Chats Table
+model Chat {
+  id        Int  @id @default(autoincrement())
+  user1_id  Int?
+  user2_id  Int?
+  barter_id Int?
+
+  user1   User?     @relation("User1Chats", fields: [user1_id], references: [id])
+  user2   User?     @relation("User2Chats", fields: [user2_id], references: [id])
+  barter  Barter?   @relation(fields: [barter_id], references: [id])
+  Message Message[]
+
+  @@map("chats")
+}
+
