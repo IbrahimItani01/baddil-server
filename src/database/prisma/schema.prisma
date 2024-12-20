@@ -137,3 +137,21 @@ model Tier {
   @@map("tiers")
 }
 
+// Subscription Plans Table
+model SubscriptionPlan {
+  id               Int      @id @default(autoincrement())
+  name             String
+  price            Float
+  target_user_type Int
+  criteria         String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  user_type UserType  @relation(fields: [target_user_type], references: [id])
+  features  Feature[]
+
+  users User[]
+
+  @@map("subscription_plans")
+}
+
