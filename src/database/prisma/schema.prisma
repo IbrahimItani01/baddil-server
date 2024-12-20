@@ -81,3 +81,14 @@ model User {
   @@map("users")
 }
 
+// User Types Table
+model UserType {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  users            User[]
+  SubscriptionPlan SubscriptionPlan[]
+
+  @@map("user_types")
+}
+
