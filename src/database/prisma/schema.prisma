@@ -23,3 +23,15 @@ enum ProfitSource {
   hire_budget
 }
 
+model Expense {
+  id           Int         @id @default(autoincrement())
+  amount       Float
+  description  String // Salary, broker compensation, etc.
+  expense_type ExpenseType
+  date         DateTime    @default(now())
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  @@map("expenses")
+}
+
