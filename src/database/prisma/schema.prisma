@@ -226,3 +226,16 @@ model Chat {
   @@map("chats")
 }
 
+// Wallets Table
+model Wallet {
+  id         Int      @id @default(autoincrement())
+  owner_id   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  owner User   @relation(fields: [owner_id], references: [id])
+  Item  Item[]
+
+  @@map("wallets")
+}
+
