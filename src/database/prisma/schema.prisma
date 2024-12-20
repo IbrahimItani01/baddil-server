@@ -102,3 +102,17 @@ model UserStatus {
   @@map("user_statuses")
 }
 
+// Settings Table
+model Setting {
+  id            Int      @id @default(autoincrement())
+  language      Language @default(english)
+  theme         Theme    @default(light)
+  notifications Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  users User[]
+
+  @@map("settings")
+}
+
