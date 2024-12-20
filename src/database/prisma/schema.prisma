@@ -7,3 +7,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Profit {
+  id         Int          @id @default(autoincrement())
+  amount     Float
+  source     ProfitSource
+  date       DateTime     @default(now())
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  @@map("profits")
+}
+
