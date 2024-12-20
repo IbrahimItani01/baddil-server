@@ -38,6 +38,7 @@
     "dotenv": "^16.4.7",
     "faker": "^6.6.6",
     "firebase-admin": "^13.0.1",
+    "mysql2": "^3.11.5",
     "nestjs-seeder": "^0.3.2",
     "passport": "^0.7.0",
     "passport-firebase-jwt": "^1.2.1",
