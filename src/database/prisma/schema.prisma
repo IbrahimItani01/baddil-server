@@ -177,3 +177,17 @@ model Category {
   @@map("categories")
 }
 
+// Subcategories Table
+model Subcategory {
+  id               Int      @id @default(autoincrement())
+  name             String
+  main_category_id Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  category Category @relation(fields: [main_category_id], references: [id])
+  Item     Item[]
+
+  @@map("subcategories")
+}
+
