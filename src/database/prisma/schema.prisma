@@ -295,3 +295,20 @@ model Location {
   @@map("locations")
 }
 
+// Ratings Table
+model Rating {
+  id          Int      @id @default(autoincrement())
+  value       Int // 1 to 5
+  description String
+  wrote_by    Int
+  broker_id   Int?
+  barter_id   Int?
+  created_at  DateTime @default(now())
+
+  wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id])
+  broker        User?   @relation("Broker", fields: [broker_id], references: [id])
+  barter        Barter? @relation(fields: [barter_id], references: [id])
+
+  @@map("ratings")
+}
+
