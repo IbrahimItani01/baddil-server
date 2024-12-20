@@ -155,3 +155,13 @@ model SubscriptionPlan {
   @@map("subscription_plans")
 }
 
+model Feature {
+  id                   Int    @id @default(autoincrement())
+  subscription_plan_id Int
+  feature              String
+
+  subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id])
+
+  @@map("features")
+}
+
