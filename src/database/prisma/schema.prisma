@@ -35,3 +35,9 @@ model Expense {
   @@map("expenses")
 }
 
+enum ExpenseType {
+  salary
+  broker_compensation
+  other
+}
+
