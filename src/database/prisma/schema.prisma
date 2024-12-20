@@ -126,3 +126,14 @@ enum Theme {
   light
 }
 
+// Tiers Table
+model Tier {
+  id          Int    @id @default(autoincrement())
+  name        String
+  requirement Int
+
+  users User[]
+
+  @@map("tiers")
+}
+
