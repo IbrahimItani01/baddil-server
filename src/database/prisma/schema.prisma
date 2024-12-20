@@ -239,3 +239,29 @@ model Wallet {
   @@map("wallets")
 }
 
+// Items Table
+model Item {
+  id             Int           @id @default(autoincrement())
+  name           String
+  description    String
+  category_id    Int
+  subcategory_id Int
+  condition      ItemCondition
+  location_id    Int
+  wallet_id      Int
+  value          Float
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  images         ItemImage[]
+
+  category        Category    @relation(fields: [category_id], references: [id])
+  subcategory     Subcategory @relation(fields: [subcategory_id], references: [id])
+  location        Location    @relation(fields: [location_id], references: [id])
+  wallet          Wallet      @relation(fields: [wallet_id], references: [id])
+  Hire            Hire[]
+  BarterUser1Item Barter[]    @relation("User1ItemBarter")
+  BarterUser2Item Barter[]    @relation("User2ItemBarter")
+
+  @@map("items")
+}
+
