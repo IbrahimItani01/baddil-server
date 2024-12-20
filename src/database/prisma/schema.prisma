@@ -331,3 +331,10 @@ model Hire {
   @@map("hires")
 }
 
+enum HireStatus {
+  pending
+  ongoing
+  cancelled
+  completed
+}
+
