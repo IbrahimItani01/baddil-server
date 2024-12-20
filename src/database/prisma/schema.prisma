@@ -206,3 +206,8 @@ model Message {
   @@map("messages")
 }
 
+enum MessageStatus {
+  sent
+  seen
+}
+
