@@ -18,3 +18,8 @@ model Profit {
   @@map("profits")
 }
 
+enum ProfitSource {
+  subscription
+  hire_budget
+}
+
