@@ -338,3 +338,21 @@ enum HireStatus {
   completed
 }
 
+// Disputes Table
+model Dispute {
+  id          Int           @id @default(autoincrement())
+  admin_id    Int
+  user1_id    Int
+  user2_id    Int
+  details     String
+  status      DisputeStatus @default(ongoing)
+  resolved_at DateTime?
+  created_at  DateTime      @default(now())
+
+  admin User @relation("AdminDispute", fields: [admin_id], references: [id])
+  user1 User @relation("User1Dispute", fields: [user1_id], references: [id])
+  user2 User @relation("User2Dispute", fields: [user2_id], references: [id])
+
+  @@map("disputes")
+}
+
