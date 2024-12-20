@@ -121,3 +121,8 @@ enum Language {
   french
 }
 
+enum Theme {
+  dark
+  light
+}
+
