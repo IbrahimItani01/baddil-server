@@ -265,3 +265,13 @@ model Item {
   @@map("items")
 }
 
+model ItemImage {
+  id      Int    @id @default(autoincrement())
+  item_id Int
+  path    String
+
+  item Item @relation(fields: [item_id], references: [id])
+
+  @@map("item_images")
+}
+
