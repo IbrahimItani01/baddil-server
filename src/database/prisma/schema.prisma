@@ -356,3 +356,8 @@ model Dispute {
   @@map("disputes")
 }
 
+enum DisputeStatus {
+  ongoing
+  resolved
+}
+
