@@ -312,3 +312,22 @@ model Rating {
   @@map("ratings")
 }
 
+// Hires Table
+model Hire {
+  id             Int        @id @default(autoincrement())
+  target_item_id Int
+  broker_id      Int
+  client_id      Int
+  budget         Float
+  status         HireStatus @default(pending)
+  completed_at   DateTime?
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+
+  item   Item @relation(fields: [target_item_id], references: [id])
+  broker User @relation("BrokerHire", fields: [broker_id], references: [id])
+  client User @relation("ClientHire", fields: [client_id], references: [id])
+
+  @@map("hires")
+}
+
