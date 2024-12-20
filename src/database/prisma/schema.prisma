@@ -281,3 +281,17 @@ enum ItemCondition {
   refurbished
 }
 
+// Locations Table
+model Location {
+  id         Int      @id @default(autoincrement())
+  name       String
+  longitude  Float
+  latitude   Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  Item       Item[]
+  Meetup     Meetup[]
+
+  @@map("locations")
+}
+
