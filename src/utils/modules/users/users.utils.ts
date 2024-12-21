@@ -46,3 +46,19 @@ export const getUserStatusId = async (
 
   return userStatusRecord.id;
 };
+export const getUserStatusById = async (
+  prisma: PrismaService,
+  userStatusId: number,
+) => {
+  const userStatusRecord = await prisma.userStatus.findUnique({
+    where: { id: userStatusId },
+  });
+
+  if (!userStatusRecord) {
+    throw new BadRequestException(
+      `User status with ID "${userStatusId}" not found`,
+    );
+  }
+
+  return userStatusRecord.status;
+};
