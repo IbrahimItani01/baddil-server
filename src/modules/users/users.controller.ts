@@ -28,7 +28,30 @@ export class UsersController {
     const userId = req.user.id;
     return this.usersService.updateUser(userId, updateData);
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Put('me/status')
+  async changeStatus(@Req() req: any, @Body() body: { status: string }) {
+    const userId = req.user.id;
+    const { status } = body;
 
+    if (!status) {
+      throw new BadRequestException('Status is required');
+    }
+
+    try {
+      const updatedUser = await this.usersService.changeUserStatus(userId, status);
+
+      return {
+        status: 'success',
+        message: 'User status updated successfully',
+        data: updatedUser,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+  // settings-related
   @UseGuards(JwtAuthGuard)
   @Patch('me/settings')
   async updateSettings(@Req() req: any, @Body() settingsData: any) {
