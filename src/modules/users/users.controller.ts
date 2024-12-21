@@ -97,4 +97,35 @@ export class UsersController {
     }
   }
   // device-token related
+  @UseGuards(JwtAuthGuard)
+  @Put('me/device-token')
+  async saveDeviceToken(
+    @Req() req: any,
+    @Body() body: { deviceToken: string },
+  ) {
+    const userId = req.user.id;
+    const { deviceToken } = body;
+
+    if (!deviceToken) {
+      throw new BadRequestException('Device token is required');
+    }
+
+    try {
+      const updatedUser = await this.usersService.updateDeviceToken(
+        userId,
+        deviceToken,
+      );
+
+      return {
+        status: 'success',
+        message: 'Device token updated successfully',
+        data: updatedUser,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Failed to update device token',
+        error.message,
+      );
+    }
+  }
 }
