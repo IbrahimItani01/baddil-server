@@ -172,4 +172,16 @@ export class UsersService {
     });
   }
 
+  async getDeviceToken(userId: number): Promise<string | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { device_token: true }, // Only select the device token field
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user.device_token; // Return the device token if available
+  }
 }
