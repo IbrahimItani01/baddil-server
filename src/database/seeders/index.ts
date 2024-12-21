@@ -66,3 +66,6 @@ async function main() {
     await seedExpenses();
     console.log('✅ Seeded: Expenses');
 
+    await seedProfits();
+    console.log('✅ Seeded: Profits');
+
