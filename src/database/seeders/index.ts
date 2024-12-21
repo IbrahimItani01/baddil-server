@@ -59,3 +59,6 @@ async function main() {
     await seedWallets();
     console.log('✅ Seeded: Wallets');
 
+    await seedFeatures();
+    console.log('✅ Seeded: Features');
+
