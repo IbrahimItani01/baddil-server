@@ -214,15 +214,13 @@ enum MessageStatus {
 
 // Chats Table
 model Chat {
-  id        Int  @id @default(autoincrement())
-  user1_id  Int?
-  user2_id  Int?
-  barter_id Int?
+  id        Int     @id @default(autoincrement())
+  barter_id Int?    // Optional foreign key for Barter
+  hire_id   Int?    // Optional foreign key for Hire
 
-  user1   User?     @relation("User1Chats", fields: [user1_id], references: [id])
-  user2   User?     @relation("User2Chats", fields: [user2_id], references: [id])
-  barter  Barter?   @relation(fields: [barter_id], references: [id])
-  Message Message[]
+  barter    Barter? @relation(fields: [barter_id], references: [id],onDelete: Cascade)
+  hire      Hire?   @relation(fields: [hire_id], references: [id],onDelete: Cascade)
+  Message   Message[]
 
   @@map("chats")
 }
