@@ -49,3 +49,7 @@ async function main() {
     await seedLocations();
     console.log('✅ Seeded: Locations');
 
+    console.log('🌱 Seeding dependent tables...');
+    await seedUsers();
+    console.log('✅ Seeded: Users');
+
