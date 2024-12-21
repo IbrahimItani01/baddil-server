@@ -95,3 +95,6 @@ async function main() {
     await seedRatings();
     console.log('✅ Seeded: Ratings');
 
+    await seedDisputes();
+    console.log('✅ Seeded: Disputes');
+
