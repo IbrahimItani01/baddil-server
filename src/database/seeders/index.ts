@@ -21,3 +21,9 @@ import { seedUserStatuses } from './seeds/userStatuses.seed';
 import { seedUserTypes } from './seeds/userTypes.seed';
 import { seedWallets } from './seeds/wallets.seed';
 
+async function main() {
+  try {
+    console.log('🚀 Starting seeding process...');
+
+    await clearDatabase();
+
