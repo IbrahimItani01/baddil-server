@@ -37,9 +37,16 @@ export class UsersService {
     user_type: string;
     profile_picture?: string;
     password?: string;
-  }): Promise<UserDocument> {
-    const existingUser = await this.userModel.findOne({
-      $or: [{ email: userData.email }, { firebase_uid: userData.firebase_uid }],
+    language?: string;
+    theme?: string;
+  }): Promise<User> {
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: userData.email },
+          { firebase_uid: userData.firebase_uid },
+        ],
+      },
     });
 
     if (existingUser) {
