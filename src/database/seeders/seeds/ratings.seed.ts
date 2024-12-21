@@ -31,3 +31,41 @@ export const seedRatings = async () => {
     throw new Error('Not enough users, barters, or brokers to create ratings.');
   }
 
+  // Generate random ratings
+  await Promise.all(
+    Array.from({ length: 10 }).map(async () => {
+      // Randomly select a user to write the rating
+      const wroteByUser = faker.helpers.arrayElement(users);
+
+      // Randomly decide whether the rating is for a broker or barter
+      const isBrokerRating = faker.datatype.boolean();
+
+      let brokerId = null;
+      let barterId = null;
+
+      if (isBrokerRating) {
+        // If it's a broker rating, pick a random broker
+        brokerId = faker.helpers.arrayElement(brokers)?.id ?? null;
+      } else {
+        // If it's a barter rating, pick a random barter
+        barterId = faker.helpers.arrayElement(barters)?.id ?? null;
+      }
+
+      // Rating value between 1 and 5
+      const ratingValue = faker.number.int({ min: 1, max: 5 });
+
+      await prisma.rating.create({
+        data: {
+          value: ratingValue,
+          description: faker.lorem.sentence(),
+          wrote_by: wroteByUser.id,
+          broker_id: brokerId,
+          barter_id: barterId,
+          created_at: faker.date.past(), // Random creation date
+        },
+      });
+    })
+  );
+
+  console.log('Ratings seeded successfully.');
+};
