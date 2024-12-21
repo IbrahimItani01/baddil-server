@@ -1,0 +1,23 @@
+import { clearDatabase } from './resetter';
+import { seedBarters } from './seeds/barters.seed';
+import { seedCategories } from './seeds/categories.seed';
+import { seedChats } from './seeds/chats.seed';
+import { seedDisputes } from './seeds/disputes.seed';
+import { seedExpenses } from './seeds/expenses.seed';
+import { seedFeatures } from './seeds/features.seed';
+import { seedHires } from './seeds/hires.seed';
+import { seedItems } from './seeds/items.seed';
+import { seedLocations } from './seeds/locations.seed';
+import { seedMeetups } from './seeds/meetups.seed';
+import { seedMessages } from './seeds/messages.seed';
+import { seedProfits } from './seeds/profits.seed';
+import { seedRatings } from './seeds/ratings.seed';
+import { seedSettings } from './seeds/settings.seed';
+import { seedSubcategories } from './seeds/subCategories.seed';
+import { seedSubscriptionPlans } from './seeds/subscriptionPlans.seed';
+import { seedTiers } from './seeds/tiers.seed';
+import { seedUsers } from './seeds/users.seed';
+import { seedUserStatuses } from './seeds/userStatuses.seed';
+import { seedUserTypes } from './seeds/userTypes.seed';
+import { seedWallets } from './seeds/wallets.seed';
+
