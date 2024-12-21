@@ -5,14 +5,17 @@ import {
   Inject,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import * as admin from 'firebase-admin';
 import axios from 'axios';
 
 import { UsersService } from '../modules/users/users.service';
-import { BarterersService } from '../modules/barterers/barterers.service';
-import { BrokersService } from '../modules/brokers/brokers.service';
+import {
+  getUserStatusById,
+  getUserTypeById,
+} from 'src/utils/modules/users/users.utils';
+import { PrismaService } from 'src/database/prisma.service';
+
 @Injectable()
 export class AuthService {
   private firebaseApiKey: string;
