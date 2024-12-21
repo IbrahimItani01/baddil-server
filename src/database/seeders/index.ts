@@ -56,3 +56,6 @@ async function main() {
     await seedSubcategories();
     console.log('✅ Seeded: Subcategories');
 
+    await seedWallets();
+    console.log('✅ Seeded: Wallets');
+
