@@ -129,16 +129,23 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-
-      if (user.status === 'banned') {
+      const userStatus = await getUserStatusById(
+        this.prisma,
+        user.user_status_id,
+      );
+      if (userStatus === 'banned') {
         throw new BadRequestException('This account is banned');
       }
 
+      const user_type = await getUserTypeById(this.prisma, user.user_type_id);
+
       const payload = {
-        sub: user._id,
+        sub: user.id,
         email: user.email,
-        user_type: user.user_type,
+        user_type,
+        firebase_uid: user.firebase_uid,
       };
+
       const token = this.jwtService.sign(payload);
 
       return {
