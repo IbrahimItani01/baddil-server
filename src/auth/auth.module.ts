@@ -9,6 +9,7 @@ import { UsersModule } from '../modules/users/users.module';
 import { BarterersModule } from '../modules/barterers/barterers.module';
 import { BrokersModule } from '../modules/brokers/brokers.module';
 import { JwtStrategy } from '../utils/strategies/jwt.strategy';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { JwtStrategy } from '../utils/strategies/jwt.strategy';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [PassportModule,JwtModule],
+  providers: [AuthService, JwtStrategy, PrismaService],
+  exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}
