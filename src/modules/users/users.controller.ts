@@ -76,4 +76,25 @@ export class UsersController {
       throw new BadRequestException('Failed to update settings', error.message);
     }
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('me/settings')
+  async getUserSettings(@Req() req: any) {
+    const userId = req.user.id;
+
+    try {
+      const settings = await this.usersService.getUserSettings(userId);
+
+      return {
+        status: 'success',
+        message: 'User settings retrieved successfully',
+        data: settings,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Failed to retrieve user settings',
+        error.message,
+      );
+    }
+  }
+  // device-token related
 }
