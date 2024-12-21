@@ -98,3 +98,10 @@ async function main() {
     await seedDisputes();
     console.log('✅ Seeded: Disputes');
 
+    console.log('🎉 Seeding process completed successfully!');
+  } catch (error) {
+    console.error('❌ Error while seeding:', error);
+  }
+}
+
+main();
