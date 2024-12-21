@@ -1,9 +1,8 @@
 import {
+  Injectable,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../database/prisma.service';
 import { User } from '@prisma/client';
@@ -195,5 +194,21 @@ export class UsersService {
     const settings = await getSettingsById(this.prisma, settingsId);
 
     return settings;
+  }
+  async changeUserStatus(userId: number, status: string): Promise<User> {
+    // Get the status ID from the status string
+    const statusId = await getUserStatusId(this.prisma, status);
+
+    if (!statusId) {
+      throw new NotFoundException(`Status '${status}' not found`);
+    }
+
+    // Update the user's status ID
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { user_status_id: statusId },
+    });
+
+    return updatedUser;
   }
 }
