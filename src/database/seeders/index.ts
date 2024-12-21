@@ -84,3 +84,7 @@ async function main() {
     await seedBarters();
     console.log('✅ Seeded: Barters');
 
+    console.log('🌱 Seeding chats and messages...');
+    await seedChats();
+    console.log('✅ Seeded: Chats');
+
