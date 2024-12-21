@@ -62,3 +62,26 @@ export const getSettingsId = async (
 
   return user.settings_id;
 };
+export function validateSettingsData(settingsData: SettingsData) {
+  const updateData: any = {};
+
+  if (settingsData.language) {
+    if (!Object.values(Language).includes(settingsData.language as Language)) {
+      throw new BadRequestException(`Invalid language provided`);
+    }
+    updateData.language = { set: settingsData.language as Language };
+  }
+
+  if (settingsData.theme) {
+    if (!Object.values(Theme).includes(settingsData.theme as Theme)) {
+      throw new BadRequestException(`Invalid theme provided`);
+    }
+    updateData.theme = { set: settingsData.theme as Theme };
+  }
+
+  if (settingsData.notifications !== undefined) {
+    updateData.notifications = settingsData.notifications;
+  }
+
+  return updateData;
+}
