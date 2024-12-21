@@ -22,8 +22,8 @@ import {
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ email }).exec();
+  async findByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findFirst({ where: { email } });
   }
 
   async findByFirebaseUid(firebaseUid: string): Promise<UserDocument | null> {
