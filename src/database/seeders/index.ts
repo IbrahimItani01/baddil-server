@@ -91,3 +91,7 @@ async function main() {
     await seedMessages();
     console.log('✅ Seeded: Messages');
 
+    console.log('🌱 Seeding ratings and disputes...');
+    await seedRatings();
+    console.log('✅ Seeded: Ratings');
+
