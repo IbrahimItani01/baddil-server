@@ -24,10 +24,9 @@ export class AuthService {
     @Inject('FIREBASE_ADMIN_INJECTOR')
     private readonly firebaseAuth: admin.auth.Auth,
     public readonly usersService: UsersService,
-    private readonly barterersService: BarterersService,
-    private readonly brokersService: BrokersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {
     this.firebaseApiKey = this.configService.get<string>('FIREBASE_API_KEY');
   }
