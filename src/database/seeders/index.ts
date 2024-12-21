@@ -46,3 +46,6 @@ async function main() {
     await seedCategories();
     console.log('✅ Seeded: Categories');
 
+    await seedLocations();
+    console.log('✅ Seeded: Locations');
+
