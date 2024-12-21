@@ -17,3 +17,45 @@ export const seedItems = async () => {
   }
 
 
+  // Generate random items
+  await Promise.all(
+    Array.from({ length: 10 }).map(async () => {
+      const category = faker.helpers.arrayElement(categories);
+      const subcategory = faker.helpers.arrayElement(subcategories);
+      const location = faker.helpers.arrayElement(locations);
+      const wallet = faker.helpers.arrayElement(wallets);
+      const condition: ItemCondition = faker.helpers.arrayElement([ItemCondition.used, ItemCondition.new, ItemCondition.refurbished]);
+      const value = parseFloat(faker.finance.amount({min:10,max: 1000,dec: 2})); // Random value
+      const description = faker.lorem.sentence();
+
+      // Create the item
+      const item = await prisma.item.create({
+        data: {
+          name: faker.commerce.productName(),
+          description,
+          category_id: category.id,
+          subcategory_id: subcategory.id,
+          location_id: location.id,
+          wallet_id: wallet.id,
+          condition,
+          value,
+        },
+      });
+
+      // Create random item images for each item
+      const imageCount = faker.number.int({ min: 1, max: 3 }); // Random number of images per item
+      await Promise.all(
+        Array.from({ length: imageCount }).map(async () => {
+          await prisma.itemImage.create({
+            data: {
+              item_id: item.id,
+              path: faker.image.url(),
+            },
+          });
+        }),
+      );
+    }),
+  );
+
+  console.log('Items seeded successfully.');
+};
