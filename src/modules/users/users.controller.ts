@@ -7,7 +7,6 @@ import {
   Body,
   Patch,
   BadRequestException,
-  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
@@ -39,25 +38,16 @@ export class UsersController {
       throw new BadRequestException('No settings data provided');
     }
 
-    const updateData = Object.keys(settingsData).reduce((acc, key) => {
-      acc[`settings.${key}`] = settingsData[key];
-      return acc;
-    }, {});
-
     try {
-      const updatedUser = await this.usersService.updateUser(
+      const updateResult = await this.usersService.updateSettings(
         userId,
-        updateData,
+        settingsData,
       );
-
-      if (!updatedUser) {
-        throw new NotFoundException('User not found');
-      }
 
       return {
         status: 'success',
         message: 'Settings updated successfully',
-        data: updatedUser,
+        data: updateResult.data,
       };
     } catch (error) {
       throw new BadRequestException('Failed to update settings', error.message);
