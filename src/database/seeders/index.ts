@@ -31,3 +31,6 @@ async function main() {
     await seedUserTypes();
     console.log('✅ Seeded: User Types');
 
+    await seedUserStatuses();
+    console.log('✅ Seeded: User Statuses');
+
