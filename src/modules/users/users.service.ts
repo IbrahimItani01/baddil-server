@@ -184,4 +184,16 @@ export class UsersService {
 
     return user.device_token; // Return the device token if available
   }
+
+  async getUserSettings(userId: number): Promise<any> {
+    const settingsId = await getSettingsId(this.prisma, userId);
+
+    if (!settingsId) {
+      throw new NotFoundException('User settings not found');
+    }
+
+    const settings = await getSettingsById(this.prisma, settingsId);
+
+    return settings;
+  }
 }
