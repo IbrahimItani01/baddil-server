@@ -62,3 +62,7 @@ async function main() {
     await seedFeatures();
     console.log('✅ Seeded: Features');
 
+    console.log('🌱 Seeding financial data...');
+    await seedExpenses();
+    console.log('✅ Seeded: Expenses');
+
