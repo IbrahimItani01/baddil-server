@@ -59,9 +59,15 @@ export class UsersService {
     }
 
     const userTypeId = await getUserTypeId(this.prisma, userData.user_type);
-    });
 
-    return newUser.save();
+    const userStatusId = await getUserStatusId(this.prisma, 'active');
+
+    const newSetting = await createUserSettings(
+      this.prisma,
+      userData.language,
+      userData.theme,
+    );
+
   }
 
   async findUserById(userId: string): Promise<Partial<User> | null> {
