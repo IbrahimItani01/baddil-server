@@ -58,8 +58,7 @@ export class UsersService {
       userData.password = hashedPassword;
     }
 
-    const newUser = new this.userModel({
-      ...userData,
+    const userTypeId = await getUserTypeId(this.prisma, userData.user_type);
     });
 
     return newUser.save();
