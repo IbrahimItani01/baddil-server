@@ -39,3 +39,32 @@ export const seedDisputes = async () => {
     throw new Error('Not enough admins or barterers to create disputes.');
   }
 
+  // Generate random disputes
+  await Promise.all(
+    Array.from({ length: 10 }).map(async () => {
+      const user1 = faker.helpers.arrayElement(barterers); // Random user1 (barterer type)
+      const user2 = faker.helpers.arrayElement(
+        barterers.filter((user) => user.id !== user1.id),
+      ); // Ensure user1 and user2 are different
+      const admin = faker.helpers.arrayElement(admins); // Random admin (admin type)
+
+      const disputeStatus = faker.helpers.arrayElement(['ongoing', 'resolved']);
+      const resolvedAt =
+        disputeStatus === 'resolved' ? faker.date.past() : null;
+
+      await prisma.dispute.create({
+        data: {
+          admin_id: admin.id,
+          user1_id: user1.id,
+          user2_id: user2.id,
+          details: faker.lorem.sentence(),
+          status: disputeStatus,
+          resolved_at: resolvedAt,
+          created_at: faker.date.past(), // Random creation date
+        },
+      });
+    }),
+  );
+
+  console.log('Disputes seeded successfully.');
+};
