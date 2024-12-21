@@ -22,6 +22,8 @@ export class AuthController {
     @Body('profile_picture') profile_picture?: string,
     @Body('password') password?: string,
     @Body('googleToken') googleToken?: string,
+    @Body('language') language?: string, // Optional
+    @Body('theme') theme?: string, // Optional
   ) {
     try {
       const result = await this.authService.register(
@@ -31,6 +33,8 @@ export class AuthController {
         profile_picture,
         password,
         googleToken,
+        language,
+        theme,
       );
 
       return {
