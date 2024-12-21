@@ -53,3 +53,6 @@ async function main() {
     await seedUsers();
     console.log('✅ Seeded: Users');
 
+    await seedSubcategories();
+    console.log('✅ Seeded: Subcategories');
+
