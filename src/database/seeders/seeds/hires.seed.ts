@@ -41,3 +41,30 @@ export const seedHires = async () => {
   if (brokers.length < 1 || barterers.length < 1 || items.length < 1) {
     throw new Error('Not enough brokers, barterers, or items to create hires.');
   }
+
+  // Generate random hires
+  await Promise.all(
+    Array.from({ length: 10 }).map(async () => {
+      const broker = faker.helpers.arrayElement(brokers); // Random broker (broker type)
+      const client = faker.helpers.arrayElement(barterers); // Random client (barterer type)
+      const targetItem = faker.helpers.arrayElement(items); // Random item for hire
+      const budget = parseFloat(faker.finance.amount({min:1000, max:50000,dec: 2})); // Random budget amount
+      const hireStatus = faker.helpers.arrayElement(['pending', 'ongoing', 'cancelled', 'completed']);
+      const completedAt = hireStatus === 'completed' ? faker.date.past() : null;
+
+      await prisma.hire.create({
+        data: {
+          target_item_id: targetItem.id,
+          broker_id: broker.id,
+          client_id: client.id,
+          budget,
+          status: hireStatus,
+          completed_at: completedAt,
+          created_at: faker.date.past(), // Random creation date
+        },
+      });
+    }),
+  );
+
+  console.log('Hires seeded successfully.');
+};
