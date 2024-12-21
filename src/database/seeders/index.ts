@@ -88,3 +88,6 @@ async function main() {
     await seedChats();
     console.log('✅ Seeded: Chats');
 
+    await seedMessages();
+    console.log('✅ Seeded: Messages');
+
