@@ -37,3 +37,6 @@ async function main() {
     await seedSettings();
     console.log('✅ Seeded: Settings');
 
+    await seedTiers();
+    console.log('✅ Seeded: Tiers');
+
