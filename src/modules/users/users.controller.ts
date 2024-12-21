@@ -128,4 +128,28 @@ export class UsersController {
       );
     }
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('me/device-token')
+  async getDeviceToken(@Req() req: any) {
+    const userId = req.user.id;
+
+    try {
+      const deviceToken = await this.usersService.getDeviceToken(userId);
+
+      if (!deviceToken) {
+        throw new BadRequestException('Device token not found');
+      }
+
+      return {
+        status: 'success',
+        message: 'Device token retrieved successfully',
+        data: { deviceToken },
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Failed to retrieve device token',
+        error.message,
+      );
+    }
+  }
 }
