@@ -33,3 +33,17 @@ export async function createUserSettings(
 
   return newSetting;
 }
+export const getSettingsById = async (
+  prisma: PrismaService,
+  settingsId: number,
+) => {
+  const settingsRecord = await prisma.setting.findUnique({
+    where: { id: settingsId },
+  });
+
+  if (!settingsRecord) {
+    throw new BadRequestException(`Settings with ID "${settingsId}" not found`);
+  }
+
+  return settingsRecord;
+};
