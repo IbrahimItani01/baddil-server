@@ -43,3 +43,6 @@ async function main() {
     await seedSubscriptionPlans();
     console.log('✅ Seeded: Subscription Plans');
 
+    await seedCategories();
+    console.log('✅ Seeded: Categories');
+
