@@ -72,3 +72,8 @@ async function main() {
     console.log('🌱 Seeding items and related data...');
     await seedItems();
     console.log('✅ Seeded: Items');
+
+    console.log('🌱 Seeding meetups...');
+    await seedMeetups();
+    console.log('✅ Seeded: Meetups');
+
