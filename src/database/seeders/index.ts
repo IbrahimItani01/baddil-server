@@ -27,3 +27,7 @@ async function main() {
 
     await clearDatabase();
 
+    console.log('🌱 Seeding independent tables...');
+    await seedUserTypes();
+    console.log('✅ Seeded: User Types');
+
