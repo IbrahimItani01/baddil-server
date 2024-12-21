@@ -81,3 +81,6 @@ async function main() {
     await seedHires();
     console.log('✅ Seeded: Hires');
 
+    await seedBarters();
+    console.log('✅ Seeded: Barters');
+
