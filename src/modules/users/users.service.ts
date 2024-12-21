@@ -68,6 +68,20 @@ export class UsersService {
       userData.theme,
     );
 
+    const newUser = await this.prisma.user.create({
+      data: {
+        firebase_uid: userData.firebase_uid,
+        name: userData.name,
+        email: userData.email,
+        profile_picture: userData.profile_picture,
+        password: userData.password,
+        user_type_id: userTypeId,
+        user_status_id: userStatusId,
+        settings_id: newSetting.id,
+      },
+    });
+
+    return newUser;
   }
 
   async findUserById(userId: string): Promise<Partial<User> | null> {
