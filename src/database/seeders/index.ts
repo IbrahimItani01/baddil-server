@@ -40,3 +40,6 @@ async function main() {
     await seedTiers();
     console.log('✅ Seeded: Tiers');
 
+    await seedSubscriptionPlans();
+    console.log('✅ Seeded: Subscription Plans');
+
