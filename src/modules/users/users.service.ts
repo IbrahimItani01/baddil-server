@@ -84,8 +84,24 @@ export class UsersService {
     return newUser;
   }
 
-  async findUserById(userId: string): Promise<Partial<User> | null> {
-    return this.userModel.findById(userId, '-password').lean().exec();
+  async findUserById(userId: number): Promise<Partial<User> | null> {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        profile_picture: true,
+        firebase_uid: true,
+        device_token: true,
+        is_deleted: true,
+        user_type_id: true,
+        user_status_id: true,
+        settings_id: true,
+        subscription_id: true,
+        tier_id: true,
+      },
+    });
   }
 
   async updateUser(
