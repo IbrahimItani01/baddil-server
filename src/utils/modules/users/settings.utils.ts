@@ -47,3 +47,18 @@ export const getSettingsById = async (
 
   return settingsRecord;
 };
+export const getSettingsId = async (
+  prisma: PrismaService,
+  userId: number,
+): Promise<number> => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { settings_id: true },
+  });
+
+  if (!user) {
+    throw new BadRequestException(`User with ID "${userId}" not found`);
+  }
+
+  return user.settings_id;
+};
