@@ -60,14 +60,12 @@ model User {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  user_type     UserType          @relation(fields: [user_type_id], references: [id])
-  user_status   UserStatus        @relation(fields: [user_status_id], references: [id])
-  settings      Setting           @relation(fields: [settings_id], references: [id])
-  subscription  SubscriptionPlan? @relation(fields: [subscription_id], references: [id])
-  tier          Tier?             @relation(fields: [tier_id], references: [id])
+  user_type     UserType          @relation(fields: [user_type_id], references: [id],onDelete: Cascade)
+  user_status   UserStatus        @relation(fields: [user_status_id], references: [id],onDelete: Cascade)
+  settings      Setting           @relation(fields: [settings_id], references: [id],onDelete: Cascade)
+  subscription  SubscriptionPlan? @relation(fields: [subscription_id], references: [id],onDelete: Cascade)
+  tier          Tier?             @relation(fields: [tier_id], references: [id],onDelete: Cascade)
   Message       Message[]
-  Chat1         Chat[]            @relation("User1Chats")
-  Chat2         Chat[]            @relation("User2Chats")
   Wallet        Wallet[]
   RatingWroteBy Rating[]          @relation("WroteBy")
   RatingBroker  Rating[]          @relation("Broker")
@@ -148,7 +146,7 @@ model SubscriptionPlan {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
-  user_type UserType  @relation(fields: [target_user_type], references: [id])
+  user_type UserType  @relation(fields: [target_user_type], references: [id],onDelete: Cascade)
   features  Feature[]
 
   users User[]
@@ -161,7 +159,7 @@ model Feature {
   subscription_plan_id Int
   feature              String
 
-  subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id])
+  subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id],onDelete: Cascade)
 
   @@map("features")
 }
@@ -186,7 +184,7 @@ model Subcategory {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
-  category Category @relation(fields: [main_category_id], references: [id])
+  category Category @relation(fields: [main_category_id], references: [id],onDelete: Cascade)
   Item     Item[]
 
   @@map("subcategories")
@@ -201,8 +199,8 @@ model Message {
   chat_id   Int
   timestamp DateTime      @default(now())
 
-  owner User @relation(fields: [owner_id], references: [id])
-  chat  Chat @relation(fields: [chat_id], references: [id])
+  owner User @relation(fields: [owner_id], references: [id],onDelete: Cascade)
+  chat  Chat @relation(fields: [chat_id], references: [id],onDelete: Cascade)
 
   @@map("messages")
 }
@@ -225,6 +223,7 @@ model Chat {
   @@map("chats")
 }
 
+
 // Wallets Table
 model Wallet {
   id         Int      @id @default(autoincrement())
@@ -232,7 +231,7 @@ model Wallet {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  owner User   @relation(fields: [owner_id], references: [id])
+  owner User   @relation(fields: [owner_id], references: [id],onDelete: Cascade)
   Item  Item[]
 
   @@map("wallets")
@@ -253,10 +252,10 @@ model Item {
   updated_at     DateTime      @updatedAt
   images         ItemImage[]
 
-  category        Category    @relation(fields: [category_id], references: [id])
-  subcategory     Subcategory @relation(fields: [subcategory_id], references: [id])
-  location        Location    @relation(fields: [location_id], references: [id])
-  wallet          Wallet      @relation(fields: [wallet_id], references: [id])
+  category        Category    @relation(fields: [category_id], references: [id],onDelete: Cascade)
+  subcategory     Subcategory @relation(fields: [subcategory_id], references: [id],onDelete: Cascade)
+  location        Location    @relation(fields: [location_id], references: [id],onDelete: Cascade)
+  wallet          Wallet      @relation(fields: [wallet_id], references: [id],onDelete: Cascade)
   Hire            Hire[]
   BarterUser1Item Barter[]    @relation("User1ItemBarter")
   BarterUser2Item Barter[]    @relation("User2ItemBarter")
@@ -269,7 +268,7 @@ model ItemImage {
   item_id Int
   path    String
 
-  item Item @relation(fields: [item_id], references: [id])
+  item Item @relation(fields: [item_id], references: [id],onDelete: Cascade)
 
   @@map("item_images")
 }
@@ -304,9 +303,9 @@ model Rating {
   barter_id   Int?
   created_at  DateTime @default(now())
 
-  wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id])
-  broker        User?   @relation("Broker", fields: [broker_id], references: [id])
-  barter        Barter? @relation(fields: [barter_id], references: [id])
+  wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id],onDelete: Cascade)
+  broker        User?   @relation("Broker", fields: [broker_id], references: [id],onDelete: Cascade)
+  barter        Barter? @relation(fields: [barter_id], references: [id],onDelete: Cascade)
 
   @@map("ratings")
 }
@@ -323,11 +322,12 @@ model Hire {
   created_at     DateTime   @default(now())
   updated_at     DateTime   @updatedAt
 
-  item   Item @relation(fields: [target_item_id], references: [id])
-  broker User @relation("BrokerHire", fields: [broker_id], references: [id])
-  client User @relation("ClientHire", fields: [client_id], references: [id])
+  item   Item @relation(fields: [target_item_id], references: [id],onDelete: Cascade)
+  broker User @relation("BrokerHire", fields: [broker_id], references: [id],onDelete: Cascade)
+  client User @relation("ClientHire", fields: [client_id], references: [id],onDelete: Cascade)
 
   @@map("hires")
+  Chat Chat[]
 }
 
 enum HireStatus {
@@ -348,9 +348,9 @@ model Dispute {
   resolved_at DateTime?
   created_at  DateTime      @default(now())
 
-  admin User @relation("AdminDispute", fields: [admin_id], references: [id])
-  user1 User @relation("User1Dispute", fields: [user1_id], references: [id])
-  user2 User @relation("User2Dispute", fields: [user2_id], references: [id])
+  admin User @relation("AdminDispute", fields: [admin_id], references: [id],onDelete: Cascade)
+  user1 User @relation("User1Dispute", fields: [user1_id], references: [id],onDelete: Cascade)
+  user2 User @relation("User2Dispute", fields: [user2_id], references: [id],onDelete: Cascade)
 
   @@map("disputes")
 }
@@ -373,11 +373,11 @@ model Barter {
   completed_at  DateTime?
   created_at    DateTime     @default(now())
 
-  user1      User     @relation("User1Barter", fields: [user1_id], references: [id])
-  user2      User     @relation("User2Barter", fields: [user2_id], references: [id])
-  user1_item Item     @relation("User1ItemBarter", fields: [user1_item_id], references: [id])
-  user2_item Item     @relation("User2ItemBarter", fields: [user2_item_id], references: [id])
-  meetup     Meetup?  @relation(fields: [meetup_id], references: [id])
+  user1      User     @relation("User1Barter", fields: [user1_id], references: [id],onDelete: Cascade)
+  user2      User     @relation("User2Barter", fields: [user2_id], references: [id],onDelete: Cascade)
+  user1_item Item     @relation("User1ItemBarter", fields: [user1_item_id], references: [id],onDelete: Cascade)
+  user2_item Item     @relation("User2ItemBarter", fields: [user2_item_id], references: [id],onDelete: Cascade)
+  meetup     Meetup?  @relation(fields: [meetup_id], references: [id],onDelete: Cascade)
   Chat       Chat[]
   Rating     Rating[]
 
@@ -399,7 +399,7 @@ model Meetup {
   location_id Int
   created_at  DateTime     @default(now())
 
-  location Location @relation(fields: [location_id], references: [id])
+  location Location @relation(fields: [location_id], references: [id],onDelete: Cascade)
   Barter   Barter[]
 
   @@map("meetups")
