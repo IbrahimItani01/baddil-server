@@ -32,3 +32,17 @@ export const getUserTypeById = async (
   return userTypeRecord.type;
 };
 
+export const getUserStatusId = async (
+  prisma: PrismaService,
+  status: string,
+) => {
+  const userStatusRecord = await prisma.userStatus.findFirst({
+    where: { status },
+  });
+
+  if (!userStatusRecord) {
+    throw new BadRequestException(`User status "${status}" not found`);
+  }
+
+  return userStatusRecord.id;
+};
