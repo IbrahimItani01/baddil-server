@@ -105,26 +105,24 @@ export class UsersService {
   }
 
   async updateUser(
-    userId: string,
+    userId: number,
     updateData: Partial<User>,
   ): Promise<User | null> {
     try {
-      const updatedUser = await this.userModel
-        .findByIdAndUpdate(
-          userId,
-          { $set: updateData },
-          { new: true, runValidators: true },
-        )
-        .lean()
-        .exec();
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+      });
 
       if (!updatedUser) {
         throw new NotFoundException('User not found');
       }
 
       return updatedUser;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new BadRequestException('Failed to update user');
     }
   }
