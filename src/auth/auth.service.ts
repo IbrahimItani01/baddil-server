@@ -38,6 +38,8 @@ export class AuthService {
     profile_picture?: string,
     password?: string,
     googleToken?: string,
+    language?: string,
+    theme?: string,
   ) {
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
@@ -67,34 +69,24 @@ export class AuthService {
         throw new BadRequestException('Password or Google token is required');
       }
 
-      const user = await this.usersService.create({
+      const userData = {
         firebase_uid: firebaseUser.uid,
         name,
         email,
         user_type,
         profile_picture: firebaseUser.photoURL || null,
-      });
-
-      const userId = user._id as Types.ObjectId;
-      let specificDocument = null;
-
-      const userTypeServiceMap = {
-        barterer: this.barterersService,
-        broker: this.brokersService,
+        password: password,
+        language,
+        theme,
       };
 
-      const specificService = userTypeServiceMap[user_type];
-      if (specificService) {
-        await specificService.create(userId);
-        specificDocument = await specificService.findByUserId(userId);
-      }
+      const user = await this.usersService.create(userData);
 
       return {
         status: 'success',
         message: 'Registration successful',
         data: {
           user,
-          specificDocument,
         },
       };
     } catch (error) {
