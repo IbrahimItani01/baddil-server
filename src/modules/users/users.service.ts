@@ -126,6 +126,7 @@ export class UsersService {
       throw new BadRequestException('Failed to update user');
     }
   }
+
   async updateSettings(
     userId: number,
     settingsData: {
@@ -162,6 +163,13 @@ export class UsersService {
     } catch (error) {
       throw new BadRequestException('Failed to update settings', error.message);
     }
+  }
+
+  async updateDeviceToken(userId: number, deviceToken: string): Promise<User> {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { device_token: deviceToken },
+    });
   }
 
 }
