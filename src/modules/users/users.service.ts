@@ -1,18 +1,26 @@
 import {
   BadRequestException,
-  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../../database/prisma.service';
+import { User } from '@prisma/client';
+import {
+  getUserStatusId,
+  getUserTypeId,
+} from 'src/utils/modules/users/users.utils';
+import {
+  createUserSettings,
+  getSettingsById,
+  getSettingsId,
+  validateSettingsData,
+} from 'src/utils/modules/users/settings.utils';
 
-import { User, UserDocument } from '../../database/schemas/users.schema';
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
