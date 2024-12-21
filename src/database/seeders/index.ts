@@ -34,3 +34,6 @@ async function main() {
     await seedUserStatuses();
     console.log('✅ Seeded: User Statuses');
 
+    await seedSettings();
+    console.log('✅ Seeded: Settings');
+
