@@ -126,5 +126,42 @@ export class UsersService {
       throw new BadRequestException('Failed to update user');
     }
   }
-  
+  async updateSettings(
+    userId: number,
+    settingsData: {
+      language?: string;
+      theme?: string;
+      notifications?: boolean;
+    },
+  ): Promise<any> {
+    try {
+      const settingsId = await getSettingsId(this.prisma, userId);
+
+      if (!settingsId) {
+        throw new NotFoundException('User settings not found');
+      }
+
+      const currentSettings = await getSettingsById(this.prisma, settingsId);
+
+      const updateData = validateSettingsData(settingsData);
+
+      if (Object.keys(updateData).length === 0) {
+        throw new BadRequestException('No valid settings data to update');
+      }
+
+      const updatedSetting = await this.prisma.setting.update({
+        where: { id: currentSettings.id },
+        data: updateData,
+      });
+
+      return {
+        status: 'success',
+        message: 'Settings updated successfully',
+        data: updatedSetting,
+      };
+    } catch (error) {
+      throw new BadRequestException('Failed to update settings', error.message);
+    }
+  }
+
 }
