@@ -69,3 +69,6 @@ async function main() {
     await seedProfits();
     console.log('✅ Seeded: Profits');
 
+    console.log('🌱 Seeding items and related data...');
+    await seedItems();
+    console.log('✅ Seeded: Items');
