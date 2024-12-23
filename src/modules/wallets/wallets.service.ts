@@ -62,6 +62,7 @@ export class WalletsService {
  
      return newItem;
    }
+  
    
   async updateWalletItem(walletId: string, itemId: string, updateDetails: any) {
     const { images, ...rest } = updateDetails;
@@ -78,3 +79,33 @@ export class WalletsService {
       data: rest,
     });
   }
+
+async deleteItemFromWallet(userId: string, itemId: string) {
+    // Fetch the item to ensure it belongs to the user and retrieve associated images
+    const item = await this.prisma.item.findFirst({
+      where: { id: itemId, wallet: { owner_id: userId } },
+      include: { images: true }, // Fetch associated images
+    });
+
+    if (!item) {
+      throw new NotFoundException('Item not found or does not belong to the user');
+    }
+
+    // Delete images from storage
+    const imagePaths = item.images.map((image) => image.path);
+    imagePaths.forEach((imagePath) => {
+      const absolutePath = path.join(__dirname, '..', imagePath);
+      if (fs.existsSync(absolutePath)) {
+        fs.unlinkSync(absolutePath); // Remove the image file
+      }
+    });
+
+    // Delete the item and its images from the database
+    await this.prisma.$transaction([
+      this.prisma.itemImage.deleteMany({ where: { item_id: itemId } }),
+      this.prisma.item.delete({ where: { id: itemId } }),
+    ]);
+
+    return { itemId, deletedImages: imagePaths.length };
+  }
+}
