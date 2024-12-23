@@ -33,3 +33,22 @@ export class TiersService {
     };
   }
 
+  // Update the user's tier based on the new tier id
+  async updateBartererTier(userId: string, tierId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Update the user's tier
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { tier_id: tierId },
+    });
+
+    return updatedUser;
+  }
+}
