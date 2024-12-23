@@ -35,7 +35,7 @@ export async function createUserSettings(
 }
 export const getSettingsById = async (
   prisma: PrismaService,
-  settingsId: number,
+  settingsId: string,
 ) => {
   const settingsRecord = await prisma.setting.findUnique({
     where: { id: settingsId },
@@ -49,8 +49,8 @@ export const getSettingsById = async (
 };
 export const getSettingsId = async (
   prisma: PrismaService,
-  userId: number,
-): Promise<number> => {
+  userId: string,
+): Promise<string> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { settings_id: true },

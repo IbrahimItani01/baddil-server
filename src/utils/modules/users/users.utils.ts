@@ -17,7 +17,7 @@ export const getUserTypeId = async (
 };
 export const getUserTypeById = async (
   prisma: PrismaService,
-  userTypeId: number,
+  userTypeId: string,
 ) => {
   const userTypeRecord = await prisma.userType.findUnique({
     where: { id: userTypeId },
@@ -48,7 +48,7 @@ export const getUserStatusId = async (
 };
 export const getUserStatusById = async (
   prisma: PrismaService,
-  userStatusId: number,
+  userStatusId: string,
 ) => {
   const userStatusRecord = await prisma.userStatus.findUnique({
     where: { id: userStatusId },
