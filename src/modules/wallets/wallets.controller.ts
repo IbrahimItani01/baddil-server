@@ -25,3 +25,11 @@ import { ItemCondition } from '@prisma/client';
 export class WalletsController {
   constructor(private readonly walletService: WalletsService) {}
 
+  @Get(':walletId/items/:itemId')
+  async getItemDetails(
+    @Param('walletId') walletId: string,
+    @Param('itemId') itemId: string,
+  ) {
+    return await this.walletService.getItemDetails(walletId, itemId);
+  }
+
