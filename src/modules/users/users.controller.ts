@@ -180,4 +180,30 @@ export class UsersController {
       );
     }
   }
+
+  @Put('me/profile-picture')
+  @UseInterceptors(FileInterceptor('file', fileUploadOptions))
+  async uploadProfilePicture(
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Construct the file URL for the uploaded image
+    const fileUrl = `/uploads/profile-pictures/${file.filename}`;
+
+    // Save the file URL to the user's record in the database
+    const updatedUser = await this.usersService.updateProfilePicture(
+      req.user.id,
+      fileUrl,
+    );
+
+    return {
+      status: 'success',
+      message: 'Profile picture uploaded successfully',
+      data: updatedUser,
+    };
+  }
 }
