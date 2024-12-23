@@ -21,21 +21,18 @@ import { fileUploadOptions } from 'src/utils/modules/config/file-upload.config';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() req: any) {
     const userId = req.user.id;
     return this.usersService.findUserById(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('me')
   async updateMe(@Req() req: any, @Body() updateData: any) {
     const userId = req.user.id;
     return this.usersService.updateUser(userId, updateData);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('me/status')
   async changeStatus(@Req() req: any, @Body() body: { status: string }) {
     const userId = req.user.id;
@@ -62,7 +59,6 @@ export class UsersController {
   }
 
   // settings-related
-  @UseGuards(JwtAuthGuard)
   @Patch('me/settings')
   async updateSettings(@Req() req: any, @Body() settingsData: any) {
     const userId = req.user.id;
@@ -87,7 +83,6 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me/settings')
   async getUserSettings(@Req() req: any) {
     const userId = req.user.id;
@@ -107,8 +102,7 @@ export class UsersController {
       );
     }
   }
-  // device-token related
-  @UseGuards(JwtAuthGuard)
+  
   @Put('me/device-token')
   async saveDeviceToken(
     @Req() req: any,
@@ -139,7 +133,6 @@ export class UsersController {
       );
     }
   }
-  @UseGuards(JwtAuthGuard)
   @Get('me/device-token')
   async getDeviceToken(@Req() req: any) {
     const userId = req.user.id;
@@ -159,6 +152,30 @@ export class UsersController {
     } catch (error) {
       throw new BadRequestException(
         'Failed to retrieve device token',
+        error.message,
+      );
+    }
+  }
+
+  @Get('me/profile-picture')
+  async getProfilePicture(@Req() req: any) {
+    const userId = req.user.id; // Extract the user ID from the JWT payload
+
+    try {
+      const profilePicture = await this.usersService.getProfilePicture(userId);
+
+      if (!profilePicture) {
+        throw new NotFoundException('Profile picture not found');
+      }
+
+      return {
+        status: 'success',
+        message: 'Profile picture retrieved successfully',
+        data: { profilePicture },
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        'Failed to retrieve profile picture',
         error.message,
       );
     }
