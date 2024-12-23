@@ -22,3 +22,10 @@ export class AIService {
     });
   }
 
+  async toggleAutoTrade(barterId: string, enabled: boolean) {
+    return await this.prisma.barter.update({
+      where: { id: barterId },
+      data: { handled_by_ai: enabled },
+    });
+  }
+
