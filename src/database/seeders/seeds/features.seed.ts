@@ -10,7 +10,9 @@ export const seedFeatures = async () => {
   const subscriptionPlans = await prisma.subscriptionPlan.findMany();
 
   if (subscriptionPlans.length === 0) {
-    throw new Error("No subscription plans found. Seed subscription plans first.");
+    throw new Error(
+      'No subscription plans found. Seed subscription plans first.',
+    );
   }
 
   const features = [
@@ -29,9 +31,10 @@ export const seedFeatures = async () => {
   // Generate a random number of features for each subscription plan
   await Promise.all(
     subscriptionPlans.map((plan) => {
-      const planFeatures = Array.from({ length: faker.number.int({ min: 1, max: 5 })
-    }).map(() => ({
-        subscription_plan_id: plan.id,
+      const planFeatures = Array.from({
+        length: faker.number.int({ min: 1, max: 5 }),
+      }).map(() => ({
+        subscription_plan_id: plan.id.toString(), // Ensure the ID is treated as a string
         feature: faker.helpers.arrayElement(features),
       }));
 

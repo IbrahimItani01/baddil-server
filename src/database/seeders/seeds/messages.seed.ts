@@ -8,9 +8,9 @@ export const seedMessages = async () => {
 
   // Fetch all chats to associate messages with
   const chats = await prisma.chat.findMany({
-    include: { 
-      barter: true,  // Include Barter relation
-      hire: true,    // Include Hire relation
+    include: {
+      barter: true, // Include Barter relation
+      hire: true, // Include Hire relation
     },
   });
 
@@ -24,7 +24,7 @@ export const seedMessages = async () => {
       // Select a random chat
       const chat = faker.helpers.arrayElement(chats);
 
-      let possibleOwners: number[] = [];
+      let possibleOwners: string[] = []; // Changed to string[]
 
       // Determine possible owners based on chat's related hire or barter
       if (chat.hire_id) {
@@ -41,9 +41,9 @@ export const seedMessages = async () => {
       await prisma.message.create({
         data: {
           content: faker.lorem.sentence(), // Random message content
-          owner_id: ownerId,
+          owner_id: ownerId, // UUID as a string
           status: faker.helpers.arrayElement(['sent', 'seen']), // Random status
-          chat_id: chat.id,
+          chat_id: chat.id, // UUID as a string
           timestamp: faker.date.recent(), // Recent timestamp
         },
       });

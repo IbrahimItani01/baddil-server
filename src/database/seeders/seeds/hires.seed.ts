@@ -25,13 +25,13 @@ export const seedHires = async () => {
   // Fetch users based on user type (broker or barterer)
   const brokers = await prisma.user.findMany({
     where: {
-      user_type_id: brokerType.id,
+      user_type_id: brokerType.id.toString(), // Ensure `user_type_id` is treated as a string
     },
   });
 
   const barterers = await prisma.user.findMany({
     where: {
-      user_type_id: bartererType.id,
+      user_type_id: bartererType.id.toString(), // Ensure `user_type_id` is treated as a string
     },
   });
 
@@ -48,15 +48,22 @@ export const seedHires = async () => {
       const broker = faker.helpers.arrayElement(brokers); // Random broker (broker type)
       const client = faker.helpers.arrayElement(barterers); // Random client (barterer type)
       const targetItem = faker.helpers.arrayElement(items); // Random item for hire
-      const budget = parseFloat(faker.finance.amount({min:1000, max:50000,dec: 2})); // Random budget amount
-      const hireStatus = faker.helpers.arrayElement(['pending', 'ongoing', 'cancelled', 'completed']);
+      const budget = parseFloat(
+        faker.finance.amount({ min: 1000, max: 50000, dec: 2 }),
+      ); // Random budget amount
+      const hireStatus = faker.helpers.arrayElement([
+        'pending',
+        'ongoing',
+        'cancelled',
+        'completed',
+      ]);
       const completedAt = hireStatus === 'completed' ? faker.date.past() : null;
 
       await prisma.hire.create({
         data: {
-          target_item_id: targetItem.id,
-          broker_id: broker.id,
-          client_id: client.id,
+          target_item_id: targetItem.id.toString(), // Ensure `target_item_id` is treated as a string
+          broker_id: broker.id.toString(), // Ensure `broker_id` is treated as a string
+          client_id: client.id.toString(), // Ensure `client_id` is treated as a string
           budget,
           status: hireStatus,
           completed_at: completedAt,

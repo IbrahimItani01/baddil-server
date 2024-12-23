@@ -25,13 +25,13 @@ export const seedDisputes = async () => {
   // Fetch users based on user type (admin and barterer)
   const admins = await prisma.user.findMany({
     where: {
-      user_type_id: adminType.id,
+      user_type_id: adminType.id.toString(), // Ensure user_type_id is a string
     },
   });
 
   const barterers = await prisma.user.findMany({
     where: {
-      user_type_id: bartererType.id,
+      user_type_id: bartererType.id.toString(), // Ensure user_type_id is a string
     },
   });
 
@@ -54,9 +54,9 @@ export const seedDisputes = async () => {
 
       await prisma.dispute.create({
         data: {
-          admin_id: admin.id,
-          user1_id: user1.id,
-          user2_id: user2.id,
+          admin_id: admin.id.toString(), // Ensure admin_id is a string
+          user1_id: user1.id.toString(), // Ensure user1_id is a string
+          user2_id: user2.id.toString(), // Ensure user2_id is a string
           details: faker.lorem.sentence(),
           status: disputeStatus,
           resolved_at: resolvedAt,

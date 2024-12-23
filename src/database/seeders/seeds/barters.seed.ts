@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
 
 export const seedBarters = async () => {
   console.log('Seeding Barters...');
@@ -9,7 +8,7 @@ export const seedBarters = async () => {
   // Fetch users and items to associate with the barter
   const users = await prisma.user.findMany();
   const items = await prisma.item.findMany();
-  const meetups = await prisma.meetup.findMany();  // If you want to associate meetups
+  const meetups = await prisma.meetup.findMany(); // If you want to associate meetups
 
   if (users.length < 2 || items.length < 2) {
     throw new Error('Not enough users or items to create barters.');
@@ -30,14 +29,14 @@ export const seedBarters = async () => {
 
       await prisma.barter.create({
         data: {
-          user1_id: user1.id,
-          user2_id: user2.id,
-          user1_item_id: user1Item.id,
-          user2_item_id: user2Item.id,
+          user1_id: user1.id.toString(),
+          user2_id: user2.id.toString(),
+          user1_item_id: user1Item.id.toString(),
+          user2_item_id: user2Item.id.toString(),
           handled_by_ai: faker.datatype.boolean(),
           status: barterStatus,
           completed_at: completedAt,
-          meetup_id: meetupId,
+          meetup_id: meetupId ? meetupId.toString() : null,
           created_at: faker.date.past(), // Random creation date
         },
       });

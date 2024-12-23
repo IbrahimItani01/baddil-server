@@ -20,22 +20,22 @@ export const seedChats = async () => {
       // Randomly choose between a Barter or Hire for each chat
       const isBarter = faker.datatype.boolean();
 
-      let barterId = null;
-      let hireId = null;
+      let barterId: string | null = null;
+      let hireId: string | null = null;
 
       if (isBarter && barters.length > 0) {
         const barter = faker.helpers.arrayElement(barters);
-        barterId = barter.id;
+        barterId = barter.id.toString(); // Ensure barter_id is a string
       } else if (!isBarter && hires.length > 0) {
         const hire = faker.helpers.arrayElement(hires);
-        hireId = hire.id;
+        hireId = hire.id.toString(); // Ensure hire_id is a string
       }
 
       // Ensure only one of the ids is populated (barter_id or hire_id, not both)
       await prisma.chat.create({
         data: {
-          barter_id: barterId ?? undefined,  // Only set if not null
-          hire_id: hireId ?? undefined,      // Only set if not null
+          barter_id: barterId ?? undefined, // Only set if not null
+          hire_id: hireId ?? undefined,     // Only set if not null
         },
       });
     }),

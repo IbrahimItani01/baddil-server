@@ -12,8 +12,15 @@ export const seedItems = async () => {
   const locations = await prisma.location.findMany();
   const wallets = await prisma.wallet.findMany();
 
-  if (categories.length < 1 || subcategories.length < 1 || locations.length < 1 || wallets.length < 1) {
-    throw new Error('Not enough categories, subcategories, locations, or wallets to create items.');
+  if (
+    categories.length < 1 ||
+    subcategories.length < 1 ||
+    locations.length < 1 ||
+    wallets.length < 1
+  ) {
+    throw new Error(
+      'Not enough categories, subcategories, locations, or wallets to create items.',
+    );
   }
 
 
@@ -24,8 +31,14 @@ export const seedItems = async () => {
       const subcategory = faker.helpers.arrayElement(subcategories);
       const location = faker.helpers.arrayElement(locations);
       const wallet = faker.helpers.arrayElement(wallets);
-      const condition: ItemCondition = faker.helpers.arrayElement([ItemCondition.used, ItemCondition.new, ItemCondition.refurbished]);
-      const value = parseFloat(faker.finance.amount({min:10,max: 1000,dec: 2})); // Random value
+      const condition: ItemCondition = faker.helpers.arrayElement([
+        ItemCondition.used,
+        ItemCondition.new,
+        ItemCondition.refurbished,
+      ]);
+      const value = parseFloat(
+        faker.finance.amount({ min: 10, max: 1000, dec: 2 }),
+      ); // Random value
       const description = faker.lorem.sentence();
 
       // Create the item
@@ -33,10 +46,10 @@ export const seedItems = async () => {
         data: {
           name: faker.commerce.productName(),
           description,
-          category_id: category.id,
-          subcategory_id: subcategory.id,
-          location_id: location.id,
-          wallet_id: wallet.id,
+          category_id: category.id.toString(), // Ensure the ID is treated as a string
+          subcategory_id: subcategory.id.toString(), // Ensure the ID is treated as a string
+          location_id: location.id.toString(), // Ensure the ID is treated as a string
+          wallet_id: wallet.id.toString(), // Ensure the ID is treated as a string
           condition,
           value,
         },
@@ -48,7 +61,7 @@ export const seedItems = async () => {
         Array.from({ length: imageCount }).map(async () => {
           await prisma.itemImage.create({
             data: {
-              item_id: item.id,
+              item_id: item.id.toString(), // Ensure the ID is treated as a string
               path: faker.image.url(),
             },
           });

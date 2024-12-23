@@ -40,8 +40,8 @@ export const seedRatings = async () => {
       // Randomly decide whether the rating is for a broker or barter
       const isBrokerRating = faker.datatype.boolean();
 
-      let brokerId = null;
-      let barterId = null;
+      let brokerId: string | null = null; // Ensure UUID handling for brokerId
+      let barterId: string | null = null; // Ensure UUID handling for barterId
 
       if (isBrokerRating) {
         // If it's a broker rating, pick a random broker
@@ -58,13 +58,13 @@ export const seedRatings = async () => {
         data: {
           value: ratingValue,
           description: faker.lorem.sentence(),
-          wrote_by: wroteByUser.id,
-          broker_id: brokerId,
-          barter_id: barterId,
+          wrote_by: wroteByUser.id, // UUID as string
+          broker_id: brokerId, // UUID as string, can be null
+          barter_id: barterId, // UUID as string, can be null
           created_at: faker.date.past(), // Random creation date
         },
       });
-    })
+    }),
   );
 
   console.log('Ratings seeded successfully.');
