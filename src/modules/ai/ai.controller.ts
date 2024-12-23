@@ -21,3 +21,12 @@ export class AIController {
   async getAutoTrades() {
     return await this.aiService.getAutoTrades();
   }
+
+  @Patch('barters/:barterId/toggle')
+  async toggleAutoTrade(
+    @Param('barterId') barterId: string,
+    @Body() body: { enabled: boolean },
+  ) {
+    return await this.aiService.toggleAutoTrade(barterId, body.enabled);
+  }
+
