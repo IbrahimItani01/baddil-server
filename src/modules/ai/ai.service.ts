@@ -29,3 +29,20 @@ export class AIService {
     });
   }
 
+  async updateAutoTrade(
+    barterId: string,
+    updateDetails: { status?: string; details?: any },
+  ) {
+    const data: any = {};
+    if (updateDetails.status) {
+      data.status = updateDetails.status as BarterStatus;
+    }
+    if (updateDetails.details) {
+      data.details = updateDetails.details; // Example: include other details
+    }
+    return await this.prisma.barter.update({
+      where: { id: barterId },
+      data,
+    });
+  }
+
