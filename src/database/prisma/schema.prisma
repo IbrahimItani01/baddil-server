@@ -52,11 +52,11 @@ model User {
   firebase_uid    String?
   device_token    String?
   is_deleted      Boolean  @default(false)
-  user_type_id    Int
-  user_status_id  Int
-  settings_id     Int
-  subscription_id Int?
-  tier_id         Int?
+  user_type_id    String
+  user_status_id  String
+  settings_id     String
+  subscription_id String?
+  tier_id         String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
@@ -141,7 +141,7 @@ model SubscriptionPlan {
   id               String   @id @default(uuid())
   name             String
   price            Float
-  target_user_type Int
+  target_user_type String
   criteria         String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
@@ -156,7 +156,7 @@ model SubscriptionPlan {
 
 model Feature {
   id                   String @id @default(uuid())
-  subscription_plan_id Int
+  subscription_plan_id String
   feature              String
 
   subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
@@ -180,7 +180,7 @@ model Category {
 model Subcategory {
   id               String   @id @default(uuid())
   name             String
-  main_category_id Int
+  main_category_id String
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
@@ -194,9 +194,9 @@ model Subcategory {
 model Message {
   id        String        @id @default(uuid())
   content   String
-  owner_id  Int
+  owner_id  String
   status    MessageStatus @default(sent)
-  chat_id   Int
+  chat_id   String
   timestamp DateTime      @default(now())
 
   owner User @relation(fields: [owner_id], references: [id], onDelete: Cascade)
@@ -213,21 +213,20 @@ enum MessageStatus {
 // Chats Table
 model Chat {
   id        String  @id @default(uuid())
-  barter_id Int?    // Optional foreign key for Barter
-  hire_id   Int?    // Optional foreign key for Hire
+  barter_id String? // Optional foreign key for Barter
+  hire_id   String? // Optional foreign key for Hire
 
-  barter    Barter? @relation(fields: [barter_id], references: [id],onDelete: Cascade)
+  barter  Barter?   @relation(fields: [barter_id], references: [id], onDelete: Cascade)
   hire    Hire?     @relation(fields: [hire_id], references: [id], onDelete: Cascade)
-  Message   Message[]
+  Message Message[]
 
   @@map("chats")
 }
 
-
 // Wallets Table
 model Wallet {
   id         String   @id @default(uuid())
-  owner_id   Int
+  owner_id   String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -242,11 +241,11 @@ model Item {
   id             String        @id @default(uuid())
   name           String
   description    String
-  category_id    Int
-  subcategory_id Int
+  category_id    String
+  subcategory_id String
   condition      ItemCondition
-  location_id    Int
-  wallet_id      Int
+  location_id    String
+  wallet_id      String
   value          Float
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
@@ -265,7 +264,7 @@ model Item {
 
 model ItemImage {
   id      String @id @default(uuid())
-  item_id Int
+  item_id String
   path    String
 
   item Item @relation(fields: [item_id], references: [id], onDelete: Cascade)
@@ -298,9 +297,9 @@ model Rating {
   id          String   @id @default(uuid())
   value       Int // 1 to 5
   description String
-  wrote_by    Int
-  broker_id   Int?
-  barter_id   Int?
+  wrote_by    String
+  broker_id   String?
+  barter_id   String?
   created_at  DateTime @default(now())
 
   wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id], onDelete: Cascade)
@@ -313,9 +312,9 @@ model Rating {
 // Hires Table
 model Hire {
   id             String     @id @default(uuid())
-  target_item_id Int
-  broker_id      Int
-  client_id      Int
+  target_item_id String
+  broker_id      String
+  client_id      String
   budget         Float
   status         HireStatus @default(pending)
   completed_at   DateTime?
@@ -340,9 +339,9 @@ enum HireStatus {
 // Disputes Table
 model Dispute {
   id          String        @id @default(uuid())
-  admin_id    Int
-  user1_id    Int
-  user2_id    Int
+  admin_id    String
+  user1_id    String
+  user2_id    String
   details     String
   status      DisputeStatus @default(ongoing)
   resolved_at DateTime?
@@ -363,13 +362,13 @@ enum DisputeStatus {
 // Barters Table
 model Barter {
   id            String       @id @default(uuid())
-  user1_id      Int
-  user2_id      Int
-  user1_item_id Int
-  user2_item_id Int
+  user1_id      String
+  user2_id      String
+  user1_item_id String
+  user2_item_id String
   handled_by_ai Boolean      @default(false)
   status        BarterStatus @default(ongoing)
-  meetup_id     Int?
+  meetup_id     String?
   completed_at  DateTime?
   created_at    DateTime     @default(now())
 
@@ -396,7 +395,7 @@ model Meetup {
   user1_key   String
   user2_key   String
   status      MeetupStatus @default(scheduled)
-  location_id Int
+  location_id String
   created_at  DateTime     @default(now())
 
   location Location @relation(fields: [location_id], references: [id], onDelete: Cascade)
