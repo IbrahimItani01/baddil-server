@@ -30,3 +30,16 @@ export class AIController {
     return await this.aiService.toggleAutoTrade(barterId, body.enabled);
   }
 
+  @Put('barters/:barterId')
+  async updateAutoTrade(
+    @Param('barterId') barterId: string,
+    @Body() updateDetails: { status?: string; details?: any },
+  ) {
+    return await this.aiService.updateAutoTrade(barterId, updateDetails);
+  }
+
+  @Get('barters/:barterId/chat')
+  async getAutoTradeChat(@Param('barterId') barterId: string) {
+    return await this.aiService.getAutoTradeChat(barterId);
+  }
+}
