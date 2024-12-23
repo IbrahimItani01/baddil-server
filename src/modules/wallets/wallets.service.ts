@@ -62,3 +62,19 @@ export class WalletsService {
  
      return newItem;
    }
+   
+  async updateWalletItem(walletId: string, itemId: string, updateDetails: any) {
+    const { images, ...rest } = updateDetails;
+
+    if (images) {
+      await this.prisma.itemImage.deleteMany({ where: { item_id: itemId } });
+      await this.prisma.itemImage.createMany({
+        data: images.map((path) => ({ path, item_id: itemId })),
+      });
+    }
+
+    return await this.prisma.item.update({
+      where: { id: itemId },
+      data: rest,
+    });
+  }
