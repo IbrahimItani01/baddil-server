@@ -26,3 +26,30 @@ export const fileUploadOptions = {
     fileSize: 5 * 1024 * 1024, // Limit file size to 5MB
   },
 };
+export const itemImagesUploadOptions = {
+  storage: diskStorage({
+    destination: (req, _, callback) => {
+      const customReq = req as any; // Cast to any for flexibility
+      const userId = customReq.user.id;
+      const itemId = customReq.itemId; // Set during item creation
+      const uploadPath = `./uploads/items-images/${userId}/${itemId}`;
+      callback(null, uploadPath);
+    },
+    filename: (_, file, callback) => {
+      const timestamp = Date.now();
+      const fileExtension = path.extname(file.originalname).toLowerCase();
+      const uniqueFilename = `${timestamp}${fileExtension}`;
+      callback(null, uniqueFilename); // Generate unique filename
+    },
+  }),
+  fileFilter: (_, file, callback) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return callback(new BadRequestException('Invalid file type'), false);
+    }
+    callback(null, true);
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB
+  },
+};
