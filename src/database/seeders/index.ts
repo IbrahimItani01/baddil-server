@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import { clearDatabase } from './resetter';
 import { seedBarters } from './seeds/barters.seed';
 import { seedCategories } from './seeds/categories.seed';
@@ -22,85 +23,89 @@ import { seedUserTypes } from './seeds/userTypes.seed';
 import { seedWallets } from './seeds/wallets.seed';
 
 async function main() {
+  const prisma = new PrismaClient();
+
   try {
     console.log('🚀 Starting seeding process...');
 
-    await clearDatabase();
+    await clearDatabase(prisma);
 
     console.log('🌱 Seeding independent tables...');
-    await seedUserTypes();
+    await seedUserTypes(prisma);
     console.log('✅ Seeded: User Types');
 
-    await seedUserStatuses();
+    await seedUserStatuses(prisma);
     console.log('✅ Seeded: User Statuses');
 
-    await seedSettings();
+    await seedSettings(prisma);
     console.log('✅ Seeded: Settings');
 
-    await seedTiers();
+    await seedTiers(prisma);
     console.log('✅ Seeded: Tiers');
 
-    await seedSubscriptionPlans();
+    await seedSubscriptionPlans(prisma);
     console.log('✅ Seeded: Subscription Plans');
 
-    await seedCategories();
+    await seedCategories(prisma);
     console.log('✅ Seeded: Categories');
-
-    await seedLocations();
+    
+    await seedLocations(prisma);
     console.log('✅ Seeded: Locations');
 
     console.log('🌱 Seeding dependent tables...');
-    await seedUsers();
+    await seedUsers(prisma);
     console.log('✅ Seeded: Users');
 
-    await seedSubcategories();
+    await seedSubcategories(prisma);
     console.log('✅ Seeded: Subcategories');
 
-    await seedWallets();
+    await seedWallets(prisma);
     console.log('✅ Seeded: Wallets');
 
-    await seedFeatures();
+    await seedFeatures(prisma);
     console.log('✅ Seeded: Features');
 
     console.log('🌱 Seeding financial data...');
-    await seedExpenses();
+    await seedExpenses(prisma);
     console.log('✅ Seeded: Expenses');
 
-    await seedProfits();
+    await seedProfits(prisma);
     console.log('✅ Seeded: Profits');
 
     console.log('🌱 Seeding items and related data...');
-    await seedItems();
+    await seedItems(prisma);
     console.log('✅ Seeded: Items');
 
     console.log('🌱 Seeding meetups...');
-    await seedMeetups();
+    await seedMeetups(prisma);
     console.log('✅ Seeded: Meetups');
 
     console.log('🌱 Seeding barters and hires...');
-    await seedHires();
+    await seedHires(prisma);
     console.log('✅ Seeded: Hires');
 
-    await seedBarters();
+    await seedBarters(prisma);
     console.log('✅ Seeded: Barters');
 
     console.log('🌱 Seeding chats and messages...');
-    await seedChats();
+    await seedChats(prisma);
     console.log('✅ Seeded: Chats');
 
-    await seedMessages();
+    await seedMessages(prisma);
     console.log('✅ Seeded: Messages');
 
     console.log('🌱 Seeding ratings and disputes...');
-    await seedRatings();
+    await seedRatings(prisma);
     console.log('✅ Seeded: Ratings');
 
-    await seedDisputes();
+    await seedDisputes(prisma);
     console.log('✅ Seeded: Disputes');
 
     console.log('🎉 Seeding process completed successfully!');
   } catch (error) {
     console.error('❌ Error while seeding:', error);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
