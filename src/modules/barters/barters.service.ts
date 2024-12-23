@@ -58,3 +58,15 @@ export class BartersService {
     }
   }
 
+  // 4. Cancel or remove a barter from the Barterer's list
+  async cancelBarter(barterId: string) {
+    try {
+      await this.prisma.barter.delete({
+        where: { id: barterId },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to cancel barter');
+    }
+  }
+}
