@@ -37,3 +37,51 @@ export class WalletsController {
   async getWalletItems(@Param('walletId') walletId: string) {
     return await this.walletService.getWalletItems(walletId);
   }
+  @Post('items')
+  @UseInterceptors(FilesInterceptor('files', 5, itemImagesUploadOptions))
+  async createItemWithImages(
+    @Req() req: any,
+    @Body()
+    itemData: {
+      name: string;
+      description: string;
+      categoryId: string;
+      subcategoryId: string;
+      condition: ItemCondition;
+      locationId: string;
+      value: number;
+    },
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files uploaded');
+    }
+
+    // Create the item and wallet (if not exists)
+    const newItem = await this.walletService.addItemToWallet(
+      req.user.id,
+      itemData,
+    );
+
+    // Update the upload options to include itemId
+    const userId = req.user.id;
+    req.itemId = newItem.id; // Pass itemId to file storage logic
+
+    // Save image details in the database
+    const savedImages = await Promise.all(
+      files.map((file) => {
+        const filePath = `/uploads/items-images/${userId}/${newItem.id}/${file.filename}`;
+        return this.walletService.saveItemImage(newItem.id, filePath);
+      }),
+    );
+
+    return {
+      status: 'success',
+      message: 'Item created and images uploaded successfully',
+      data: {
+        item: newItem,
+        images: savedImages,
+      },
+    };
+  }
+
