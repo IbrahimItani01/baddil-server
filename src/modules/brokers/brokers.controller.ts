@@ -15,4 +15,7 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard';
 
 @Controller('brokers')
-export class BrokersController {}
+@UseGuards(JwtAuthGuard, UserTypeGuard)
+export class BrokersController {
+  constructor(private readonly brokerService: BrokerService) {}
+
