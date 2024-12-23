@@ -101,4 +101,37 @@ export class BrokerService {
   
       return updatedHire;
     }
+    async getHireContractStatus(userId: string, hireId: string) {
+      // Step 1: Retrieve the hire contract by hireId and ensure it belongs to the user
+      const hire = await this.prisma.hire.findUnique({
+        where: { id: hireId },
+        select: {
+          id: true,
+          status: true,
+          budget: true,
+          created_at: true,
+          completed_at: true,
+          broker: { select: { email: true } },
+          client: { select: { id: true } },
+        },
+      });
+  
+      if (!hire) {
+        throw new NotFoundException('Hire contract not found');
+      }
+  
+      if (hire.client.id !== userId) {
+        throw new ForbiddenException('You do not have permission to view this hire contract');
+      }
+  
+      // Return the hire contract details
+      return {
+        hireId: hire.id,
+        status: hire.status,
+        budget: hire.budget,
+        createdAt: hire.created_at,
+        completedAt: hire.completed_at,
+        brokerEmail: hire.broker.email,
+      };
+    }
 }
