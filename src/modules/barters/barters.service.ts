@@ -41,3 +41,20 @@ export class BartersService {
     }
   }
 
+  async updateBarterStatus(updateDetails: {
+    barterId: string;
+    status: BarterStatus;
+  }) {
+    try {
+      return await this.prisma.barter.update({
+        where: { id: updateDetails.barterId },
+        data: {
+          status: updateDetails.status,
+        },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to update barter status');
+    }
+  }
+
