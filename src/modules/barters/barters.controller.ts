@@ -1,16 +1,25 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 import { BartersService } from './barters.service';
 import { BarterStatus } from '@prisma/client';
-
 
 @Controller('barters')
 @UseGuards(JwtAuthGuard, UserTypeGuard)
 @AllowedUserTypes('barterer')
 export class BartersController {
   constructor(private readonly barterService: BartersService) {}
- 
+
   @Get(':userId')
   async getBartersByUser(@Param('userId') userId: string) {
     try {
@@ -20,7 +29,7 @@ export class BartersController {
         message: 'Barters fetched successfully',
         data: barters,
       };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new Error('Failed to fetch barters');
     }
@@ -28,17 +37,25 @@ export class BartersController {
 
   @Post('')
   async createBarter(
-    @Body() barterDetails: { user2Id: string; user1ItemId: string; user2ItemId: string },
+    @Body()
+    barterDetails: {
+      user2Id: string;
+      user1ItemId: string;
+      user2ItemId: string;
+    },
     @Request() req,
   ) {
     try {
-      const createdBarter = await this.barterService.createBarter(req.user.id, barterDetails);
+      const createdBarter = await this.barterService.createBarter(
+        req.user.id,
+        barterDetails,
+      );
       return {
         status: 'success',
         message: 'Barter created successfully',
         data: createdBarter,
       };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new Error('Failed to create barter');
     }
@@ -62,3 +79,17 @@ export class BartersController {
     }
   }
 
+  @Delete('')
+  async cancelBarter(@Body() barterId: string) {
+    try {
+      await this.barterService.cancelBarter(barterId);
+      return {
+        status: 'success',
+        message: 'Barter canceled successfully',
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to cancel barter');
+    }
+  }
+}
