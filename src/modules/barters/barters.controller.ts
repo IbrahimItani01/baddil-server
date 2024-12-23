@@ -44,3 +44,21 @@ export class BartersController {
     }
   }
 
+  @Put('')
+  async updateBarterStatus(
+    @Body() updateDetails: { barterId: string; status: BarterStatus },
+  ) {
+    try {
+      const updatedBarter =
+        await this.barterService.updateBarterStatus(updateDetails);
+      return {
+        status: 'success',
+        message: 'Barter status updated successfully',
+        data: updatedBarter,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to update barter status');
+    }
+  }
+
