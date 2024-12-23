@@ -7,3 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { SetMetadata } from '@nestjs/common';
 
+export const AllowedUserTypes = (...types: string[]) =>
+  SetMetadata('allowedUserTypes', types);
+
