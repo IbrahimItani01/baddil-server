@@ -46,3 +46,20 @@ export class AIService {
     });
   }
 
+  async getAutoTradeChat(barterId: string) {
+    const chat = await this.prisma.chat.findFirst({
+      where: { barter_id: barterId },
+      include: {
+        Message: {
+          include: { owner: true },
+        },
+      },
+    });
+
+    if (!chat) {
+      throw new Error('Chat not found for this barter');
+    }
+
+    return chat;
+  }
+}
