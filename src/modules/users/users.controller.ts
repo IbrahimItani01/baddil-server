@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../../guards/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileUploadOptions } from 'src/utils/modules/config/file-upload.config';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -33,7 +34,7 @@ export class UsersController {
     const userId = req.user.id;
     return this.usersService.updateUser(userId, updateData);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Put('me/status')
   async changeStatus(@Req() req: any, @Body() body: { status: string }) {
@@ -45,7 +46,10 @@ export class UsersController {
     }
 
     try {
-      const updatedUser = await this.usersService.changeUserStatus(userId, status);
+      const updatedUser = await this.usersService.changeUserStatus(
+        userId,
+        status,
+      );
 
       return {
         status: 'success',
@@ -56,6 +60,7 @@ export class UsersController {
       throw new BadRequestException(error.message);
     }
   }
+
   // settings-related
   @UseGuards(JwtAuthGuard)
   @Patch('me/settings')
@@ -81,6 +86,7 @@ export class UsersController {
       throw new BadRequestException('Failed to update settings', error.message);
     }
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('me/settings')
   async getUserSettings(@Req() req: any) {
