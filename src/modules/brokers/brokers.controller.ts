@@ -38,3 +38,29 @@ export class BrokersController {
     }
   }
   
+  @Post('hired-brokers')
+  @AllowedUserTypes('barterer')
+  async hireBroker(
+    @Body() body: { brokerEmail: string; targetItemId: string; budget: number },
+    @Request() req,
+  ) {
+    const userId = req.user.id; // Extract the authenticated user ID from the JWT payload
+    try {
+      const hireResult = await this.brokerService.hireBroker(
+        userId,
+        body.brokerEmail,
+        body.targetItemId,
+        body.budget,
+      );
+      return {
+        status: 'success',
+        message: 'Broker hired successfully',
+        data: hireResult,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to hire broker',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
