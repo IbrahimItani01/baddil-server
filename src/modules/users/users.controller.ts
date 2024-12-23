@@ -102,7 +102,7 @@ export class UsersController {
       );
     }
   }
-  
+
   @Put('me/device-token')
   async saveDeviceToken(
     @Req() req: any,
@@ -133,6 +133,7 @@ export class UsersController {
       );
     }
   }
+
   @Get('me/device-token')
   async getDeviceToken(@Req() req: any) {
     const userId = req.user.id;
