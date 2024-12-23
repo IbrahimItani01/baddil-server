@@ -90,3 +90,25 @@ export class BrokersController {
     }
   }
   
+  @Get('hire-contract-status/:hireId')
+  @AllowedUserTypes('barterer')
+  async getHireContractStatus(
+    @Request() req, 
+    @Param('hireId') hireId: string
+  ) {
+    const userId = req.user.id;  // Assuming user is authenticated and `user.id` is available
+    try {
+      const contractStatus = await this.brokerService.getHireContractStatus(userId, hireId);
+      return {
+        status: 'success',
+        message: 'Hire contract status retrieved successfully',
+        data: contractStatus,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to retrieve hire contract status',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
