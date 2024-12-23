@@ -37,6 +37,7 @@ export class WalletsController {
   async getWalletItems(@Param('walletId') walletId: string) {
     return await this.walletService.getWalletItems(walletId);
   }
+  
   @Post('items')
   @UseInterceptors(FilesInterceptor('files', 5, itemImagesUploadOptions))
   async createItemWithImages(
@@ -83,5 +84,25 @@ export class WalletsController {
         images: savedImages,
       },
     };
+  }
+
+  @Put(':walletId/items/:itemId')
+  async updateWalletItem(
+    @Param('walletId') walletId: string,
+    @Param('itemId') itemId: string,
+    @Body()
+    updateDetails: {
+      name?: string;
+      description?: string;
+      condition?: string;
+      value?: number;
+      images?: string[];
+    },
+  ) {
+    return await this.walletService.updateWalletItem(
+      walletId,
+      itemId,
+      updateDetails,
+    );
   }
 
