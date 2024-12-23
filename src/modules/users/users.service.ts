@@ -85,7 +85,7 @@ export class UsersService {
     return newUser;
   }
 
-  async findUserById(userId: number): Promise<Partial<User> | null> {
+  async findUserById(userId: string): Promise<Partial<User> | null> {
     return this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -106,7 +106,7 @@ export class UsersService {
   }
 
   async updateUser(
-    userId: number,
+    userId: string,
     updateData: Partial<User>,
   ): Promise<User | null> {
     try {
@@ -129,7 +129,7 @@ export class UsersService {
   }
 
   async updateSettings(
-    userId: number,
+    userId: string,
     settingsData: {
       language?: string;
       theme?: string;
@@ -166,14 +166,14 @@ export class UsersService {
     }
   }
 
-  async updateDeviceToken(userId: number, deviceToken: string): Promise<User> {
+  async updateDeviceToken(userId: string, deviceToken: string): Promise<User> {
     return await this.prisma.user.update({
       where: { id: userId },
       data: { device_token: deviceToken },
     });
   }
 
-  async getDeviceToken(userId: number): Promise<string | null> {
+  async getDeviceToken(userId: string): Promise<string | null> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { device_token: true }, // Only select the device token field
@@ -186,7 +186,7 @@ export class UsersService {
     return user.device_token; // Return the device token if available
   }
 
-  async getUserSettings(userId: number): Promise<any> {
+  async getUserSettings(userId: string): Promise<any> {
     const settingsId = await getSettingsId(this.prisma, userId);
 
     if (!settingsId) {
@@ -197,7 +197,7 @@ export class UsersService {
 
     return settings;
   }
-  async changeUserStatus(userId: number, status: string): Promise<User> {
+  async changeUserStatus(userId: string, status: string): Promise<User> {
     // Get the status ID from the status string
     const statusId = await getUserStatusId(this.prisma, status);
 
@@ -211,6 +211,46 @@ export class UsersService {
       data: { user_status_id: statusId },
     });
 
+    return updatedUser;
+  }
+  async getProfilePicture(userId: string): Promise<string | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { profile_picture: true }, // Only select the profile_picture field
+    });
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    return user.profile_picture; // Return the profile picture URL or null if not set
+  }
+ 
+  async updateProfilePicture(userId: string, profilePictureUrl: string): Promise<User> {
+    // Check if the user exists
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    // If the user has an old profile picture, delete it
+    if (user.profile_picture) {
+      const oldFilePath = path.join(__dirname, '..', 'uploads', user.profile_picture);
+      // Check if old file exists and delete it
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath); // Delete old file
+      }
+    }
+  
+    // Update the user's profile picture URL in the database
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        profile_picture: profilePictureUrl, // Save the URL of the uploaded image
+      },
+    });
+  
     return updatedUser;
   }
 }
