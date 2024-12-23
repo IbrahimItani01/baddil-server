@@ -7,3 +7,12 @@ import * as path from 'path';
 export class WalletsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getItemDetails(walletId: string, itemId: string) {
+    return await this.prisma.item.findFirst({
+      where: { id: itemId, wallet_id: walletId },
+    });
+  }
+
+    });
+  }
+
