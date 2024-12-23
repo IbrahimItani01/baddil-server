@@ -62,8 +62,16 @@ export class WalletsService {
  
      return newItem;
    }
-  
    
+   async saveItemImage(itemId: string, filePath: string) {
+    const image = await this.prisma.itemImage.create({
+      data: {
+        item_id: itemId,
+        path: filePath,
+      },
+    });
+    return image;
+  }
   async updateWalletItem(walletId: string, itemId: string, updateDetails: any) {
     const { images, ...rest } = updateDetails;
 
