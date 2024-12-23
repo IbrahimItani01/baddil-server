@@ -68,4 +68,37 @@ export class BrokerService {
       return hire;
     }
   
+    async terminateBrokerContract(userId: string, brokerEmail: string) {
+      // Step 1: Find the broker by email using the existing service method
+      const broker = await this.usersService.findByEmail(brokerEmail);
+  
+      if (!broker) {
+        throw new NotFoundException(`Broker with email ${brokerEmail} not found`);
+      }
+  
+      // Step 2: Find the hire contract between the client and the broker
+      const hire = await this.prisma.hire.findFirst({
+        where: {
+          client_id: userId,
+          broker_id: broker.id, // Use the broker's ID
+          status: {
+            not: 'cancelled', // Ensure the status is not already cancelled
+          },
+        },
+      });
+  
+      if (!hire) {
+        throw new NotFoundException(`No active hire contract found between the client and broker`);
+      }
+  
+      // Step 3: Update the hire record's status to 'cancelled'
+      const updatedHire = await this.prisma.hire.update({
+        where: { id: hire.id },
+        data: {
+          status: 'cancelled', // Mark the contract as cancelled
+        },
+      });
+  
+      return updatedHire;
+    }
 }
