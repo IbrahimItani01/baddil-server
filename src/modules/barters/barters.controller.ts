@@ -10,4 +10,19 @@ import { BarterStatus } from '@prisma/client';
 @AllowedUserTypes('barterer')
 export class BartersController {
   constructor(private readonly barterService: BartersService) {}
+ 
+  @Get(':userId')
+  async getBartersByUser(@Param('userId') userId: string) {
+    try {
+      const barters = await this.barterService.getBartersByUser(userId);
+      return {
+        status: 'success',
+        message: 'Barters fetched successfully',
+        data: barters,
+      };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to fetch barters');
+    }
+  }
 
