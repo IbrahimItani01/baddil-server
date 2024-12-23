@@ -7,9 +7,14 @@ import {
   Body,
   Patch,
   BadRequestException,
+  NotFoundException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../guards/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { fileUploadOptions } from 'src/utils/modules/config/file-upload.config';
 
 @Controller('users')
 export class UsersController {
