@@ -17,3 +17,7 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class AIController {
   constructor(private readonly aiService: AIService) {}
 
+  @Get('barters')
+  async getAutoTrades() {
+    return await this.aiService.getAutoTrades();
+  }
