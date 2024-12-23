@@ -21,3 +21,44 @@ export class WalletsService {
     });
   }
 
+  async addItemToWallet(
+     userId: string,
+     itemData: {
+       name: string;
+       description: string;
+       categoryId: string;
+       subcategoryId: string;
+       condition: ItemCondition; // Use the enum type
+       locationId: string;
+       value: number;
+     },
+   ) {
+     // Check for an existing wallet or create one
+     let wallet = await this.prisma.wallet.findFirst({
+       where: { owner_id: userId },
+     });
+ 
+     if (!wallet) {
+       wallet = await this.prisma.wallet.create({
+         data: {
+           owner_id: userId,
+         },
+       });
+     }
+ 
+     // Create a new item in the wallet
+     const newItem = await this.prisma.item.create({
+       data: {
+         name: itemData.name,
+         description: itemData.description,
+         condition: itemData.condition, // Enum type ensures correctness
+         value: itemData.value,
+         category_id: itemData.categoryId, // Correct property for foreign key
+         subcategory_id: itemData.subcategoryId, // Correct property for foreign key
+         location_id: itemData.locationId, // Correct property for foreign key
+         wallet_id: wallet.id, // Correct property for foreign key
+       },
+     });
+ 
+     return newItem;
+   }
