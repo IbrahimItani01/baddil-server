@@ -33,3 +33,7 @@ export class WalletsController {
     return await this.walletService.getItemDetails(walletId, itemId);
   }
 
+  @Get(':walletId/items')
+  async getWalletItems(@Param('walletId') walletId: string) {
+    return await this.walletService.getWalletItems(walletId);
+  }
