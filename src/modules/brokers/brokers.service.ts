@@ -45,4 +45,27 @@ export class BrokerService {
       }));
     }
   
+    async hireBroker(userId: string, brokerEmail: string, targetItemId: string, budget: number) {
+      // Step 1: Find the broker by email
+      const broker = await this.prisma.user.findUnique({
+        where: { email: brokerEmail },
+      });
+  
+      if (!broker) {
+        throw new NotFoundException(`Broker with email ${brokerEmail} not found`);
+      }
+  
+      // Step 2: Create a new hire record in the hires table
+      const hire = await this.prisma.hire.create({
+        data: {
+          client_id: userId,
+          broker_id: broker.id,
+          target_item_id: targetItemId,
+          budget,
+        },
+      });
+  
+      return hire;
+    }
+  
 }
