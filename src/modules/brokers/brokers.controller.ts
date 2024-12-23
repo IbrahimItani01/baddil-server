@@ -64,3 +64,29 @@ export class BrokersController {
       );
     }
   }
+
+  @Delete('hired-brokers')
+  @AllowedUserTypes('barterer')
+  async terminateBrokerContract(
+    @Body() body: { brokerEmail: string },
+    @Request() req,
+  ) {
+    const userId = req.user.id; // Extract the authenticated user ID from the JWT payload
+    try {
+      const hireResult = await this.brokerService.terminateBrokerContract(
+        userId,
+        body.brokerEmail,
+      );
+      return {
+        status: 'success',
+        message: 'Broker contract terminated successfully',
+        data: hireResult,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to terminate broker contract',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  
