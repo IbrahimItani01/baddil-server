@@ -26,3 +26,21 @@ export class BartersController {
     }
   }
 
+  @Post('')
+  async createBarter(
+    @Body() barterDetails: { user2Id: string; user1ItemId: string; user2ItemId: string },
+    @Request() req,
+  ) {
+    try {
+      const createdBarter = await this.barterService.createBarter(req.user.id, barterDetails);
+      return {
+        status: 'success',
+        message: 'Barter created successfully',
+        data: createdBarter,
+      };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new Error('Failed to create barter');
+    }
+  }
+
