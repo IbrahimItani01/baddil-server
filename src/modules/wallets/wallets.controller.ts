@@ -37,7 +37,7 @@ export class WalletsController {
   async getWalletItems(@Param('walletId') walletId: string) {
     return await this.walletService.getWalletItems(walletId);
   }
-  
+
   @Post('items')
   @UseInterceptors(FilesInterceptor('files', 5, itemImagesUploadOptions))
   async createItemWithImages(
@@ -106,3 +106,11 @@ export class WalletsController {
     );
   }
 
+  @Delete(':walletId/items/:itemId')
+  async removeWalletItem(
+    @Param('walletId') walletId: string,
+    @Param('itemId') itemId: string,
+  ) {
+    return await this.walletService.deleteItemFromWallet(walletId, itemId);
+  }
+}
