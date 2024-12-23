@@ -10,9 +10,14 @@ export class WalletsService {
   async getItemDetails(walletId: string, itemId: string) {
     return await this.prisma.item.findFirst({
       where: { id: itemId, wallet_id: walletId },
+      include: { images: true, category: true, subcategory: true, location: true },
     });
   }
 
+  async getWalletItems(walletId: string) {
+    return await this.prisma.item.findMany({
+      where: { wallet_id: walletId },
+      include: { images: true },
     });
   }
 
