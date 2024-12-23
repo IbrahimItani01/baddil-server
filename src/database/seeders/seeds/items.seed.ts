@@ -1,9 +1,7 @@
 import { ItemCondition, PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedItems = async () => {
+export const seedItems = async (prisma: PrismaClient) => {
   console.log('Seeding Items...');
 
   // Fetch categories, subcategories, locations, and wallets to associate with the items
@@ -22,7 +20,6 @@ export const seedItems = async () => {
       'Not enough categories, subcategories, locations, or wallets to create items.',
     );
   }
-
 
   // Generate random items
   await Promise.all(

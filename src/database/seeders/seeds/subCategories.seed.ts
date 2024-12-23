@@ -1,16 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedSubcategories = async () => {
+export const seedSubcategories = async (prisma: PrismaClient) => {
   console.log('Seeding Subcategories...');
 
   // Fetch existing categories to associate subcategories with them
   const categories = await prisma.category.findMany();
 
   if (categories.length === 0) {
-    throw new Error("No categories found. Seed categories first.");
+    throw new Error('No categories found. Seed categories first.');
   }
 
   // Generate random subcategories
@@ -19,7 +17,7 @@ export const seedSubcategories = async () => {
       const randomCategory = faker.helpers.arrayElement(categories); // Pick a random category
       return prisma.subcategory.create({
         data: {
-          name: faker.commerce.productName(),  // Generate a random subcategory name
+          name: faker.commerce.productName(), // Generate a random subcategory name
           main_category_id: randomCategory.id, // Assign a category to the subcategory
         },
       });

@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedMessages = async () => {
+export const seedMessages = async (prisma: PrismaClient) => {
   console.log('Seeding Messages...');
 
   // Fetch all chats to associate messages with

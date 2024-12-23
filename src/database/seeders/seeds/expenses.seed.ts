@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedExpenses = async () => {
+export const seedExpenses = async (prisma: PrismaClient) => {
   console.log('Seeding Expenses...');
   await Promise.all(
     Array.from({ length: 50 }).map(() =>

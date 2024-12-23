@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedChats = async () => {
+export const seedChats = async (prisma: PrismaClient) => {
   console.log('Seeding Chats...');
 
   // Fetch some existing Barters and Hires
@@ -35,7 +33,7 @@ export const seedChats = async () => {
       await prisma.chat.create({
         data: {
           barter_id: barterId ?? undefined, // Only set if not null
-          hire_id: hireId ?? undefined,     // Only set if not null
+          hire_id: hireId ?? undefined, // Only set if not null
         },
       });
     }),

@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedLocations = async () => {
+export const seedLocations = async (prisma: PrismaClient) => {
   console.log('Seeding Locations...');
 
   // Generate random locations

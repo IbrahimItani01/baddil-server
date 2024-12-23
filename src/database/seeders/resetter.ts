@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-export async function clearDatabase() {
-  const prisma = new PrismaClient();
-
+export async function clearDatabase(prisma: PrismaClient) {
   try {
     console.log('🗑️ Clearing database...');
 
@@ -31,7 +29,5 @@ export async function clearDatabase() {
     console.log('✅ Database cleared.');
   } catch (error) {
     console.error('❌ Error while clearing database:', error);
-  } finally {
-    await prisma.$disconnect();
   }
 }

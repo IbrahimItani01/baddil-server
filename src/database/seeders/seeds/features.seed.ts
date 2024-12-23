@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedFeatures = async () => {
+export const seedFeatures = async (prisma: PrismaClient) => {
   console.log('Seeding Features...');
 
   // Fetch existing subscription plans to associate features with them

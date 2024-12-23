@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-
-export const seedUserTypes = async () => {
+export const seedUserTypes = async (prisma: PrismaClient) => {
   console.log('Seeding User Types...');
   const types = ['admin', 'broker', 'barterer'];
 

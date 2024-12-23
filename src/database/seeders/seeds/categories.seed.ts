@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedCategories = async () => {
+export const seedCategories = async (prisma: PrismaClient) => {
   console.log('Seeding Categories...');
 
   await Promise.all(
@@ -11,7 +9,7 @@ export const seedCategories = async () => {
       prisma.category.create({
         data: {
           name: faker.commerce.department(),
-          category_icon: faker.image.url(),  // Updated to use imageUrl()
+          category_icon: faker.image.url(), // Updated to use imageUrl()
         },
       }),
     ),

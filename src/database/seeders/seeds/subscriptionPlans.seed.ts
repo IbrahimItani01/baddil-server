@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-
-export const seedSubscriptionPlans = async () => {
+export const seedSubscriptionPlans = async (prisma: PrismaClient) => {
   console.log('Seeding Subscription Plans...');
 
   // Fetch user types for Barterers and Brokers only
@@ -15,12 +13,18 @@ export const seedSubscriptionPlans = async () => {
   });
 
   if (validUserTypes.length === 0) {
-    throw new Error("No valid user types (Barterer or Broker) found. Check your userType records.");
+    throw new Error(
+      'No valid user types (Barterer or Broker) found. Check your userType records.',
+    );
   }
 
   const plans = [
     { name: 'Pro', price: 10.0, user_type: validUserTypes[0] },
-    { name: 'Premium', price: 50.0, user_type: validUserTypes[1] || validUserTypes[0] }, // Fallback to Barterer if only one type exists
+    {
+      name: 'Premium',
+      price: 50.0,
+      user_type: validUserTypes[1] || validUserTypes[0],
+    }, // Fallback to Barterer if only one type exists
   ];
 
   await Promise.all(
@@ -29,7 +33,7 @@ export const seedSubscriptionPlans = async () => {
         data: {
           name: plan.name,
           price: plan.price,
-          target_user_type: plan.user_type.id,
+          target_user_type: plan.user_type.id, // This should be a UUID string, no changes needed
         },
       }),
     ),

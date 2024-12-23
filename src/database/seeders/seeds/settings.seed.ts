@@ -1,10 +1,8 @@
 import { PrismaClient, Theme, Language } from '@prisma/client'; // Import enums
 
-const prisma = new PrismaClient();
-
-export const seedSettings = async () => {
+export const seedSettings = async (prisma: PrismaClient) => {
   console.log('Seeding Settings...');
-  
+
   const themes = [Theme.light, Theme.dark]; // Use Prisma enums
   const languages = [Language.english, Language.french]; // Use Prisma enums
 

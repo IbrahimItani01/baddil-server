@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedWallets = async () => {
+export const seedWallets = async (prisma: PrismaClient) => {
   console.log('Seeding Wallets...');
 
   // Fetch the user type ID for 'barterer'
@@ -15,7 +13,7 @@ export const seedWallets = async () => {
     throw new Error('User type "barterer" not found.');
   }
 
-  // Fetch users of type 'barterer'
+  // Fetch users of type 'barterer' with the correct UUID user type reference
   const barterers = await prisma.user.findMany({
     where: { user_type_id: bartererUserType.id },
   });
@@ -27,11 +25,11 @@ export const seedWallets = async () => {
   // Generate random wallets
   await Promise.all(
     Array.from({ length: 10 }).map(async () => {
-      const owner = faker.helpers.arrayElement(barterers); // Random barterer user
+      const owner = faker.helpers.arrayElement(barterers); // Random barterer user (ensure 'id' is UUID)
 
       await prisma.wallet.create({
         data: {
-          owner_id: owner.id,
+          owner_id: owner.id, // Should be UUID, correctly handled by Prisma
         },
       });
     }),

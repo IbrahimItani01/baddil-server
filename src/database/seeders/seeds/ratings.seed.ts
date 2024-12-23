@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedRatings = async () => {
+export const seedRatings = async (prisma: PrismaClient) => {
   console.log('Seeding Ratings...');
 
   // Fetch all users, barters, and brokers to create valid ratings
@@ -14,7 +12,6 @@ export const seedRatings = async () => {
   const brokerUserType = await prisma.userType.findFirst({
     where: { type: 'broker' },
   });
-  
 
   if (!brokerUserType) {
     throw new Error('Broker user type not found.');

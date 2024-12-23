@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedHires = async () => {
+export const seedHires = async (prisma: PrismaClient) => {
   console.log('Seeding Hires...');
 
   // Fetch user types for broker and barterer

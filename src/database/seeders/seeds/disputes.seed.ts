@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
-const prisma = new PrismaClient();
-
-export const seedDisputes = async () => {
+export const seedDisputes = async (prisma: PrismaClient) => {
   console.log('Seeding Disputes...');
 
   // Fetch user types for admin and barterer

@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
-
-export const seedTiers = async () => {
+export const seedTiers = async (prisma: PrismaClient) => {
   console.log('Seeding Tiers...');
   const tiers = [
     { name: 'Bronze', requirement: 10 },
