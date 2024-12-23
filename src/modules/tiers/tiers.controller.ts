@@ -36,3 +36,26 @@ export class TiersController {
     }
   }
 
+  @Put('')
+  @UseGuards(JwtAuthGuard, UserTypeGuard)
+  @AllowedUserTypes('barterer')
+  async updateBartererTier(@Body() body: { tierId: string }, @Request() req) {
+    try {
+      const userId = req.user.id; // Extracted from JWT
+      const updatedTier = await this.tiersService.updateBartererTier(
+        userId,
+        body.tierId,
+      );
+      return {
+        status: 'success',
+        message: 'Tier updated successfully',
+        data: updatedTier,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to update tier information',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
