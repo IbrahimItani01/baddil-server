@@ -11,3 +11,9 @@ import {
 import { TiersService } from './tiers.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
+@UseGuards(JwtAuthGuard, UserTypeGuard)
+@AllowedUserTypes('barterer', 'admin')
+@Controller('tiers')
+export class TiersController {
+  constructor(private readonly tiersService: TiersService) {}
+
