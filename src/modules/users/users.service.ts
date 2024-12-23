@@ -16,6 +16,8 @@ import {
   getSettingsId,
   validateSettingsData,
 } from 'src/utils/modules/users/settings.utils';
+import * as fs from 'fs';
+import path from 'path';
 
 @Injectable()
 export class UsersService {
