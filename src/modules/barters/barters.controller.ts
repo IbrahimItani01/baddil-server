@@ -16,7 +16,7 @@ import { BarterStatus } from '@prisma/client';
 
 @Controller('barters')
 @UseGuards(JwtAuthGuard, UserTypeGuard)
-@AllowedUserTypes('barterer')
+@AllowedUserTypes('barterer','broker')
 export class BartersController {
   constructor(private readonly barterService: BartersService) {}
 
