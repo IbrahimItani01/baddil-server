@@ -42,3 +42,11 @@ export class ManagementController {
     return this.managementService.getSubscriptionPlans();
   }
 
+  @Put('subscription/:id')
+  updateSubscriptionPlan(
+    @Param('id') id: string,
+    @Body() body: { name?: string; price?: number; criteria?: string },
+  ) {
+    return this.managementService.updateSubscriptionPlan(id, body);
+  }
+
