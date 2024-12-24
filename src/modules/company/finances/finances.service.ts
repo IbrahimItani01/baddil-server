@@ -11,3 +11,21 @@ export class FinancesService {
     return this.prisma.profit.create({ data });
   }
 
+  // Get profits with filters: startDate, endDate, source
+  async getProfits(query: {
+    startDate?: string;
+    endDate?: string;
+    source?: ProfitSource;
+  }) {
+    const { startDate, endDate, source } = query;
+    return this.prisma.profit.findMany({
+      where: {
+        source,
+        date: {
+          gte: startDate ? new Date(startDate) : undefined,
+          lte: endDate ? new Date(endDate) : undefined,
+        },
+      },
+    });
+  }
+
