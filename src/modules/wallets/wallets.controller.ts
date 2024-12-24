@@ -36,8 +36,9 @@ export class WalletsController {
     return await this.walletService.getItemDetails(walletId, itemId);
   }
 
-  @Get(':walletId/items')
-  async getWalletItems(@Param('walletId') walletId: string) {
+  @Get('items')
+  async getWalletItems(@Req() req: any) {
+    const walletId = await getWalletIdByUserId(this.prisma, req.user.id);
     return await this.walletService.getWalletItems(walletId);
   }
 
