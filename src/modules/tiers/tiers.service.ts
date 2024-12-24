@@ -4,7 +4,7 @@ import { PrismaService } from 'src/database/prisma.service';
 @Injectable()
 export class TiersService {
   constructor(private readonly prisma: PrismaService) {}
-  
+
   async getBartererTier(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -51,4 +51,8 @@ export class TiersService {
 
     return updatedUser;
   }
+  async createTier(data: { name: string; requirement: number }) {
+    return this.prisma.tier.create({ data });
+  }
+
 }
