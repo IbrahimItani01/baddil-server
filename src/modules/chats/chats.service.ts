@@ -15,3 +15,8 @@ export class ChatsService {
     });
   }
 
+  async getAllChats() {
+    return await this.prisma.chat.findMany({
+      include: { Message: true },
+    });
+  }
