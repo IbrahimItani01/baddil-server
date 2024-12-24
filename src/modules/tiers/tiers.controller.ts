@@ -1,9 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
   Put,
   Request,
   UseGuards,
@@ -13,15 +17,15 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard)
-@AllowedUserTypes('barterer', 'admin')
 @Controller('tiers')
 export class TiersController {
   constructor(private readonly tiersService: TiersService) {}
 
-  @Get('')
-  async getBartererTier(@Request() req) {
+  @AllowedUserTypes('barterer', 'admin')
+  @Get('user/:userId?')
+  async getBartererTier(@Request() req, @Param('userId') bartererId?: string) {
     try {
-      const userId = req.user.id; // Extracted from JWT
+      const userId = req.user.id ? req.user.id : bartererId; // Extracted from JWT
       const tierInfo = await this.tiersService.getBartererTier(userId);
       return {
         status: 'success',
