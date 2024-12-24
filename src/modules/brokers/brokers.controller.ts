@@ -16,11 +16,11 @@ import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard';
 
 @Controller('brokers')
 @UseGuards(JwtAuthGuard, UserTypeGuard)
+@AllowedUserTypes('barterer','broker')
 export class BrokersController {
   constructor(private readonly brokerService: BrokerService) {}
 
   @Get('hired-brokers')
-  @AllowedUserTypes('barterer')
   async getHiredBrokers(@Request() req) {
     const userId = req.user.id; // Extract user ID from JWT payload
     try {
@@ -38,8 +38,7 @@ export class BrokersController {
     }
   }
   
-  @Post('hired-brokers')
-  @AllowedUserTypes('barterer')
+  @Post()
   async hireBroker(
     @Body() body: { brokerEmail: string; targetItemId: string; budget: number },
     @Request() req,
@@ -65,8 +64,7 @@ export class BrokersController {
     }
   }
 
-  @Delete('hired-brokers')
-  @AllowedUserTypes('barterer')
+  @Delete()
   async terminateBrokerContract(
     @Body() body: { brokerEmail: string },
     @Request() req,
@@ -90,8 +88,7 @@ export class BrokersController {
     }
   }
   
-  @Get('hire-contract-status/:hireId')
-  @AllowedUserTypes('barterer')
+  @Get('hire-status/:hireId')
   async getHireContractStatus(
     @Request() req, 
     @Param('hireId') hireId: string
