@@ -44,3 +44,10 @@ export class DisputesController {
     return this.disputesService.getDisputes(query);
   }
 
+  // Get a specific dispute by ID
+  @AllowedUserTypes('admin')
+  @Get(':id')
+  getDispute(@Param('id') id: string) {
+    return this.disputesService.getDispute(id);
+  }
+
