@@ -69,3 +69,18 @@ export class FinancesService {
     });
   }
 
+  // Create a new expense
+  async createExpense(data: {
+    amount: number;
+    description: string;
+    expenseType: ExpenseType;
+  }) {
+    return this.prisma.expense.create({
+      data: {
+        amount: data.amount,
+        description: data.description,
+        expense_type: data.expenseType, // Match the field name
+      },
+    });
+  }
+
