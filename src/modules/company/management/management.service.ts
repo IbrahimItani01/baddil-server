@@ -23,3 +23,19 @@ export class ManagementService {
     });
   }
 
+  async getSubscriptionPlans() {
+    return this.prisma.subscriptionPlan.findMany({
+      include: { features: true, user_type: true }, // Include related UserType
+    });
+  }
+
+  async updateSubscriptionPlan(
+    id: string,
+    data: { name?: string; price?: number; criteria?: string },
+  ) {
+    return this.prisma.subscriptionPlan.update({
+      where: { id },
+      data,
+    });
+  }
+
