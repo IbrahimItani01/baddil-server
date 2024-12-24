@@ -49,3 +49,10 @@ export class MessagesController {
   async deleteMessage(@Param('id') id: string) {
     return this.messagesService.deleteMessage(id);
   }
+
+  @Get('user')
+  async getMessagesByUser(@Request() req: any) {
+    const userId = req.user.id; 
+    return this.messagesService.getMessagesByUser(userId);
+  }
+}
