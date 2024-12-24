@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
@@ -119,4 +119,14 @@ export class TiersService {
     return { message: 'No tier update required for the user' };
   }
   
+  async deleteTier(id: string) {
+    try {
+      await this.prisma.tier.delete({
+        where: { id },
+      });
+      return { success: true, message: 'Tier deleted successfully' };
+    } catch (error) {
+      throw new Error('Failed to delete tier: ' + error.message);
+    }
+  }
 }
