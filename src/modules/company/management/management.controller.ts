@@ -73,3 +73,8 @@ export class ManagementController {
   deleteCategory(@Param('id') id: string) {
     return this.managementService.deleteCategory(id);
   }
+  @Post('subcategory')
+  createSubcategory(@Body() body: { name: string; mainCategoryId: string }) {
+    // Pass the body directly since it aligns with the service method
+    return this.managementService.createSubcategory(body);
+  }
