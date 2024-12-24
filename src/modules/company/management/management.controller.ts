@@ -18,3 +18,4 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class ManagementController {
   constructor(private readonly managementService: ManagementService) {}
 
+  @Post('subscription')
