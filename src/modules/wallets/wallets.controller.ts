@@ -62,7 +62,6 @@ export class WalletsController {
       throw new BadRequestException('No files uploaded');
     }
 
-    // Create the item and wallet (if not exists)
     const newItem = await this.walletService.addItemToWallet(
       req.user.id,
       itemData,
@@ -90,9 +89,9 @@ export class WalletsController {
     };
   }
 
-  @Put(':walletId/items/:itemId')
+  @Put('items/:itemId')
   async updateWalletItem(
-    @Param('walletId') walletId: string,
+    @Req() req: any,
     @Param('itemId') itemId: string,
     @Body()
     updateDetails: {
@@ -103,6 +102,7 @@ export class WalletsController {
       images?: string[];
     },
   ) {
+    const walletId = await getWalletIdByUserId(this.prisma, req.user.id);
     return await this.walletService.updateWalletItem(
       walletId,
       itemId,
