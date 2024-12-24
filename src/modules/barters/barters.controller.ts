@@ -20,17 +20,19 @@ import { BarterStatus } from '@prisma/client';
 export class BartersController {
   constructor(private readonly barterService: BartersService) {}
 
-  @Get(':userId')
-  async getBartersByUser(@Param('userId') userId: string) {
+  @Get('/by-user')
+  async getUserBarters(@Request() req: any) {
     try {
+      const userId = req.user.id; // Extracting the user ID from the JWT
       const barters = await this.barterService.getBartersByUser(userId);
       return {
         status: 'success',
         message: 'Barters fetched successfully',
         data: barters,
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      // Handle errors properly
       throw new Error('Failed to fetch barters');
     }
   }
