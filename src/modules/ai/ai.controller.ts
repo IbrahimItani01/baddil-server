@@ -13,12 +13,21 @@ import { AIService } from './ai.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 
+/**
+ * 🌐 AI Controller
+ * This controller handles operations related to AI-managed barters,
+ * such as toggling auto-trade, fetching auto-trades, and updating trade statuses.
+ */
 @UseGuards(JwtAuthGuard, UserTypeGuard)
 @AllowedUserTypes('barterer', 'broker', 'admin')
 @Controller('ai')
 export class AIController {
   constructor(private readonly aiService: AIService) {}
 
+  /**
+   * 📜 Get all auto-trades
+   * Fetches all barters that are handled by AI.
+   */
   @Get('barters')
   async getAutoTrades() {
     try {
@@ -35,6 +44,11 @@ export class AIController {
       );
     }
   }
+
+  /**
+   * 🔄 Toggle auto-trade
+   * Enables or disables AI management for a specific barter.
+   */
   @Patch('barters/toggle')
   async toggleAutoTrade(@Body() body: { barterId: string; enabled: boolean }) {
     const { barterId, enabled } = body;
@@ -59,6 +73,12 @@ export class AIController {
       );
     }
   }
+
+  /**
+   * ✏️ Update auto-trade
+   * Updates details or status for a specific AI-managed barter.
+   */
+  @Put('barters')
   async updateAutoTrade(
     @Body() updateDetails: { barterId: string; status?: string; details?: any },
   ) {
@@ -85,6 +105,10 @@ export class AIController {
     }
   }
 
+  /**
+   * 💬 Get auto-trade chat
+   * Fetches chat details for a specific barter.
+   */
   @Get('barters/:barterId/chat')
   async getAutoTradeChat(@Param('barterId') barterId: string) {
     try {
