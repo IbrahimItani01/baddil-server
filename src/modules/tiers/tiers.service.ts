@@ -66,4 +66,57 @@ export class TiersService {
     });
   }
 
+  async evaluateAndUpdateUserTier(userId: string) {
+    // Find the user and ensure they are of user type "barterer"
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { user_type: true, tier: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.user_type.type !== 'barterer') {
+      throw new NotFoundException(
+        'This API only applies to users of type "barterer"',
+      );
+    }
+
+    // Count the number of barters associated with the user
+    const barterCount = await this.prisma.barter.count({
+      where: {
+        OR: [{ user1_id: user.id }, { user2_id: user.id }],
+      },
+    });
+
+    // Get the user's current tier and all available tiers
+    const tiers = await this.prisma.tier.findMany({
+      orderBy: { requirement: 'asc' },
+    });
+    const currentTier = user.tier_id ? user.tier : null;
+
+    // Determine the next tier based on requirements
+    const nextTier = tiers.find(
+      (tier) =>
+        tier.requirement > (currentTier ? currentTier.requirement : 0) &&
+        tier.requirement <= barterCount,
+    );
+
+    if (nextTier) {
+      // Update the user's tier to the next tier
+      const updatedUser = await this.prisma.user.update({
+        where: { id: user.id },
+        data: { tier_id: nextTier.id },
+        include: { tier: true }, // Include the updated tier in the response
+      });
+      return {
+        message: `User's tier updated to ${nextTier.name}`,
+        updatedTier: updatedUser.tier,
+      };
+    }
+
+    return { message: 'No tier update required for the user' };
+  }
+  
 }
