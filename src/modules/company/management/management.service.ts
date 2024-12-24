@@ -39,3 +39,12 @@ export class ManagementService {
     });
   }
 
+  async createCategory(data: { name: string; categoryIcon: string }) {
+    return this.prisma.category.create({
+      data: {
+        name: data.name,
+        category_icon: data.categoryIcon, // Map to the correct field in Prisma schema
+      },
+    });
+  }
+
