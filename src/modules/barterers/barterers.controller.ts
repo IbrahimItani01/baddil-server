@@ -16,7 +16,7 @@ import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard';
 export class BarterersController {
   constructor(private readonly barterersService: BarterersService) {}
 
-  @Get('me')
+  @Get()
   async getBartererInfo(@Request() req) {
     try {
       const bartererInfo = await this.barterersService.getBartererInfo(
