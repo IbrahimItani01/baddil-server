@@ -16,3 +16,18 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 export class PerformancesController {
   constructor(private readonly performancesService: PerformancesService) {}
 
+  @Get('earnings')
+  async getBrokerEarnings(@Request() req: any) {
+    const brokerId = req.user.id; // Extract broker ID from JWT
+    try {
+      const earnings =
+        await this.performancesService.getBrokerEarnings(brokerId);
+      return { success: true, data: earnings };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to retrieve earnings',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
