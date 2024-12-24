@@ -110,11 +110,8 @@ export class WalletsController {
     );
   }
 
-  @Delete(':walletId/items/:itemId')
-  async removeWalletItem(
-    @Param('walletId') walletId: string,
-    @Param('itemId') itemId: string,
-  ) {
-    return await this.walletService.deleteItemFromWallet(walletId, itemId);
+  @Delete('items/:itemId')
+  async removeWalletItem(@Req() req: any, @Param('itemId') itemId: string) {
+    return await this.walletService.deleteItemFromWallet(req.user.id, itemId);
   }
 }
