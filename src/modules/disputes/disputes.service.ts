@@ -56,3 +56,14 @@ export class DisputesService {
     });
   }
 
+  // Resolve a dispute (update the status and resolved_at date)
+  async resolveDispute(id: string) {
+    return this.prisma.dispute.update({
+      where: { id },
+      data: {
+        status: DisputeStatus.resolved,
+        resolved_at: new Date(),
+      },
+    });
+  }
+}
