@@ -190,6 +190,18 @@ model Subcategory {
   @@map("subcategories")
 }
 
+// Chats Table
+model Chat {
+  id        String  @id @default(uuid())
+  barter_id String? // Optional foreign key for Barter
+  hire_id   String? // Optional foreign key for Hire
+
+  barter  Barter?   @relation(fields: [barter_id], references: [id], onDelete: Cascade)
+  hire    Hire?     @relation(fields: [hire_id], references: [id], onDelete: Cascade)
+  Message Message[]
+
+  @@map("chats")
+}
 // Messages Table
 model Message {
   id        String        @id @default(uuid())
@@ -210,18 +222,6 @@ enum MessageStatus {
   seen
 }
 
-// Chats Table
-model Chat {
-  id        String  @id @default(uuid())
-  barter_id String? // Optional foreign key for Barter
-  hire_id   String? // Optional foreign key for Hire
-
-  barter  Barter?   @relation(fields: [barter_id], references: [id], onDelete: Cascade)
-  hire    Hire?     @relation(fields: [hire_id], references: [id], onDelete: Cascade)
-  Message Message[]
-
-  @@map("chats")
-}
 
 // Wallets Table
 model Wallet {
