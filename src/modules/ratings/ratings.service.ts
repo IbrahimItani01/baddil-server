@@ -29,3 +29,26 @@ export class RatingsService {
     }
   }
   
+  async deleteRating(ratingId: string) {
+    try {
+      const existingRating = await this.prisma.rating.findUnique({
+        where: { id: ratingId },
+      });
+
+      if (!existingRating) {
+        throw new HttpException('Rating not found', HttpStatus.NOT_FOUND);
+      }
+
+      await this.prisma.rating.delete({
+        where: { id: ratingId },
+      });
+
+      return { message: 'Rating deleted successfully' };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete rating',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
