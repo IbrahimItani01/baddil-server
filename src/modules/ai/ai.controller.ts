@@ -87,6 +87,18 @@ export class AIController {
 
   @Get('barters/:barterId/chat')
   async getAutoTradeChat(@Param('barterId') barterId: string) {
-    return await this.aiService.getAutoTradeChat(barterId);
+    try {
+      const chat = await this.aiService.getAutoTradeChat(barterId);
+      return { success: true, data: chat };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to fetch chat',
+          error: error.message,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }
