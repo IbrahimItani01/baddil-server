@@ -64,3 +64,18 @@ export class ManagementService {
     });
   }
 
+  async deleteCategory(id: string) {
+    return this.prisma.category.delete({ where: { id } });
+  }
+
+  async createSubcategory(data: { name: string; mainCategoryId: string }) {
+    return this.prisma.subcategory.create({
+      data: {
+        name: data.name,
+        category: {
+          connect: { id: data.mainCategoryId }, // Relates to Category by ID
+        },
+      },
+    });
+  }
+
