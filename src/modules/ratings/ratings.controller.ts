@@ -47,3 +47,20 @@ export class RatingsController {
     }
   }
   
+  @AllowedUserTypes('barterer')
+  @Delete(':ratingId')
+  async deleteRating(@Param('ratingId') ratingId: string) {
+    try {
+      await this.ratingsService.deleteRating(ratingId);
+      return {
+        status: 'success',
+        message: 'Rating deleted successfully',
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to delete rating',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
