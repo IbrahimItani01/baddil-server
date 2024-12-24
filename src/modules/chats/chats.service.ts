@@ -6,3 +6,12 @@ import { PrismaService } from 'src/database/prisma.service';
 export class ChatsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async createChat(barter_id?: string, hire_id?: string) {
+    return await this.prisma.chat.create({
+      data: {
+        barter_id,
+        hire_id,
+      },
+    });
+  }
+
