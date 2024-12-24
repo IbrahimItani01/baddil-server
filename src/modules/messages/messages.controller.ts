@@ -19,3 +19,21 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
+  @Post()
+  async sendMessage(
+    @Body()
+    body: {
+      content: string;
+      owner_id: string;
+      chat_id: string;
+      status?: string;
+    },
+  ) {
+    return this.messagesService.sendMessage(
+      body.content,
+      body.owner_id,
+      body.chat_id,
+      body.status || 'sent',
+    );
+  }
+
