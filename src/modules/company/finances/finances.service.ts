@@ -6,3 +6,8 @@ import { ProfitSource, ExpenseType } from '@prisma/client'; // Import enum types
 export class FinancesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Create a new profit
+  async createProfit(data: { amount: number; source: ProfitSource }) {
+    return this.prisma.profit.create({ data });
+  }
+
