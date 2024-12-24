@@ -37,3 +37,11 @@ export class MessagesController {
     );
   }
 
+  @Patch(':id/status')
+  async updateMessageStatus(
+    @Param('id') id: string,
+    @Body() body: { status: string },
+  ) {
+    return this.messagesService.updateMessageStatus(id, body.status);
+  }
+
