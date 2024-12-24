@@ -69,3 +69,7 @@ export class ManagementController {
     return this.managementService.updateCategory(id, body);
   }
 
+  @Delete('category/:id')
+  deleteCategory(@Param('id') id: string) {
+    return this.managementService.deleteCategory(id);
+  }
