@@ -35,9 +35,30 @@ export class AIController {
       );
     }
   }
+  @Patch('barters/toggle')
+  async toggleAutoTrade(@Body() body: { barterId: string; enabled: boolean }) {
+    const { barterId, enabled } = body;
+    try {
+      const updatedBarter = await this.aiService.toggleAutoTrade(
+        barterId,
+        enabled,
+      );
+      return {
+        success: true,
+        message: 'Auto-trade updated successfully',
+        data: updatedBarter,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to toggle auto-trade',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
-
-  @Put('barters/:barterId')
   async updateAutoTrade(
     @Param('barterId') barterId: string,
     @Body() updateDetails: { status?: string; details?: any },
