@@ -18,12 +18,17 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { itemImagesUploadOptions } from 'src/utils/modules/config/file-upload.config';
 import { ItemCondition } from '@prisma/client';
+import { PrismaService } from 'src/database/prisma.service';
+import { getWalletIdByUserId } from 'src/utils/modules/wallet/wallet.utils';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard)
 @AllowedUserTypes('barterer')
 @Controller('wallet')
 export class WalletsController {
-  constructor(private readonly walletService: WalletsService) {}
+  constructor(
+    private readonly walletService: WalletsService,
+    private readonly prisma: PrismaService, // Inject PrismaService for utility function
+  ) {}
 
   @Get(':walletId/items/:itemId')
   async getItemDetails(
