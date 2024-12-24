@@ -56,3 +56,7 @@ export class ManagementController {
     return this.managementService.createCategory(body);
   }
 
+  @Get('category')
+  getCategories() {
+    return this.managementService.getCategories();
+  }
