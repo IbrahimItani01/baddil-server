@@ -1,0 +1,20 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
+import { DisputesService } from './disputes.service';
+import { DisputeStatus } from '@prisma/client';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
+
+@UseGuards(JwtAuthGuard, UserTypeGuard)
+@Controller('disputes')
+export class DisputesController {
+  constructor(private readonly disputesService: DisputesService) {}
+
