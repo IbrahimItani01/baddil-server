@@ -21,15 +21,20 @@ export class AIController {
 
   @Get('barters')
   async getAutoTrades() {
-    return await this.aiService.getAutoTrades();
+    try {
+      const trades = await this.aiService.getAutoTrades();
+      return { success: true, data: trades };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to fetch auto-trades',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
-
-  @Patch('barters/:barterId/toggle')
-  async toggleAutoTrade(
-    @Param('barterId') barterId: string,
-    @Body() body: { enabled: boolean },
-  ) {
-    return await this.aiService.toggleAutoTrade(barterId, body.enabled);
   }
 
   @Put('barters/:barterId')
