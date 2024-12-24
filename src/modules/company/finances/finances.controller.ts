@@ -54,3 +54,16 @@ export class FinancesController {
     return this.financesService.createExpense(body);
   }
 
+  // Get expenses with filters: startDate, endDate, expenseType
+  @Get('expenses')
+  getExpenses(
+    @Query()
+    query: {
+      startDate?: string;
+      endDate?: string;
+      expenseType?: ExpenseType;
+    },
+  ) {
+    return this.financesService.getExpenses(query);
+  }
+}
