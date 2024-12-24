@@ -43,3 +43,12 @@ export class ChatsService {
     });
   }
 
+  // Get Message Count for a Chat
+  async getMessageCount(chatId: string) {
+    return await this.prisma.message.count({
+      where: {
+        chat_id: chatId,
+      },
+    });
+  }
+
