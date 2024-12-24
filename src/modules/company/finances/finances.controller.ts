@@ -16,3 +16,16 @@ export class FinancesController {
     return this.financesService.createProfit(body);
   }
 
+  // Get profits with filters: startDate, endDate, source
+  @Get('profits')
+  getProfits(
+    @Query()
+    query: {
+      startDate?: string;
+      endDate?: string;
+      source?: ProfitSource;
+    },
+  ) {
+    return this.financesService.getProfits(query);
+  }
+
