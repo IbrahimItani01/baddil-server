@@ -44,3 +44,15 @@ export class DisputesService {
     });
   }
 
+  // Get a specific dispute by ID
+  async getDispute(id: string) {
+    return this.prisma.dispute.findUnique({
+      where: { id },
+      include: {
+        admin: true,
+        user1: true,
+        user2: true,
+      },
+    });
+  }
+
