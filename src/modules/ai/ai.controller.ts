@@ -60,10 +60,29 @@ export class AIController {
     }
   }
   async updateAutoTrade(
-    @Param('barterId') barterId: string,
-    @Body() updateDetails: { status?: string; details?: any },
+    @Body() updateDetails: { barterId: string; status?: string; details?: any },
   ) {
-    return await this.aiService.updateAutoTrade(barterId, updateDetails);
+    const { barterId, ...rest } = updateDetails;
+    try {
+      const updatedBarter = await this.aiService.updateAutoTrade(
+        barterId,
+        rest,
+      );
+      return {
+        success: true,
+        message: 'Auto-trade updated successfully',
+        data: updatedBarter,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to update auto-trade',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Get('barters/:barterId/chat')
