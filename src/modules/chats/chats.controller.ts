@@ -31,3 +31,10 @@ export class ChatsController {
     return this.chatsService.createChat(body.barter_id, body.hire_id);
   }
 
+  @AllowedUserTypes('broker', 'barterer')
+  @Get('user')
+  async getUserChats(@Request() req: any) {
+    const userId = req.user.id; // Extract user ID from JWT
+    return await this.chatsService.getUserChats(userId);
+  }
+
