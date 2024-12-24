@@ -30,11 +30,9 @@ export class WalletsController {
     private readonly prisma: PrismaService, // Inject PrismaService for utility function
   ) {}
 
-  @Get(':walletId/items/:itemId')
-  async getItemDetails(
-    @Param('walletId') walletId: string,
-    @Param('itemId') itemId: string,
-  ) {
+  @Get('items/:itemId')
+  async getItemDetails(@Req() req: any, @Param('itemId') itemId: string) {
+    const walletId = await getWalletIdByUserId(this.prisma, req.user.id);
     return await this.walletService.getItemDetails(walletId, itemId);
   }
 
