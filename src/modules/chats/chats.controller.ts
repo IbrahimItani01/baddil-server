@@ -19,3 +19,9 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class ChatsController {
   constructor(private readonly chatsService: ChatsService) {}
 
+  @AllowedUserTypes('admin')
+  @Get()
+  async getAllChats() {
+    return this.chatsService.getAllChats();
+  }
+
