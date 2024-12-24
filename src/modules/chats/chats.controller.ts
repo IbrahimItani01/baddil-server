@@ -58,3 +58,9 @@ export class ChatsController {
     return this.chatsService.deleteChat(id);
   }
   
+  // Get Message Count for a Chat
+  @Get(':chatId/messages/count')
+  async getMessageCount(@Param('chatId') chatId: string) {
+    return this.chatsService.getMessageCount(chatId);
+  }
+
