@@ -26,3 +26,25 @@ export class PerformancesService {
       );
     }
   }
+
+  async getBrokerBartersGroupedByStatus(brokerId: string) {
+    try {
+      const barters = await this.prisma.barter.findMany({
+        where: { user1_id: brokerId },
+        select: { status: true },
+      });
+
+      const groupedBarters = barters.reduce((acc, barter) => {
+        acc[barter.status] = (acc[barter.status] || 0) + 1;
+        return acc;
+      }, {});
+
+      return groupedBarters;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve broker barters',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
