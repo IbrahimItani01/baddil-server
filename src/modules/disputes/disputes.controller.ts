@@ -32,3 +32,15 @@ export class DisputesController {
     return this.disputesService.createDispute(body);
   }
 
+  @AllowedUserTypes('admin')
+  @Get()
+  getDisputes(
+    @Query()
+    query: {
+      status?: DisputeStatus;
+      userId?: string;
+    },
+  ) {
+    return this.disputesService.getDisputes(query);
+  }
+
