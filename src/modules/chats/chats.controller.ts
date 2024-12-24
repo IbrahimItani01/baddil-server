@@ -25,3 +25,9 @@ export class ChatsController {
     return this.chatsService.getAllChats();
   }
 
+  @AllowedUserTypes('broker', 'barterer')
+  @Post()
+  async createChat(@Body() body: { barter_id?: string; hire_id?: string }) {
+    return this.chatsService.createChat(body.barter_id, body.hire_id);
+  }
+
