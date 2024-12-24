@@ -50,3 +50,9 @@ export class ManagementController {
     return this.managementService.updateSubscriptionPlan(id, body);
   }
 
+  @Post('category')
+  createCategory(@Body() body: { name: string; categoryIcon: string }) {
+    // Map `categoryIcon` to `category_icon` if necessary in the service layer
+    return this.managementService.createCategory(body);
+  }
+
