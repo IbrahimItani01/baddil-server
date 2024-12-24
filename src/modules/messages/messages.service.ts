@@ -27,3 +27,17 @@ export class MessagesService {
     });
   }
 
+  async updateMessageStatus(id: string, status: string) {
+    // Validate and cast the status to MessageStatus
+    if (!Object.values(MessageStatus).includes(status as MessageStatus)) {
+      throw new Error(`Invalid status: ${status}`);
+    }
+
+    return await this.prisma.message.update({
+      where: { id },
+      data: {
+        status: status as MessageStatus, // Cast to MessageStatus
+      },
+    });
+  }
+
