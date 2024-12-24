@@ -35,3 +35,9 @@ export class FinancesController {
     return this.financesService.getProfitsByUserType();
   }
 
+  // Get hire-related profits (budget)
+  @Get('profits/hire')
+  getHireProfits() {
+    return this.financesService.getHireProfits();
+  }
+
