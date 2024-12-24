@@ -60,3 +60,12 @@ export class FinancesService {
       });
   }
 
+  // Get profits from hires (budget)
+  async getHireProfits() {
+    return this.prisma.hire.aggregate({
+      _sum: {
+        budget: true, // Assuming the hire table has a budget field
+      },
+    });
+  }
+
