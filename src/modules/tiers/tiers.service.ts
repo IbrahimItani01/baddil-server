@@ -59,4 +59,11 @@ export class TiersService {
     return this.prisma.tier.findMany({ orderBy: { requirement: 'asc' } });
   }
 
+  async updateTier(id: string, data: { name?: string; requirement?: number }) {
+    return this.prisma.tier.update({
+      where: { id },
+      data,
+    });
+  }
+
 }
