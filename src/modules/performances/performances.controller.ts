@@ -31,3 +31,20 @@ export class PerformancesController {
     }
   }
 
+  @Get('barters')
+  async getBrokerBarters(@Request() req: any) {
+    const brokerId = req.user.id; // Extract broker ID from JWT
+    try {
+      const barters =
+        await this.performancesService.getBrokerBartersGroupedByStatus(
+          brokerId,
+        );
+      return { success: true, data: barters };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to retrieve barters',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
