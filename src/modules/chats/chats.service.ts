@@ -28,3 +28,12 @@ export class ChatsService {
     });
   }
 
+  async getMessagesInChat(chatId: string, status?: string) {
+    return await this.prisma.message.findMany({
+      where: {
+        chat_id: chatId,
+        ...(status && { status: status as MessageStatus }), // Cast status to MessageStatus
+      },
+    });
+  }
+
