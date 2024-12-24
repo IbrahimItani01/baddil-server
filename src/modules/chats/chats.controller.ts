@@ -53,3 +53,8 @@ export class ChatsController {
     return this.chatsService.getMessagesInChat(chatId, status);
   }
 
+  @Delete(':id')
+  async deleteChat(@Param('id') id: string) {
+    return this.chatsService.deleteChat(id);
+  }
+  
