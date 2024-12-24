@@ -84,3 +84,21 @@ export class FinancesService {
     });
   }
 
+  // Get expenses with filters: startDate, endDate, expenseType
+  async getExpenses(query: {
+    startDate?: string;
+    endDate?: string;
+    expenseType?: ExpenseType;
+  }) {
+    const { startDate, endDate, expenseType } = query;
+    return this.prisma.expense.findMany({
+      where: {
+        expense_type: expenseType,
+        date: {
+          gte: startDate ? new Date(startDate) : undefined,
+          lte: endDate ? new Date(endDate) : undefined,
+        },
+      },
+    });
+  }
+}
