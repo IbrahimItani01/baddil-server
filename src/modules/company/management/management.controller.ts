@@ -36,3 +36,9 @@ export class ManagementController {
       criteria: body.criteria,
     });
   }
+
+  @Get('subscription')
+  getSubscriptionPlans() {
+    return this.managementService.getSubscriptionPlans();
+  }
+
