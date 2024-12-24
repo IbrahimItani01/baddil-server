@@ -51,3 +51,10 @@ export class DisputesController {
     return this.disputesService.getDispute(id);
   }
 
+  // Resolve a dispute (update the status and resolved_at date)
+  @AllowedUserTypes('admin')
+  @Patch(':id/resolve')
+  resolveDispute(@Param('id') id: string) {
+    return this.disputesService.resolveDispute(id);
+  }
+}
