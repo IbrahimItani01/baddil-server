@@ -38,3 +38,9 @@ export class ChatsController {
     return await this.chatsService.getUserChats(userId);
   }
 
+  @AllowedUserTypes('broker', 'barterer')
+  @Get(':id')
+  async getChatById(@Param('id') id: string) {
+    return this.chatsService.getChatById(id);
+  }
+
