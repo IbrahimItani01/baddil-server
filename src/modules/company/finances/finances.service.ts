@@ -29,3 +29,34 @@ export class FinancesService {
     });
   }
 
+  // Get profits grouped by user type
+  async getProfitsByUserType() {
+    return this.prisma.user
+      .findMany({
+        select: {
+          user_type_id: true, // Corrected field name to match the model
+          subscription: {
+            select: {
+              price: true, // Fetch the subscription price
+            },
+          },
+        },
+      })
+      .then((users) => {
+        const profitsByUserType = users.reduce((acc, user) => {
+          const userTypeId = user.user_type_id; // Corrected to match the model
+          const price = user.subscription?.price || 0; // Corrected to match the relation name
+
+          if (!acc[userTypeId]) {
+            acc[userTypeId] = { totalProfit: 0, userType: userTypeId };
+          }
+
+          acc[userTypeId].totalProfit += price;
+          return acc;
+        }, {});
+
+        // Return the results as an array
+        return Object.values(profitsByUserType);
+      });
+  }
+
