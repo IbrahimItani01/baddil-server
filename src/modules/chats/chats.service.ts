@@ -20,3 +20,11 @@ export class ChatsService {
       include: { Message: true },
     });
   }
+
+  async getChatById(id: string) {
+    return await this.prisma.chat.findUnique({
+      where: { id },
+      include: { Message: true },
+    });
+  }
+
