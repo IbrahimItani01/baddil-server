@@ -65,4 +65,10 @@ export class TiersController {
     return this.tiersService.createTier(body);
   }
 
+  @AllowedUserTypes('admin')
+  @Get()
+  getTiers() {
+    return this.tiersService.getTiers();
+  }
+
 }
