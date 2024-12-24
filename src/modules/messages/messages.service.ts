@@ -47,3 +47,10 @@ export class MessagesService {
     });
   }
 
+  async getMessagesByUser(userId: string) {
+    return await this.prisma.message.findMany({
+      where: { owner_id: userId },
+      include: { chat: true },
+    });
+  }
+}
