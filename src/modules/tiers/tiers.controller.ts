@@ -71,4 +71,13 @@ export class TiersController {
     return this.tiersService.getTiers();
   }
 
+  @AllowedUserTypes('admin')
+  @Put(':id')
+  updateTier(
+    @Param('id') id: string,
+    @Body() body: { name?: string; requirement?: number },
+  ) {
+    return this.tiersService.updateTier(id, body);
+  }
+  
 }
