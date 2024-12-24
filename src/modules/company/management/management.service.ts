@@ -54,3 +54,13 @@ export class ManagementService {
     });
   }
 
+  async updateCategory(id: string, data: { name?: string; categoryIcon?: string }) {
+    return this.prisma.category.update({
+      where: { id },
+      data: {
+        ...data,
+        category_icon: data.categoryIcon, // Map to the correct field
+      },
+    });
+  }
+
