@@ -52,3 +52,88 @@ export class ChatsService {
     });
   }
 
+  // Get All Chats with Unread Messages for the Current User
+  async getChatsWithUnreadMessages(userId: string) {
+    return await this.prisma.chat.findMany({
+      where: {
+        Message: {
+          some: {
+            owner_id: {
+              not: userId, // Messages not sent by the current user
+            },
+            status: MessageStatus.sent, // Unread messages
+          },
+        },
+      },
+      select: {
+        id: true,
+        barter: {
+          select: {
+            user1_id: true,
+            user2_id: true,
+          },
+        },
+        hire: true,
+        Message: {
+          where: {
+            owner_id: {
+              not: userId,
+            },
+            status: MessageStatus.sent,
+          },
+          select: {
+            id: true,
+            content: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getUserChats(userId: string) {
+    // Fetch chats where the user is either in a hire or barter
+    const chats = await this.prisma.chat.findMany({
+      where: {
+        OR: [
+          // User is involved in a hire (as broker or client)
+          {
+            hire: {
+              OR: [{ broker_id: userId }, { client_id: userId }],
+            },
+          },
+          // User is involved in a barter (as user1 or user2)
+          {
+            barter: {
+              OR: [{ user1_id: userId }, { user2_id: userId }],
+            },
+          },
+        ],
+      },
+      include: {
+        barter: {
+          include: {
+            user1: true,
+            user2: true,
+          },
+        },
+        hire: {
+          include: {
+            broker: true,
+            client: true,
+          },
+        },
+        Message: {
+          include: {
+            owner: true,
+          },
+        },
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'User chats fetched successfully',
+      data: chats,
+    };
+  }
+}
