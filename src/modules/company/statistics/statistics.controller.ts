@@ -9,3 +9,21 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
   
+
+   @Get('user-count')
+    async getUserCounts() {
+      try {
+        const counts = await this.statisticsService.getUserCounts();
+        return {
+          status: 'success',
+          message: 'User counts retrieved successfully',
+          data: counts,
+        };
+      } catch (error) {
+        throw new BadRequestException(
+          'Failed to retrieve user counts',
+          error.message,
+        );
+      }
+    }
+}
