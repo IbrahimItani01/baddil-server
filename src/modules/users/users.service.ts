@@ -218,31 +218,39 @@ export class UsersService {
       where: { id: userId },
       select: { profile_picture: true }, // Only select the profile_picture field
     });
-  
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
+
     return user.profile_picture; // Return the profile picture URL or null if not set
   }
- 
-  async updateProfilePicture(userId: string, profilePictureUrl: string): Promise<User> {
+
+  async updateProfilePicture(
+    userId: string,
+    profilePictureUrl: string,
+  ): Promise<User> {
     // Check if the user exists
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-  
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
+
     // If the user has an old profile picture, delete it
     if (user.profile_picture) {
-      const oldFilePath = path.join(__dirname, '..', 'uploads', user.profile_picture);
+      const oldFilePath = path.join(
+        __dirname,
+        '..',
+        'uploads',
+        user.profile_picture,
+      );
       // Check if old file exists and delete it
       if (fs.existsSync(oldFilePath)) {
         fs.unlinkSync(oldFilePath); // Delete old file
       }
     }
-  
+
     // Update the user's profile picture URL in the database
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -250,7 +258,7 @@ export class UsersService {
         profile_picture: profilePictureUrl, // Save the URL of the uploaded image
       },
     });
-  
+
     return updatedUser;
   }
 }
