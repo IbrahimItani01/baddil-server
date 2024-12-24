@@ -48,3 +48,9 @@ export class ManagementService {
     });
   }
 
+  async getCategories() {
+    return this.prisma.category.findMany({
+      include: { subcategories: true },
+    });
+  }
+
