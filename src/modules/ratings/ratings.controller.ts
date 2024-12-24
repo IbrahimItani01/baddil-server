@@ -64,3 +64,32 @@ export class RatingsController {
     }
   }
 
+  @AllowedUserTypes('barterer','broker')
+  @Post('barter')
+  async addBarterRating(
+    @Request() req,
+    @Body() body: { value: number; description: string; barterId: string },
+  ) {
+    const userId = req.user.id;
+    const { value, description, barterId } = body;
+
+    try {
+      const rating = await this.ratingsService.addBarterRating(
+        userId,
+        barterId,
+        value,
+        description,
+      );
+      return {
+        status: 'success',
+        message: 'Barter rating added successfully',
+        data: rating,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to add barter rating',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
