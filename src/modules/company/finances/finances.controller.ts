@@ -10,3 +10,9 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class FinancesController {
   constructor(private readonly financesService: FinancesService) {}
 
+  // Create a new profit
+  @Post('profit')
+  createProfit(@Body() body: { amount: number; source: ProfitSource }) {
+    return this.financesService.createProfit(body);
+  }
+
