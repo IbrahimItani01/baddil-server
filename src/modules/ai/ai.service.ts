@@ -1,11 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BarterStatus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 
+/**
+ * ⚙️ AI Service
+ * Provides business logic for AI-related operations, including managing
+ * AI-handled barters and related data such as chats.
+ */
 @Injectable()
 export class AIService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * 🗂️ Get all auto-trades
+   * Fetches all barters handled by AI, with optional filtering by user.
+   */
   async getAutoTrades(userId?: string) {
     const where = { handled_by_ai: true };
     if (userId) {
@@ -22,13 +31,25 @@ export class AIService {
     });
   }
 
+  /**
+   * 🔄 Toggle auto-trade
+   * Enables or disables AI management for a barter.
+   */
   async toggleAutoTrade(barterId: string, enabled: boolean) {
+    const barter = await this.prisma.barter.findUnique({
+      where: { id: barterId },
+    });
+    if (!barter) throw new NotFoundException('Barter not found');
     return await this.prisma.barter.update({
       where: { id: barterId },
       data: { handled_by_ai: enabled },
     });
   }
 
+  /**
+   * ✏️ Update auto-trade
+   * Updates details or status of a barter.
+   */
   async updateAutoTrade(
     barterId: string,
     updateDetails: { status?: string; details?: any },
@@ -38,14 +59,24 @@ export class AIService {
       data.status = updateDetails.status as BarterStatus;
     }
     if (updateDetails.details) {
-      data.details = updateDetails.details; // Example: include other details
+      data.details = updateDetails.details;
     }
+
+    const barter = await this.prisma.barter.findUnique({
+      where: { id: barterId },
+    });
+    if (!barter) throw new NotFoundException('Barter not found');
+
     return await this.prisma.barter.update({
       where: { id: barterId },
       data,
     });
   }
 
+  /**
+   * 💬 Get barter chat
+   * Fetches chat details for a specific barter.
+   */
   async getAutoTradeChat(barterId: string) {
     const chat = await this.prisma.chat.findFirst({
       where: { barter_id: barterId },
@@ -57,7 +88,7 @@ export class AIService {
     });
 
     if (!chat) {
-      throw new Error('Chat not found for this barter');
+      throw new NotFoundException('Chat not found for this barter');
     }
 
     return chat;
