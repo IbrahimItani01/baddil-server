@@ -18,3 +18,17 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 export class DisputesController {
   constructor(private readonly disputesService: DisputesService) {}
 
+  @AllowedUserTypes('broker', 'barterer')
+  @Post()
+  createDispute(
+    @Body()
+    body: {
+      adminId: string;
+      user1Id: string;
+      user2Id: string;
+      details: string;
+    },
+  ) {
+    return this.disputesService.createDispute(body);
+  }
+
