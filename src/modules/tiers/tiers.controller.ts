@@ -58,4 +58,11 @@ export class TiersController {
       );
     }
   }
+
+  @AllowedUserTypes('admin')
+  @Post()
+  createTier(@Body() body: { name: string; requirement: number }) {
+    return this.tiersService.createTier(body);
+  }
+
 }
