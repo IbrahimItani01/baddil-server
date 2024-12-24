@@ -48,3 +48,27 @@ export class PerformancesService {
     }
   }
 
+  async getBrokerRatings(brokerId: string) {
+    try {
+      const ratings = await this.prisma.rating.findMany({
+        where: { broker_id: brokerId },
+        select: { value: true },
+      });
+
+      const totalRatings = ratings.length;
+      const averageRating =
+        ratings.reduce((sum, rating) => sum + rating.value, 0) / totalRatings ||
+        0;
+
+      return {
+        averageRating,
+        totalRatings,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve broker ratings',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
