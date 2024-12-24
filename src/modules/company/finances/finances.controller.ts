@@ -29,3 +29,9 @@ export class FinancesController {
     return this.financesService.getProfits(query);
   }
 
+  // Get profits grouped by user type
+  @Get('profits/by-user-type')
+  getProfitsByUserType() {
+    return this.financesService.getProfitsByUserType();
+  }
+
