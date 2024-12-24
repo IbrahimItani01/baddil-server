@@ -64,3 +64,12 @@ export class ChatsController {
     return this.chatsService.getMessageCount(chatId);
   }
 
+  // Get All Chats with Unread Messages for the Current User
+  @AllowedUserTypes('broker', 'barterer')
+  @Get('unread')
+  async getChatsWithUnreadMessages(@Req() req: any) {
+    const userId = req.user.id;
+    return this.chatsService.getChatsWithUnreadMessages(userId);
+  }
+
+}
