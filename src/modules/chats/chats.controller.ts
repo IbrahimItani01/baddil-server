@@ -44,3 +44,12 @@ export class ChatsController {
     return this.chatsService.getChatById(id);
   }
 
+  @AllowedUserTypes('broker', 'barterer')
+  @Get(':id/messages')
+  async getMessagesInChat(
+    @Param('id') chatId: string,
+    @Query('status') status?: string,
+  ) {
+    return this.chatsService.getMessagesInChat(chatId, status);
+  }
+
