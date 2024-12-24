@@ -55,4 +55,8 @@ export class TiersService {
     return this.prisma.tier.create({ data });
   }
 
+  async getTiers() {
+    return this.prisma.tier.findMany({ orderBy: { requirement: 'asc' } });
+  }
+
 }
