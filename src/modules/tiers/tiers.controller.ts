@@ -80,4 +80,9 @@ export class TiersController {
     return this.tiersService.updateTier(id, body);
   }
   
+  @AllowedUserTypes('admin')
+  @Delete(':id')
+  async deleteTier(@Param('id') id: string) {
+    return this.tiersService.deleteTier(id);
+  }
 }
