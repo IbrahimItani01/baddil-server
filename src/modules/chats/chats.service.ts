@@ -37,3 +37,9 @@ export class ChatsService {
     });
   }
 
+  async deleteChat(id: string) {
+    return await this.prisma.chat.delete({
+      where: { id },
+    });
+  }
+
