@@ -41,3 +41,16 @@ export class FinancesController {
     return this.financesService.getHireProfits();
   }
 
+  // Create a new expense
+  @Post('expense')
+  createExpense(
+    @Body()
+    body: {
+      amount: number;
+      description: string;
+      expenseType: ExpenseType;
+    },
+  ) {
+    return this.financesService.createExpense(body);
+  }
+
