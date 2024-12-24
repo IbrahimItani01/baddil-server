@@ -41,3 +41,9 @@ export class MessagesService {
     });
   }
 
+  async deleteMessage(id: string) {
+    return await this.prisma.message.delete({
+      where: { id },
+    });
+  }
+
