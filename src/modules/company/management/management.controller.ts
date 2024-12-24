@@ -60,3 +60,12 @@ export class ManagementController {
   getCategories() {
     return this.managementService.getCategories();
   }
+
+  @Put('category/:id')
+  updateCategory(
+    @Param('id') id: string,
+    @Body() body: { name?: string; categoryIcon?: string },
+  ) {
+    return this.managementService.updateCategory(id, body);
+  }
+
