@@ -52,3 +52,26 @@ export class RatingsService {
     }
   }
 
+  async addBarterRating(
+    userId: string,
+    barterId: string,
+    value: number,
+    description: string,
+  ) {
+    try {
+      return await this.prisma.rating.create({
+        data: {
+          value,
+          description,
+          wrote_by: userId,
+          barter_id: barterId,
+        },
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Failed to add barter rating',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
