@@ -19,3 +19,20 @@ export class ManagementController {
   constructor(private readonly managementService: ManagementService) {}
 
   @Post('subscription')
+  createSubscriptionPlan(
+    @Body()
+    body: {
+      name: string;
+      price: number;
+      targetUserType: string;
+      criteria?: string;
+    },
+  ) {
+    // Map `targetUserType` to `targetUserTypeId` for the service method
+    return this.managementService.createSubscriptionPlan({
+      name: body.name,
+      price: body.price,
+      targetUserTypeId: body.targetUserType,
+      criteria: body.criteria,
+    });
+  }
