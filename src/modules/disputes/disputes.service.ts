@@ -24,3 +24,23 @@ export class DisputesService {
     });
   }
 
+  // Get all disputes with optional filters
+  async getDisputes(query: { status?: DisputeStatus; userId?: string }) {
+    const { status, userId } = query;
+    return this.prisma.dispute.findMany({
+      where: {
+        status,
+        OR: [
+          { user1_id: userId },
+          { user2_id: userId },
+          { admin_id: userId },
+        ],
+      },
+      include: {
+        admin: true,
+        user1: true,
+        user2: true,
+      },
+    });
+  }
+
