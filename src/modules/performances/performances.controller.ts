@@ -48,3 +48,17 @@ export class PerformancesController {
     }
   }
 
+  @Get('ratings')
+  async getBrokerRatings(@Request() req: any) {
+    const brokerId = req.user.id; // Extract broker ID from JWT
+    try {
+      const ratings = await this.performancesService.getBrokerRatings(brokerId);
+      return { success: true, data: ratings };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to retrieve ratings',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+}
