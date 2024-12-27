@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -16,6 +14,7 @@ import { TiersService } from './tiers.service'; // 🔧 Importing TiersService
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔒 Importing JWT guard for route protection
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🚦 Importing guards to check user types
 import { CreateTierDto, UpdateTierDto } from './dto/tiers.dto'; // 🛠️ Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Apply guards to protect the routes
 @Controller('tiers') // 🚪 Base route for tiers
@@ -31,21 +30,17 @@ export class TiersController {
    */
   @AllowedUserTypes('barterer', 'admin') // 👥 Allow barterers and admins to access this route
   @Get('user/:userId?') // 📡 Route to get barterer tier information
-  async getBartererTier(@Request() req, @Param('userId') bartererId?: string) {
-    try {
-      const userId = req.user.id ? req.user.id : bartererId; // 🕵️‍♂️ Extracted user ID from JWT or parameter
-      const tierInfo = await this.tiersService.getBartererTier(userId); // 🗂️ Fetching tier info from service
-      return {
-        status: 'success',
-        message: 'Tier and progress retrieved successfully',
-        data: tierInfo,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve tier information',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+  async getBartererTier(
+    @Request() req,
+    @Param('userId') bartererId?: string,
+  ): Promise<ApiResponse> {
+    const userId = req.user.id ? req.user.id : bartererId; // 🕵️‍♂️ Extracted user ID from JWT or parameter
+    const tierInfo = await this.tiersService.getBartererTier(userId); // 🗂️ Fetching tier info from service
+    return {
+      success: true,
+      message: 'Tier and progress retrieved successfully',
+      data: tierInfo,
+    };
   }
 
   /**
@@ -56,21 +51,14 @@ export class TiersController {
    */
   @AllowedUserTypes('barterer') // 🏆 Only allow barterers to access this route
   @Patch('user') // ✍️ Route to evaluate and update user tier
-  async evaluateAndUpdateUserTier(@Request() req) {
-    try {
-      const userId = req.user.id; // 👤 Extract user ID from JWT
-      const result = await this.tiersService.evaluateAndUpdateUserTier(userId); // 🔄 Update tier based on evaluation
-      return {
-        status: 'success',
-        message: result.message,
-        data: result.updatedTier || null,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to update tier information',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+  async evaluateAndUpdateUserTier(@Request() req): Promise<ApiResponse> {
+    const userId = req.user.id; // 👤 Extract user ID from JWT
+    const result = await this.tiersService.evaluateAndUpdateUserTier(userId); // 🔄 Update tier based on evaluation
+    return {
+      success: true,
+      message: result.message,
+      data: result.updatedTier || null,
+    };
   }
 
   /**
@@ -81,21 +69,15 @@ export class TiersController {
    */
   @AllowedUserTypes('admin') // 👑 Only allow admins to access this route
   @Post() // ➕ Route to create a new tier
-  async createTier(@Body() body: CreateTierDto) {
+  async createTier(@Body() body: CreateTierDto): Promise<ApiResponse> {
     // 📝 Use CreateTierDto for the body
-    try {
-      const tier = await this.tiersService.createTier(body); // 🏗️ Calling service to create tier
-      return {
-        status: 'success',
-        message: 'Tier created successfully',
-        data: tier,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to create tier',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+
+    const tier = await this.tiersService.createTier(body); // 🏗️ Calling service to create tier
+    return {
+      success: true,
+      message: 'Tier created successfully',
+      data: tier,
+    };
   }
 
   /**
@@ -105,20 +87,13 @@ export class TiersController {
    */
   @AllowedUserTypes('admin') // 👑 Only allow admins to access this route
   @Get() // 📡 Route to get all tiers
-  async getTiers() {
-    try {
-      const tiers = await this.tiersService.getTiers(); // 🗂️ Fetching all tiers
-      return {
-        status: 'success',
-        message: 'Tiers retrieved successfully',
-        data: tiers,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve tiers',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+  async getTiers(): Promise<ApiResponse> {
+    const tiers = await this.tiersService.getTiers(); // 🗂️ Fetching all tiers
+    return {
+      success: true,
+      message: 'Tiers retrieved successfully',
+      data: tiers,
+    };
   }
 
   /**
@@ -130,21 +105,18 @@ export class TiersController {
    */
   @AllowedUserTypes('admin') // 👑 Only allow admins to access this route
   @Put(':id') // ✍️ Route to update a specific tier
-  async updateTier(@Param('id') id: string, @Body() body: UpdateTierDto) {
+  async updateTier(
+    @Param('id') id: string,
+    @Body() body: UpdateTierDto,
+  ): Promise<ApiResponse> {
     // 📝 Use UpdateTierDto for the body
-    try {
-      const updatedTier = await this.tiersService.updateTier(id, body); // 🔄 Updating tier in service
-      return {
-        status: 'success',
-        message: 'Tier updated successfully',
-        data: updatedTier,
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to update tier',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+
+    const updatedTier = await this.tiersService.updateTier(id, body); // 🔄 Updating tier in service
+    return {
+      success: true,
+      message: 'Tier updated successfully',
+      data: updatedTier,
+    };
   }
 
   /**
@@ -155,18 +127,11 @@ export class TiersController {
    */
   @AllowedUserTypes('admin') // 👑 Only allow admins to access this route
   @Delete(':id') // 🗑️ Route to delete a specific tier
-  async deleteTier(@Param('id') id: string) {
-    try {
-      await this.tiersService.deleteTier(id); // 🧹 Deleting tier through service
-      return {
-        status: 'success',
-        message: 'Tier deleted successfully',
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to delete tier',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // 💥 Handling errors
-    }
+  async deleteTier(@Param('id') id: string): Promise<ApiResponse> {
+    await this.tiersService.deleteTier(id); // 🧹 Deleting tier through service
+    return {
+      success: true,
+      message: 'Tier deleted successfully',
+    };
   }
 }
