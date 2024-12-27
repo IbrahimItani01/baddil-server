@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus type from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import {
+  CreateChatDto,
+  GetMessagesInChatDto,
+  GetChatByIdDto,
+} from './dto/chats.dto'; // 📑 Importing DTOs
 
 @Injectable()
 export class ChatsService {
@@ -9,11 +14,11 @@ export class ChatsService {
   /**
    * ➕ Create Chat
    * Creates a new chat with optional barter and hire IDs.
-   * @param barter_id - Optional ID of the barter.
-   * @param hire_id - Optional ID of the hire.
+   * @param createChatDto - DTO containing barter and hire IDs.
    * @returns The created chat record.
    */
-  async createChat(barter_id?: string, hire_id?: string) {
+  async createChat(createChatDto: CreateChatDto) {
+    const { barter_id, hire_id } = createChatDto;
     return await this.prisma.chat.create({
       data: {
         barter_id,
@@ -36,11 +41,12 @@ export class ChatsService {
   /**
    * 📜 Get Chat by ID
    * Fetches a specific chat by its ID, including messages.
-   * @param id - The ID of the chat to retrieve.
+   * @param getChatByIdDto - DTO containing the chat ID.
    * @returns The chat record.
    * @throws NotFoundException if the chat is not found.
    */
-  async getChatById(id: string) {
+  async getChatById(getChatByIdDto: GetChatByIdDto) {
+    const { id } = getChatByIdDto;
     const chat = await this.prisma.chat.findUnique({
       where: { id },
       include: { Message: true }, // 📩 Including messages in the result
@@ -56,11 +62,11 @@ export class ChatsService {
   /**
    * 📩 Get Messages in Chat
    * Fetches messages for a specific chat, optionally filtered by status.
-   * @param chatId - The ID of the chat.
-   * @param status - Optional status to filter messages.
+   * @param getMessagesInChatDto - DTO containing chatId and optional status.
    * @returns An array of messages in the chat.
    */
-  async getMessagesInChat(chatId: string, status?: string) {
+  async getMessagesInChat(getMessagesInChatDto: GetMessagesInChatDto) {
+    const { chatId, status } = getMessagesInChatDto;
     return await this.prisma.message.findMany({
       where: {
         chat_id: chatId,
@@ -72,11 +78,12 @@ export class ChatsService {
   /**
    * ❌ Delete Chat
    * Deletes a specific chat by its ID.
-   * @param id - The ID of the chat to delete.
+   * @param getChatByIdDto - DTO containing the chat ID.
    * @returns The deleted chat record.
    * @throws NotFoundException if the chat is not found.
    */
-  async deleteChat(id: string) {
+  async deleteChat(getChatByIdDto: GetChatByIdDto) {
+    const { id } = getChatByIdDto;
     const chat = await this.prisma.chat.findUnique({
       where: { id },
     });
@@ -194,7 +201,7 @@ export class ChatsService {
 
     return {
       status: 'success',
-      message: 'User  chats fetched successfully',
+      message: 'User chats fetched successfully',
       data: chats,
     };
   }
