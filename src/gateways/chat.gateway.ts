@@ -24,3 +24,10 @@ export class ChatGateway {
     private readonly jwtService: JwtService, // 🔑 Inject JwtService for decoding tokens
   ) {}
 
+  @WebSocketServer() server: Server; // 🌐 WebSocket server instance
+
+  /**
+   * 🔐 Middleware for validating JWT tokens during connection.
+   * 🚫 If the token is invalid, the connection is rejected.
+   * 🧑‍💻 If valid, user data is attached to the socket.
+   */
