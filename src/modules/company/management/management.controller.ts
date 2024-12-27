@@ -13,6 +13,13 @@ import {
 import { ManagementService } from './management.service'; // 🛠️ Importing ManagementService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import {
+  CreateSubscriptionPlanDto,
+  UpdateSubscriptionPlanDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CreateSubcategoryDto,
+} from './dto/management.dto'; // 📁 Importing DTOs
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
@@ -26,13 +33,7 @@ export class ManagementController {
    */
   @Post('subscription') // ➕ Endpoint to create a subscription plan
   async createSubscriptionPlan(
-    @Body()
-    body: {
-      name: string;
-      price: number;
-      targetUserType: string;
-      criteria?: string;
-    },
+    @Body() body: CreateSubscriptionPlanDto, // Using the DTO for validation
   ) {
     try {
       // Map `targetUser Type` to `targetUser TypeId` for the service method
@@ -40,9 +41,10 @@ export class ManagementController {
         await this.managementService.createSubscriptionPlan({
           name: body.name,
           price: body.price,
-          targetUserTypeId: body.targetUserType,
+          targetUserType: body.targetUserType, // Correct property name
           criteria: body.criteria,
         });
+
       return {
         status: 'success',
         message: 'Subscription plan created successfully', // ✅ Success message
@@ -84,7 +86,7 @@ export class ManagementController {
   @Put('subscription/:id') // ✏️ Endpoint to update a subscription plan
   async updateSubscriptionPlan(
     @Param('id') id: string,
-    @Body() body: { name?: string; price?: number; criteria?: string },
+    @Body() body: UpdateSubscriptionPlanDto, // Using the DTO for validation
   ) {
     try {
       const updatedPlan = await this.managementService.updateSubscriptionPlan(
@@ -109,7 +111,8 @@ export class ManagementController {
    * @param body - The category details including name and icon.
    */
   @Post('category') // ➕ Endpoint to create a category
-  async createCategory(@Body() body: { name: string; categoryIcon: string }) {
+  async createCategory(@Body() body: CreateCategoryDto) {
+    // Using the DTO for validation
     try {
       const category = await this.managementService.createCategory(body); // 🔄 Creating a new category
       return {
@@ -153,7 +156,7 @@ export class ManagementController {
   @Put('category/:id') // ✏️ Endpoint to update a category
   async updateCategory(
     @Param('id') id: string,
-    @Body() body: { name?: string; categoryIcon?: string },
+    @Body() body: UpdateCategoryDto, // Using the DTO for validation
   ) {
     try {
       const updatedCategory = await this.managementService.updateCategory(
@@ -199,7 +202,7 @@ export class ManagementController {
    */
   @Post('subcategory') // ➕ Endpoint to create a subcategory
   async createSubcategory(
-    @Body() body: { name: string; mainCategoryId: string },
+    @Body() body: CreateSubcategoryDto, // Using the DTO for validation
   ) {
     try {
       const subcategory = await this.managementService.createSubcategory(body); // 🔄 Creating a new subcategory
