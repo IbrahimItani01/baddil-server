@@ -1,19 +1,8 @@
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { PerformancesService } from './performances.service'; // 📈 Importing PerformancesService for business logic
-import {
-  Controller,
-  Get,
-  UseGuards,
-  HttpException,
-  HttpStatus,
-  Request,
-} from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
+import { Controller, Get, UseGuards, Request } from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
-import {
-  BrokerEarningsDto,
-  BrokerBartersDto,
-  BrokerRatingsDto,
-} from './dto/performances.dto'; // 📨 Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @AllowedUserTypes('broker') // 🎯 Restricting access to brokers
@@ -27,16 +16,15 @@ export class PerformancesController {
    * @returns The earnings data for the broker.
    */
   @Get('earnings') // 📥 Endpoint to get broker earnings
-  async getBrokerEarnings(@Request() req: any): Promise<BrokerEarningsDto> {
+  async getBrokerEarnings(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
-    try {
-      return await this.performancesService.getBrokerEarnings(brokerId);
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve earnings', // 🚫 Error handling
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
-    }
+
+    const earnings = await this.performancesService.getBrokerEarnings(brokerId); // �
+    return {
+      success: true,
+      message: 'Earnings retrieved successfully',
+      data: earnings,
+    };
   }
 
   /**
@@ -45,18 +33,16 @@ export class PerformancesController {
    * @returns The barters data for the broker.
    */
   @Get('barters') // 📥 Endpoint to get broker barters
-  async getBrokerBarters(@Request() req: any): Promise<BrokerBartersDto> {
+  async getBrokerBarters(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
-    try {
-      return await this.performancesService.getBrokerBartersGroupedByStatus(
-        brokerId,
-      );
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve barters', // 🚫 Error handling
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
-    }
+
+    const barters =
+      await this.performancesService.getBrokerBartersGroupedByStatus(brokerId);
+    return {
+      success: true,
+      message: 'Barters retrieved successfully',
+      data: barters,
+    };
   }
 
   /**
@@ -65,15 +51,14 @@ export class PerformancesController {
    * @returns The ratings data for the broker.
    */
   @Get('ratings') // 📥 Endpoint to get broker ratings
-  async getBrokerRatings(@Request() req: any): Promise<BrokerRatingsDto> {
+  async getBrokerRatings(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
-    try {
-      return await this.performancesService.getBrokerRatings(brokerId);
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve ratings', // 🚫 Error handling
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
-    }
+
+    const ratings = await this.performancesService.getBrokerRatings(brokerId);
+    return {
+      success: true,
+      message: 'Ratings retrieved successfully',
+      data: ratings,
+    };
   }
 }
