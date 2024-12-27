@@ -14,6 +14,11 @@ import { DisputesService } from './disputes.service'; // ⚖️ Importing Disput
 import { DisputeStatus } from '@prisma/client'; // 📜 Importing DisputeStatus enum from Prisma
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import {
+  CreateDisputeDto,
+  DisputeDto,
+  ResolveDisputeDto,
+} from './dto/disputes.dto'; // 📥 Importing DTOs
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @Controller('disputes') // 📍 Base route for dispute-related operations
@@ -28,20 +33,14 @@ export class DisputesController {
   @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
   @Post() // ➕ Endpoint to create a dispute
   async createDispute(
-    @Body()
-    body: {
-      adminId: string;
-      user1Id: string;
-      user2Id: string;
-      details: string;
-    },
-  ) {
+    @Body() body: CreateDisputeDto, // 📥 Using CreateDisputeDto for request body validation
+  ): Promise<{ status: string; message: string; data: DisputeDto }> {
     try {
       const dispute = await this.disputesService.createDispute(body); // 🔄 Creating a dispute
       return {
         status: 'success',
         message: 'Dispute created successfully',
-        data: dispute,
+        data: dispute, // 🎉 Returning the dispute data
       };
     } catch (error) {
       throw new HttpException(
@@ -59,18 +58,14 @@ export class DisputesController {
   @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get() // 📥 Endpoint to get disputes
   async getDisputes(
-    @Query()
-    query: {
-      status?: DisputeStatus; // Optional status filter
-      userId?: string; // Optional user ID filter
-    },
-  ) {
+    @Query() query: { status?: DisputeStatus; userId?: string }, // 📥 Optional filters for status and user ID
+  ): Promise<{ status: string; message: string; data: DisputeDto[] }> {
     try {
       const disputes = await this.disputesService.getDisputes(query); // 🔍 Fetching disputes
       return {
         status: 'success',
         message: 'Disputes retrieved successfully',
-        data: disputes,
+        data: disputes, // 🎉 Returning disputes data
       };
     } catch (error) {
       throw new HttpException(
@@ -87,13 +82,15 @@ export class DisputesController {
    */
   @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get(':id') // 📥 Endpoint to get a specific dispute
-  async getDispute(@Param('id') id: string) {
+  async getDispute(
+    @Param('id') id: string,
+  ): Promise<{ status: string; message: string; data: DisputeDto }> {
     try {
       const dispute = await this.disputesService.getDispute(id); // 🔍 Fetching a specific dispute
       return {
         status: 'success',
         message: 'Dispute retrieved successfully',
-        data: dispute,
+        data: dispute, // 🎉 Returning dispute data
       };
     } catch (error) {
       throw new HttpException(
@@ -110,13 +107,19 @@ export class DisputesController {
    */
   @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Patch(':id/resolve') // ✏️ Endpoint to resolve a dispute
-  async resolveDispute(@Param('id') id: string) {
+  async resolveDispute(
+    @Param('id') id: string, // 📥 Dispute ID from URL params
+    @Body() body: ResolveDisputeDto, // 📥 Using ResolveDisputeDto for request body validation
+  ): Promise<{ status: string; message: string; data: DisputeDto }> {
     try {
-      const updatedDispute = await this.disputesService.resolveDispute(id);
+      const updatedDispute = await this.disputesService.resolveDispute(
+        id,
+        body,
+      ); // 🔄 Resolving the dispute
       return {
         status: 'success',
         message: 'Dispute resolved successfully',
-        data: updatedDispute,
+        data: updatedDispute, // 🎉 Returning the updated dispute data
       };
     } catch (error) {
       throw new HttpException(
