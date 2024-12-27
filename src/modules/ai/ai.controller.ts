@@ -8,39 +8,39 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { AIService } from './ai.service';
-import { JwtAuthGuard } from 'src/guards/jwt.guard';
-import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
+} from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
+import { AIService } from './ai.service'; // 🤖 Importing AIService for business logic
+import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
+import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 
 /**
  * 🌐 AI Controller
  * This controller handles operations related to AI-managed barters,
  * such as toggling auto-trade, fetching auto-trades, and updating trade statuses.
  */
-@UseGuards(JwtAuthGuard, UserTypeGuard)
-@AllowedUserTypes('barterer', 'broker', 'admin')
-@Controller('ai')
+@UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
+@AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
+@Controller('ai') // 📍 Base route for AI-related operations
 export class AIController {
-  constructor(private readonly aiService: AIService) {}
+  constructor(private readonly aiService: AIService) {} // 🏗️ Injecting AIService
 
   /**
    * 📜 Get all auto-trades
    * Fetches all barters that are handled by AI.
    */
-  @Get('barters')
+  @Get('barters') // 📥 Endpoint to get all auto-trades
   async getAutoTrades() {
     try {
-      const trades = await this.aiService.getAutoTrades();
-      return { success: true, data: trades };
+      const trades = await this.aiService.getAutoTrades(); // 🔍 Fetching auto-trades
+      return { success: true, data: trades }; // ✅ Successful data retrieval
     } catch (error) {
       throw new HttpException(
         {
           success: false,
-          message: 'Failed to fetch auto-trades',
-          error: error.message,
+          message: 'Failed to fetch auto-trades', // 🚫 Error message
+          error: error.message, // 🔍 Detailed error message
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Server error status
       );
     }
   }
@@ -49,27 +49,27 @@ export class AIController {
    * 🔄 Toggle auto-trade
    * Enables or disables AI management for a specific barter.
    */
-  @Patch('barters/toggle')
+  @Patch('barters/toggle') // 🔄 Endpoint to toggle auto-trade
   async toggleAutoTrade(@Body() body: { barterId: string; enabled: boolean }) {
-    const { barterId, enabled } = body;
+    const { barterId, enabled } = body; // 🏷️ Destructuring request body
     try {
       const updatedBarter = await this.aiService.toggleAutoTrade(
         barterId,
         enabled,
-      );
+      ); // 🔄 Toggling auto-trade
       return {
         success: true,
-        message: 'Auto-trade updated successfully',
-        data: updatedBarter,
+        message: 'Auto-trade updated successfully', // ✅ Success message
+        data: updatedBarter, // 🎉 Updated barter data
       };
     } catch (error) {
       throw new HttpException(
         {
           success: false,
-          message: 'Failed to toggle auto-trade',
-          error: error.message,
+          message: 'Failed to toggle auto-trade', // 🚫 Error message
+          error: error.message, // 🔍 Detailed error message
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST, // ⚠️ Client error status
       );
     }
   }
@@ -78,29 +78,29 @@ export class AIController {
    * ✏️ Update auto-trade
    * Updates details or status for a specific AI-managed barter.
    */
-  @Put('barters')
+  @Put('barters') // ✏️ Endpoint to update auto-trade
   async updateAutoTrade(
     @Body() updateDetails: { barterId: string; status?: string; details?: any },
   ) {
-    const { barterId, ...rest } = updateDetails;
+    const { barterId, ...rest } = updateDetails; // 🏷️ Destructuring request body
     try {
       const updatedBarter = await this.aiService.updateAutoTrade(
         barterId,
         rest,
-      );
+      ); // 🔄 Updating auto-trade
       return {
         success: true,
-        message: 'Auto-trade updated successfully',
-        data: updatedBarter,
+        message: 'Auto-trade updated successfully', // ✅ Success message
+        data: updatedBarter, // 🎉 Updated barter data
       };
     } catch (error) {
       throw new HttpException(
         {
           success: false,
-          message: 'Failed to update auto-trade',
-          error: error.message,
+          message: 'Failed to update auto-trade', // 🚫 Error message
+          error: error.message, // 🔍 Detailed error message
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST, // ⚠️ Client error status
       );
     }
   }
@@ -109,19 +109,19 @@ export class AIController {
    * 💬 Get auto-trade chat
    * Fetches chat details for a specific barter.
    */
-  @Get('barters/:barterId/chat')
+  @Get('barters/:barterId/chat') // 📥 Endpoint to get chat details for a barter
   async getAutoTradeChat(@Param('barterId') barterId: string) {
     try {
-      const chat = await this.aiService.getAutoTradeChat(barterId);
-      return { success: true, data: chat };
+      const chat = await this.aiService.getAutoTradeChat(barterId); // 🔍 Fetching chat details for the specified barter
+      return { success: true, data: chat }; // ✅ Successful data retrieval
     } catch (error) {
       throw new HttpException(
         {
           success: false,
-          message: 'Failed to fetch chat',
-          error: error.message,
+          message: 'Failed to fetch chat', // 🚫 Error message
+          error: error.message, // 🔍 Detailed error message
         },
-        HttpStatus.NOT_FOUND,
+        HttpStatus.NOT_FOUND, // ⚠️ Not found status
       );
     }
   }
