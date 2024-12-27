@@ -1,6 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
-import { ProfitSource, ExpenseType } from '@prisma/client'; // 📜 Importing enum types
+import {
+  CreateProfitDto,
+  CreateExpenseDto,
+  GetProfitsDto,
+  GetExpensesDto,
+} from './dto/finances.dto'; // 📜 Importing DTOs
 
 @Injectable()
 export class FinancesService {
@@ -12,10 +17,11 @@ export class FinancesService {
    * @returns The created profit record.
    * @throws BadRequestException if the profit creation fails.
    */
-  async createProfit(data: { amount: number; source: ProfitSource }) {
+  async createProfit(data: CreateProfitDto) {
     if (data.amount <= 0) {
       throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
     }
+
     return this.prisma.profit.create({ data }); // 🔄 Creating a new profit
   }
 
@@ -24,11 +30,7 @@ export class FinancesService {
    * @param query - Filters for startDate, endDate, and source.
    * @returns An array of profits matching the filters.
    */
-  async getProfits(query: {
-    startDate?: string;
-    endDate?: string;
-    source?: ProfitSource;
-  }) {
+  async getProfits(query: GetProfitsDto) {
     const { startDate, endDate, source } = query;
     return this.prisma.profit.findMany({
       where: {
@@ -93,11 +95,7 @@ export class FinancesService {
    * @returns The created expense record.
    * @throws BadRequestException if the expense creation fails.
    */
-  async createExpense(data: {
-    amount: number;
-    description: string;
-    expenseType: ExpenseType;
-  }) {
+  async createExpense(data: CreateExpenseDto) {
     if (data.amount <= 0) {
       throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
     }
@@ -116,11 +114,7 @@ export class FinancesService {
    * @param query - Filters for startDate, endDate, and expenseType.
    * @returns An array of expenses matching the filters.
    */
-  async getExpenses(query: {
-    startDate?: string;
-    endDate?: string;
-    expenseType?: ExpenseType;
-  }) {
+  async getExpenses(query: GetExpensesDto) {
     const { startDate, endDate, expenseType } = query;
     return this.prisma.expense.findMany({
       where: {
