@@ -4,6 +4,11 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import {
+  BrokerEarningsDto,
+  BrokerBartersDto,
+  BrokerRatingsDto,
+} from './dto/performances.dto'; // 📨 Importing DTOs
 
 @Injectable()
 export class PerformancesService {
@@ -16,7 +21,7 @@ export class PerformancesService {
    * @throws NotFoundException if the broker has no completed hires.
    * @throws InternalServerErrorException if there is an error retrieving earnings.
    */
-  async getBrokerEarnings(brokerId: string) {
+  async getBrokerEarnings(brokerId: string): Promise<BrokerEarningsDto> {
     try {
       const hires = await this.prisma.hire.findMany({
         where: { broker_id: brokerId, status: 'completed' },
@@ -46,7 +51,9 @@ export class PerformancesService {
    * @returns An object containing the count of barters grouped by status.
    * @throws InternalServerErrorException if there is an error retrieving barters.
    */
-  async getBrokerBartersGroupedByStatus(brokerId: string) {
+  async getBrokerBartersGroupedByStatus(
+    brokerId: string,
+  ): Promise<BrokerBartersDto> {
     try {
       const barters = await this.prisma.barter.findMany({
         where: { user1_id: brokerId },
@@ -72,7 +79,7 @@ export class PerformancesService {
    * @returns An object containing average rating and total ratings count.
    * @throws InternalServerErrorException if there is an error retrieving ratings.
    */
-  async getBrokerRatings(brokerId: string) {
+  async getBrokerRatings(brokerId: string): Promise<BrokerRatingsDto> {
     try {
       const ratings = await this.prisma.rating.findMany({
         where: { broker_id: brokerId },
