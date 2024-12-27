@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import { BartererInfoDto } from './dto/barterers.dto'; // 📄 Importing the DTO for Barterer information
 
-/**
- * 🛠️ Barterers Service
- * This service handles the business logic related to barterers, such as fetching
- * barterer information, including their bartering history and wallet details.
- */
 @Injectable()
 export class BarterersService {
   constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
@@ -18,7 +14,7 @@ export class BarterersService {
    * @returns A detailed object containing the barterer's info, wallet items, and history
    * @throws NotFoundException if the barterer is not found
    */
-  async getBartererInfo(userId: string) {
+  async getBartererInfo(userId: string): Promise<BartererInfoDto> {
     // Fetch the barterer's information from the database, including relevant related data.
     const barterer = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -34,7 +30,7 @@ export class BarterersService {
       throw new NotFoundException('Barterer not found');
     }
 
-    // Return the formatted data
+    // Map the fetched data into the DTO format
     return {
       id: barterer.id,
       name: barterer.name,
