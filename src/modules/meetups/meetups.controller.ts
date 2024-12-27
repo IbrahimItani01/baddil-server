@@ -12,6 +12,7 @@ import { MeetupsService } from './meetups.service'; // 📅 Importing MeetupsSer
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { CreateMeetupDto, VerifyMeetupDto } from './dto/meetups.dto'; // 📄 Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('meetups') // 📍 Base route for meetup-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
@@ -25,20 +26,15 @@ export class MeetupsController {
    * @returns The created meetup record.
    */
   @Post('create') // ➕ Endpoint to create a meetup
-  async createMeetup(@Body() createMeetupDto: CreateMeetupDto) {
-    try {
-      const meetup = await this.meetupsService.createMeetup(createMeetupDto);
-      return {
-        status: 'success',
-        message: 'Meetup created successfully',
-        data: meetup,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to create meetup: ' + error.message,
-        HttpStatus.BAD_REQUEST, // 400 Bad Request
-      );
-    }
+  async createMeetup(
+    @Body() createMeetupDto: CreateMeetupDto,
+  ): Promise<ApiResponse> {
+    const meetup = await this.meetupsService.createMeetup(createMeetupDto);
+    return {
+      success: true,
+      message: 'Meetup created successfully',
+      data: meetup,
+    };
   }
 
   /**
@@ -51,23 +47,16 @@ export class MeetupsController {
   async verifyMeetup(
     @Param('meetupId') meetupId: string,
     @Body() verifyMeetupDto: VerifyMeetupDto, // 📄 Using the VerifyMeetupDto
-  ) {
-    try {
-      const verificationResult = await this.meetupsService.verifyMeetup(
-        meetupId,
-        verifyMeetupDto,
-      );
-      return {
-        status: 'success',
-        message: 'Meetup verified successfully',
-        data: verificationResult,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to verify meetup: ' + error.message,
-        HttpStatus.BAD_REQUEST, // 400 Bad Request
-      );
-    }
+  ): Promise<ApiResponse> {
+    const verificationResult = await this.meetupsService.verifyMeetup(
+      meetupId,
+      verifyMeetupDto,
+    );
+    return {
+      success: true,
+      message: 'Meetup verified successfully',
+      data: verificationResult,
+    };
   }
 
   /**
@@ -76,22 +65,17 @@ export class MeetupsController {
    * @returns The meetup record.
    */
   @Get(':meetupId') // 📥 Endpoint to get a specific meetup
-  async getMeetupById(@Param('meetupId') meetupId: string) {
-    try {
-      const meetup = await this.meetupsService.getMeetupById(meetupId);
-      if (!meetup) {
-        throw new HttpException('Meetup not found', HttpStatus.NOT_FOUND); // 404 Not Found
-      }
-      return {
-        status: 'success',
-        message: 'Meetup retrieved successfully',
-        data: meetup,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to retrieve meetup: ' + error.message,
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
+  async getMeetupById(
+    @Param('meetupId') meetupId: string,
+  ): Promise<ApiResponse> {
+    const meetup = await this.meetupsService.getMeetupById(meetupId);
+    if (!meetup) {
+      throw new HttpException('Meetup not found', HttpStatus.NOT_FOUND); // 404 Not Found
     }
+    return {
+      success: true,
+      message: 'Meetup retrieved successfully',
+      data: meetup,
+    };
   }
 }
