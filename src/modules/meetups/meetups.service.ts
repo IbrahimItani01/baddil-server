@@ -8,4 +8,6 @@ import { Meetup, MeetupStatus } from '@prisma/client'; // 📅 Importing Meetup 
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 
 @Injectable()
-export class MeetupsService {}
+export class MeetupsService {
+  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
+
