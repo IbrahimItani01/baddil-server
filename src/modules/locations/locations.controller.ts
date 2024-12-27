@@ -50,3 +50,28 @@ export class LocationsController {
     }
   }
 
+  /**
+   * 📜 Get a location by ID
+   * @param id - The ID of the location to retrieve.
+   * @returns The location record.
+   */
+  @Get(':id') // 📥 Endpoint to get a specific location
+  async getLocationById(@Param('id') id: string) {
+    try {
+      const location = await this.locationsService.getLocationById(id);
+      if (!location) {
+        throw new HttpException('Location not found', HttpStatus.NOT_FOUND); // 404 Not Found
+      }
+      return {
+        status: 'success',
+        message: 'Location retrieved successfully',
+        data: location,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve location: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
+      );
+    }
+  }
+
