@@ -7,8 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
 import { ManagementService } from './management.service'; // 🛠️ Importing ManagementService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
@@ -20,6 +18,7 @@ import {
   UpdateCategoryDto,
   CreateSubcategoryDto,
 } from './dto/management.dto'; // 📁 Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
@@ -34,48 +33,34 @@ export class ManagementController {
   @Post('subscription') // ➕ Endpoint to create a subscription plan
   async createSubscriptionPlan(
     @Body() body: CreateSubscriptionPlanDto, // Using the DTO for validation
-  ) {
-    try {
-      // Map `targetUser Type` to `targetUser TypeId` for the service method
-      const subscriptionPlan =
-        await this.managementService.createSubscriptionPlan({
-          name: body.name,
-          price: body.price,
-          targetUserType: body.targetUserType, // Correct property name
-          criteria: body.criteria,
-        });
+  ): Promise<ApiResponse> {
+    // Map `targetUser Type` to `targetUser TypeId` for the service method
+    const subscriptionPlan =
+      await this.managementService.createSubscriptionPlan({
+        name: body.name,
+        price: body.price,
+        targetUserType: body.targetUserType, // Correct property name
+        criteria: body.criteria,
+      });
 
-      return {
-        status: 'success',
-        message: 'Subscription plan created successfully', // ✅ Success message
-        data: subscriptionPlan, // 🎉 Created subscription plan data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to create subscription plan', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+    return {
+      success: true,
+      message: 'Subscription plan created successfully', // ✅ Success message
+      data: subscriptionPlan, // 🎉 Created subscription plan data
+    };
   }
 
   /**
    * 📜 Get all subscription plans
    */
   @Get('subscription') // 📥 Endpoint to get subscription plans
-  async getSubscriptionPlans() {
-    try {
-      const plans = await this.managementService.getSubscriptionPlans(); // 🔍 Fetching subscription plans
-      return {
-        status: 'success',
-        message: 'Subscription plans retrieved successfully', // ✅ Success message
-        data: plans, // 🎉 Subscription plans data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve subscription plans', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  async getSubscriptionPlans(): Promise<ApiResponse> {
+    const plans = await this.managementService.getSubscriptionPlans(); // 🔍 Fetching subscription plans
+    return {
+      success: true,
+      message: 'Subscription plans retrieved successfully', // ✅ Success message
+      data: plans, // 🎉 Subscription plans data
+    };
   }
 
   /**
@@ -87,23 +72,16 @@ export class ManagementController {
   async updateSubscriptionPlan(
     @Param('id') id: string,
     @Body() body: UpdateSubscriptionPlanDto, // Using the DTO for validation
-  ) {
-    try {
-      const updatedPlan = await this.managementService.updateSubscriptionPlan(
-        id,
-        body,
-      ); // 🔄 Updating the subscription plan
-      return {
-        status: 'success',
-        message: 'Subscription plan updated successfully', // ✅ Success message
-        data: updatedPlan, // 🎉 Updated subscription plan data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to update subscription plan', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  ): Promise<ApiResponse> {
+    const updatedPlan = await this.managementService.updateSubscriptionPlan(
+      id,
+      body,
+    ); // 🔄 Updating the subscription plan
+    return {
+      success: true,
+      message: 'Subscription plan updated successfully', // ✅ Success message
+      data: updatedPlan, // 🎉 Updated subscription plan data
+    };
   }
 
   /**
@@ -111,41 +89,27 @@ export class ManagementController {
    * @param body - The category details including name and icon.
    */
   @Post('category') // ➕ Endpoint to create a category
-  async createCategory(@Body() body: CreateCategoryDto) {
+  async createCategory(@Body() body: CreateCategoryDto): Promise<ApiResponse> {
     // Using the DTO for validation
-    try {
-      const category = await this.managementService.createCategory(body); // 🔄 Creating a new category
-      return {
-        status: 'success',
-        message: 'Category created successfully', // ✅ Success message
-        data: category, // 🎉 Created category data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to create category', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+    const category = await this.managementService.createCategory(body); // 🔄 Creating a new category
+    return {
+      success: true,
+      message: 'Category created successfully', // ✅ Success message
+      data: category, // 🎉 Created category data
+    };
   }
 
   /**
    * 📜 Get all categories
    */
   @Get('category') // 📥 Endpoint to get categories
-  async getCategories() {
-    try {
-      const categories = await this.managementService.getCategories(); // 🔍 Fetching categories
-      return {
-        status: 'success',
-        message: 'Categories retrieved successfully', // ✅ Success message
-        data: categories, // 🎉 Categories data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve categories', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  async getCategories(): Promise<ApiResponse> {
+    const categories = await this.managementService.getCategories(); // 🔍 Fetching categories
+    return {
+      success: true,
+      message: 'Categories retrieved successfully', // ✅ Success message
+      data: categories, // 🎉 Categories data
+    };
   }
 
   /**
@@ -157,23 +121,16 @@ export class ManagementController {
   async updateCategory(
     @Param('id') id: string,
     @Body() body: UpdateCategoryDto, // Using the DTO for validation
-  ) {
-    try {
-      const updatedCategory = await this.managementService.updateCategory(
-        id,
-        body,
-      ); // 🔄 Updating the category
-      return {
-        status: 'success',
-        message: 'Category updated successfully', // ✅ Success message
-        data: updatedCategory, // 🎉 Updated category data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to update category', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  ): Promise<ApiResponse> {
+    const updatedCategory = await this.managementService.updateCategory(
+      id,
+      body,
+    ); // 🔄 Updating the category
+    return {
+      success: true,
+      message: 'Category updated successfully', // ✅ Success message
+      data: updatedCategory, // 🎉 Updated category data
+    };
   }
 
   /**
@@ -181,19 +138,12 @@ export class ManagementController {
    * @param id - The ID of the category to delete.
    */
   @Delete('category/:id') // 🗑️ Endpoint to delete a category
-  async deleteCategory(@Param('id') id: string) {
-    try {
-      await this.managementService.deleteCategory(id); // 🔄 Deleting the category
-      return {
-        status: 'success',
-        message: 'Category deleted successfully', // ✅ Success message
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to delete category', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  async deleteCategory(@Param('id') id: string): Promise<ApiResponse> {
+    await this.managementService.deleteCategory(id); // 🔄 Deleting the category
+    return {
+      success: true,
+      message: 'Category deleted successfully', // ✅ Success message
+    };
   }
 
   /**
@@ -203,39 +153,25 @@ export class ManagementController {
   @Post('subcategory') // ➕ Endpoint to create a subcategory
   async createSubcategory(
     @Body() body: CreateSubcategoryDto, // Using the DTO for validation
-  ) {
-    try {
-      const subcategory = await this.managementService.createSubcategory(body); // 🔄 Creating a new subcategory
-      return {
-        status: 'success',
-        message: 'Subcategory created successfully', // ✅ Success message
-        data: subcategory, // 🎉 Created subcategory data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to create subcategory', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  ): Promise<ApiResponse> {
+    const subcategory = await this.managementService.createSubcategory(body); // 🔄 Creating a new subcategory
+    return {
+      success: true,
+      message: 'Subcategory created successfully', // ✅ Success message
+      data: subcategory, // 🎉 Created subcategory data
+    };
   }
 
   /**
    * 📜 Get all subcategories
    */
   @Get('subcategory') // 📥 Endpoint to get subcategories
-  async getSubcategories() {
-    try {
-      const subcategories = await this.managementService.getSubcategories(); // 🔍 Fetching subcategories
-      return {
-        status: 'success',
-        message: 'Subcategories retrieved successfully', // ✅ Success message
-        data: subcategories, // 🎉 Subcategories data
-      };
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to retrieve subcategories', // 🚫 Error message
-        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal Server Error status
-      );
-    }
+  async getSubcategories(): Promise<ApiResponse> {
+    const subcategories = await this.managementService.getSubcategories(); // 🔍 Fetching subcategories
+    return {
+      success: true,
+      message: 'Subcategories retrieved successfully', // ✅ Success message
+      data: subcategories, // 🎉 Subcategories data
+    };
   }
 }
