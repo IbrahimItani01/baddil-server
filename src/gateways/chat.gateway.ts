@@ -61,3 +61,23 @@ export class ChatGateway {
     }
   }
 
+  /**
+   * 🚪 Handle a user joining a chat room.
+   * 🏠 Adds the user to the specified chat room.
+   * @param chatId - The ID of the chat room.
+   * @param client - The connected socket instance.
+   */
+  @SubscribeMessage('joinChat')
+  handleJoinChat(
+    @MessageBody() chatId: string, // 📜 Chat room ID from the message body
+    @ConnectedSocket() client: Socket, // 🔗 Connected socket instance
+  ) {
+    const user = client.data.user; // 🧑‍💻 Retrieve user data from the socket
+    if (!user) {
+      throw new UnauthorizedException('User  not authenticated'); // ❌ User must be authenticated to join
+    }
+
+    this.logger.log(`User  ${user.sub} joined chat room ${chatId}`); // 📤 Log when user joins a room
+    client.join(chatId); // 🏠 Add the user to the chat room
+  }
+
