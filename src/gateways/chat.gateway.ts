@@ -31,3 +31,20 @@ export class ChatGateway {
    * 🚫 If the token is invalid, the connection is rejected.
    * 🧑‍💻 If valid, user data is attached to the socket.
    */
+  handleConnection(client: Socket) {
+    try {
+      const token = client.handshake.headers['authorization']?.split(' ')[1]; // 🧩 Extract JWT from Authorization header
+      if (!token) {
+        throw new UnauthorizedException('No token provided'); // ⚠️ No token, reject connection
+      }
+
+      const decoded = this.jwtService.verify(token); // 🧳 Decode and validate the JWT
+      client.data.user = decoded; // 🏷️ Attach user data to the socket instance
+
+      this.logger.log(`User  ${decoded.sub} connected`); // ✅ Log successful connection
+    } catch (error) {
+      this.logger.error(`Connection rejected: ${error.message}`); // ❌ Log error if connection fails
+      client.disconnect(true); // 🔌 Forcefully disconnect the client
+    }
+  }
+
