@@ -1,3 +1,5 @@
+// src/brokers/brokers.controller.ts
+
 import {
   Controller,
   Get,
@@ -13,6 +15,7 @@ import {
 import { BrokerService } from './brokers.service'; // 🤝 Importing BrokerService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import { HireBrokerDto, TerminateBrokerContractDto } from './dto/brokers.dto'; // 📜 Importing DTOs
 
 @Controller('brokers') // 📍 Base route for broker-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
@@ -20,13 +23,9 @@ import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard'; // 
 export class BrokersController {
   constructor(private readonly brokerService: BrokerService) {} // 🏗️ Injecting BrokerService
 
-  /**
-   * 📜 Get Hired Brokers
-   * Fetches all brokers hired by the authenticated user.
-   */
   @Get('hired-brokers') // 📥 Endpoint to get hired brokers
   async getHiredBrokers(@Request() req) {
-    const userId = req.user.id; // Extract user ID from JWT payload
+    const userId = req.user.id; // 🧑‍💼 Extract user ID from JWT payload
     try {
       const hiredBrokers = await this.brokerService.getHiredBrokers(userId); // 🔍 Fetching hired brokers
       return {
@@ -42,16 +41,12 @@ export class BrokersController {
     }
   }
 
-  /**
-   * ➕ Hire Broker
-   * Hires a broker for a specific item with a given budget.
-   */
   @Post() // ➕ Endpoint to hire a broker
   async hireBroker(
-    @Body() body: { brokerEmail: string; targetItemId: string; budget: number }, // 📜 Body parameters
+    @Body() body: HireBrokerDto, // 📜 Using HireBrokerDto for input validation
     @Request() req,
   ) {
-    const userId = req.user.id; // Extract the authenticated user ID from the JWT payload
+    const userId = req.user.id; // 🧑‍💼 Extract the authenticated user ID from the JWT payload
     try {
       const hireResult = await this.brokerService.hireBroker(
         userId,
@@ -72,16 +67,12 @@ export class BrokersController {
     }
   }
 
-  /**
-   * ❌ Terminate Broker Contract
-   * Terminates the contract with a hired broker.
-   */
   @Delete() // ❌ Endpoint to terminate a broker contract
   async terminateBrokerContract(
-    @Body() body: { brokerEmail: string }, // 📜 Body parameters
+    @Body() body: TerminateBrokerContractDto, // 📜 Using TerminateBrokerContractDto for input validation
     @Request() req,
   ) {
-    const userId = req.user.id; // Extract the authenticated user ID from the JWT payload
+    const userId = req.user.id; // 🧑‍💼 Extract the authenticated user ID from the JWT payload
     try {
       const hireResult = await this.brokerService.terminateBrokerContract(
         userId,
@@ -100,16 +91,12 @@ export class BrokersController {
     }
   }
 
-  /**
-   * 📑 Get Hire Contract Status
-   * Fetches the status of a specific hire contract.
-   */
   @Get('hire-status/:hireId') // 📥 Endpoint to get hire contract status
   async getHireContractStatus(
     @Request() req,
     @Param('hireId') hireId: string, // 📜 Hire ID from the route parameters
   ) {
-    const userId = req.user.id; // Extract user ID from JWT payload
+    const userId = req.user.id; // 🧑‍💼 Extract user ID from JWT payload
     try {
       const contractStatus = await this.brokerService.getHireContractStatus(
         userId,
