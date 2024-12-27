@@ -13,12 +13,12 @@ import {
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { BartersService } from './barters.service'; // 🤝 Importing BartersService for business logic
-import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus type from Prisma
+import {
+  CreateBarterDto,
+  UpdateBarterStatusDto,
+  BarterResponseDto,
+} from './dto/barters.dto'; // 📜 Importing DTOs
 
-/**
- * 🚪 Barters Controller
- * Manages routes related to barters, such as creating, updating, and deleting barters.
- */
 @Controller('barters') // 📍 Base route for barter-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
@@ -30,19 +30,32 @@ export class BartersController {
    * Fetches all barters for the logged-in user.
    */
   @Get('/by-user') // 📥 Endpoint to get barters by user
-  async getUserBarters(@Request() req: any) {
+  async getUserBarters(
+    @Request() req: any,
+  ): Promise<{ status: string; message: string; data: BarterResponseDto[] }> {
     try {
-      const userId = req.user.id; // Extracting the user ID from the JWT
+      const userId = req.user.id; // 🧑‍💻 Extracting the user ID from the JWT
       const barters = await this.barterService.getBartersByUser(userId); // 🔍 Fetching barters for the user
+
+      // 🗂️ Map the response to BarterResponseDto
+      const response: BarterResponseDto[] = barters.map((barter) => ({
+        id: barter.id, // 🆔 Barter ID
+        user1_id: barter.user1_id, // 🧑‍💼 First user's ID
+        user2_id: barter.user2_id, // 🧑‍💼 Second user's ID
+        user1_item_id: barter.user1_item_id, // 📦 Item ID of the first user
+        user2_item_id: barter.user2_item_id, // 📦 Item ID of the second user
+        status: barter.status, // 📝 Current status of the barter
+      }));
+
       return {
-        status: 'success',
+        status: 'success', // ✅ Success status
         message: 'Barters fetched successfully', // ✅ Success message
-        data: barters, // 🎉 Barters data
+        data: response, // 🎉 Barters data
       };
     } catch (error) {
       throw new HttpException(
         {
-          status: 'error',
+          status: 'error', // 🚫 Error status
           message: 'Failed to fetch barters', // 🚫 Error message
           error: error.message, // 🔍 Detailed error message
         },
@@ -57,28 +70,33 @@ export class BartersController {
    */
   @Post('') // ➕ Endpoint to create a barter
   async createBarter(
-    @Body()
-    barterDetails: {
-      user2Id: string; // 📛 ID of the second user
-      user1ItemId: string; // 📦 ID of the first user's item
-      user2ItemId: string; // 📦 ID of the second user's item
-    },
+    @Body() barterDetails: CreateBarterDto, // 📜 Apply DTO for validation
     @Request() req, // 🧑‍💻 Request object to access user info
-  ) {
+  ): Promise<{ status: string; message: string; data: BarterResponseDto }> {
     try {
       const createdBarter = await this.barterService.createBarter(
         req.user.id, // 🏷️ User ID from the request
         barterDetails, // 📜 Barter details
       );
+
+      const response: BarterResponseDto = {
+        id: createdBarter.id, // 🆔 Barter ID
+        user1_id: createdBarter.user1_id, // 🧑‍💼 First user's ID
+        user2_id: createdBarter.user2_id, // 🧑‍💼 Second user's ID
+        user1_item_id: createdBarter.user1_item_id, // 📦 Item ID of the first user
+        user2_item_id: createdBarter.user2_item_id, // 📦 Item ID of the second user
+        status: createdBarter.status, // 📝 Current status of the barter
+      };
+
       return {
-        status: 'success',
+        status: 'success', // ✅ Success status
         message: 'Barter created successfully', // ✅ Success message
-        data: createdBarter, // 🎉 Created barter data
+        data: response, // 🎉 Created barter data
       };
     } catch (error) {
       throw new HttpException(
         {
-          status: 'error',
+          status: 'error', // 🚫 Error status
           message: 'Failed to create barter', // 🚫 Error message
           error: error.message, // 🔍 Detailed error message
         },
@@ -93,21 +111,21 @@ export class BartersController {
    */
   @Put('') // ✏️ Endpoint to update barter status
   async updateBarterStatus(
-    @Body() updateDetails: { barterId: string; status: BarterStatus }, // 📜 Update details
+    @Body() updateDetails: UpdateBarterStatusDto, // 📜 Apply DTO for validation
   ) {
     try {
       const updatedBarter = await this.barterService.updateBarterStatus(
         updateDetails, // 📜 Update details
       );
       return {
-        status: 'success',
+        status: 'success', // ✅ Success status
         message: 'Barter status updated successfully', // ✅ Success message
         data: updatedBarter, // 🎉 Updated barter data
       };
     } catch (error) {
       throw new HttpException(
         {
-          status: 'error',
+          status: 'error', // 🚫 Error status
           message: 'Failed to update barter status', // 🚫 Error message
           error: error.message, // 🔍 Detailed error message
         },
@@ -125,13 +143,13 @@ export class BartersController {
     try {
       await this.barterService.cancelBarter(barterId.barterId); // 🗑️ Cancelling the barter
       return {
-        status: 'success',
+        status: 'success', // ✅ Success status
         message: 'Barter canceled successfully', // ✅ Success message
       };
     } catch (error) {
       throw new HttpException(
         {
-          status: 'error',
+          status: 'error', // 🚫 Error status
           message: 'Failed to cancel barter', // 🚫 Error message
           error: error.message, // 🔍 Detailed error message
         },
