@@ -108,8 +108,3 @@ export enum UserThemeEnum {
   Light = 'light', // 💡 Light theme
 }
 
-// 📊 Represents the status of API responses
-export enum ApiResponseStatusEnum {
-  Success = 'success', // ✅ API call was successful
-  Failed = 'failed', // ❌ API call failed
-}
