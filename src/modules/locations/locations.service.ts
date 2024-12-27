@@ -6,3 +6,6 @@ import {
 import { Location } from '@prisma/client'; // 📍 Importing Location type from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 
+@Injectable()
+export class LocationsService {
+  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
