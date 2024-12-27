@@ -57,15 +57,35 @@ export class MessagesController {
     }
   }
 
-  @Patch(':id/status')
+  /**
+   * ✏️ Update the status of a message
+   * @param id - The ID of the message to update.
+   * @param body - The new status of the message.
+   * @returns The updated message record.
+   */
+  @Patch(':id/status') // ✏️ Endpoint to update message status
   async updateMessageStatus(
     @Param('id') id: string,
     @Body() body: { status: string },
   ) {
-    return this.messagesService.updateMessageStatus(id, body.status);
+    try {
+      const updatedMessage = await this.messagesService.updateMessageStatus(
+        id,
+        body.status,
+      );
+      return {
+        status: 'success',
+        message: 'Message status updated successfully',
+        data: updatedMessage,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to update message status: ' + error.message,
+        HttpStatus.BAD_REQUEST, // 400 Bad Request
+      );
+    }
   }
 
-  @Delete(':id')
   async deleteMessage(@Param('id') id: string) {
     return this.messagesService.deleteMessage(id);
   }
