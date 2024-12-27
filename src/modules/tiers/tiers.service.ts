@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import { CreateTierDto, UpdateTierDto } from './dto/tiers.dto'; // 🛠️ Importing DTOs
 
 @Injectable()
 export class TiersService {
@@ -25,7 +26,7 @@ export class TiersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User  not found'); // 🚫 Error handling for not found
+      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
     }
 
     const completedBarters = user.Barter1.filter(
@@ -56,7 +57,7 @@ export class TiersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User  not found'); // 🚫 Error handling for not found
+      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
     }
 
     // Update the user's tier
@@ -73,7 +74,8 @@ export class TiersService {
    * @param data - The tier details including name and requirement.
    * @returns The created tier information.
    */
-  async createTier(data: { name: string; requirement: number }) {
+  async createTier(data: CreateTierDto) {
+    // 📥 Accepting CreateTierDto
     return this.prisma.tier.create({ data });
   }
 
@@ -91,7 +93,8 @@ export class TiersService {
    * @param data - The updated tier details.
    * @returns The updated tier information.
    */
-  async updateTier(id: string, data: { name?: string; requirement?: number }) {
+  async updateTier(id: string, data: UpdateTierDto) {
+    // 📥 Accepting UpdateTierDto
     return this.prisma.tier.update({
       where: { id },
       data,
@@ -111,7 +114,7 @@ export class TiersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User  not found'); // 🚫 Error handling for not found
+      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
     }
 
     if (user.user_type.type !== 'barterer') {
@@ -148,7 +151,7 @@ export class TiersService {
         include: { tier: true }, // Include the updated tier in the response
       });
       return {
-        message: `User 's tier updated to ${nextTier.name}`,
+        message: `User's tier updated to ${nextTier.name}`,
         updatedTier: updatedUser.tier,
       };
     }
