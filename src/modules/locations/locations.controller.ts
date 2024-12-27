@@ -12,6 +12,7 @@ import { LocationsService } from './locations.service'; // 📍 Importing Locati
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { CreateLocationDto } from './dto/locations.dto'; // 📄 Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('locations') // 📍 Base route for location-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
@@ -25,21 +26,16 @@ export class LocationsController {
    * @returns The created location record.
    */
   @Post('create') // ➕ Endpoint to create a location
-  async createLocation(@Body() createLocationDto: CreateLocationDto) {
-    try {
-      const location =
-        await this.locationsService.createLocation(createLocationDto);
-      return {
-        status: 'success',
-        message: 'Location created successfully',
-        data: location,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to create location: ' + error.message,
-        HttpStatus.BAD_REQUEST, // 400 Bad Request
-      );
-    }
+  async createLocation(
+    @Body() createLocationDto: CreateLocationDto,
+  ): Promise<ApiResponse> {
+    const location =
+      await this.locationsService.createLocation(createLocationDto);
+    return {
+      success: true,
+      message: 'Location created successfully',
+      data: location,
+    };
   }
 
   /**
@@ -48,23 +44,16 @@ export class LocationsController {
    * @returns The location record.
    */
   @Get(':id') // 📥 Endpoint to get a specific location
-  async getLocationById(@Param('id') id: string) {
-    try {
-      const location = await this.locationsService.getLocationById(id);
-      if (!location) {
-        throw new HttpException('Location not found', HttpStatus.NOT_FOUND); // 404 Not Found
-      }
-      return {
-        status: 'success',
-        message: 'Location retrieved successfully',
-        data: location,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to retrieve location: ' + error.message,
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
+  async getLocationById(@Param('id') id: string): Promise<ApiResponse> {
+    const location = await this.locationsService.getLocationById(id);
+    if (!location) {
+      throw new HttpException('Location not found', HttpStatus.NOT_FOUND); // 404 Not Found
     }
+    return {
+      success: true,
+      message: 'Location retrieved successfully',
+      data: location,
+    };
   }
 
   /**
@@ -72,19 +61,12 @@ export class LocationsController {
    * @returns An array of all locations.
    */
   @Get() // 📥 Endpoint to get all locations
-  async getAllLocations() {
-    try {
-      const locations = await this.locationsService.getAllLocations();
-      return {
-        status: 'success',
-        message: 'Locations retrieved successfully',
-        data: locations,
-      };
-    } catch (error) {
-      throw new HttpException(
-        'Failed to retrieve locations: ' + error.message,
-        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
-      );
-    }
+  async getAllLocations(): Promise<ApiResponse> {
+    const locations = await this.locationsService.getAllLocations();
+    return {
+      success: true,
+      message: 'Locations retrieved successfully',
+      data: locations,
+    };
   }
 }
