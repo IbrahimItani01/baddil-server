@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { Meetup, MeetupStatus } from '@prisma/client'; // 📅 Importing Meetup and MeetupStatus types from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import { CreateMeetupDto,VerifyMeetupDto } from './dto/meetups.dto'; // 🧾 Importing DTOs
 
 @Injectable()
 export class MeetupsService {
@@ -13,17 +14,12 @@ export class MeetupsService {
 
   /**
    * ➕ Create a new meetup
-   * @param user1Key - The key of the first user.
-   * @param user2Key - The key of the second user.
-   * @param locationId - The ID of the location for the meetup.
+   * @param createMeetupDto - The DTO containing data for creating a meetup.
    * @returns The created meetup record.
    * @throws InternalServerErrorException if there is an error creating the meetup.
    */
-  async createMeetup(
-    user1Key: string,
-    user2Key: string,
-    locationId: string,
-  ): Promise<Meetup> {
+  async createMeetup(createMeetupDto: CreateMeetupDto): Promise<Meetup> {
+    const { user1Key, user2Key, locationId } = createMeetupDto; // Destructure the DTO
     try {
       return await this.prisma.meetup.create({
         data: {
@@ -42,12 +38,17 @@ export class MeetupsService {
   /**
    * 📜 Verify a meetup
    * @param meetupId - The ID of the meetup to verify.
-   * @param userKey - The key of the user verifying the meetup.
+   * @param verifyMeetupDto - The DTO containing the userKey for verification.
    * @returns The verified meetup record.
    * @throws NotFoundException if the meetup is not found.
    * @throws BadRequestException if the user key does not match.
    */
-  async verifyMeetup(meetupId: string, userKey: string): Promise<Meetup> {
+  async verifyMeetup(
+    meetupId: string,
+    verifyMeetupDto: VerifyMeetupDto,
+  ): Promise<Meetup> {
+    const { userKey } = verifyMeetupDto; // Destructure the DTO
+
     const meetup = await this.prisma.meetup.findUnique({
       where: { id: meetupId },
     });
@@ -66,7 +67,7 @@ export class MeetupsService {
       return meetup; // Return the verified meetup
     }
 
-    throw new BadRequestException('User  key does not match'); // 🚫 Error handling for mismatched user key
+    throw new BadRequestException('User key does not match'); // 🚫 Error handling for mismatched user key
   }
 
   /**
