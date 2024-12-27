@@ -1,3 +1,5 @@
+// src/barters/barters.service.ts
+
 import {
   Injectable,
   NotFoundException,
@@ -5,6 +7,11 @@ import {
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import {
+  CreateBarterDto,
+  UpdateBarterStatusDto,
+  BarterResponseDto,
+} from './dto/barters.dto'; // Importing DTOs
 
 @Injectable()
 export class BartersService {
@@ -17,7 +24,7 @@ export class BartersService {
    * @returns An array of barters associated with the user.
    * @throws NotFoundException if no barters are found for the user.
    */
-  async getBartersByUser(userId: string) {
+  async getBartersByUser(userId: string): Promise<BarterResponseDto[]> {
     const barters = await this.prisma.barter.findMany({
       where: { user1_id: userId },
     });
@@ -26,7 +33,7 @@ export class BartersService {
       throw new NotFoundException('No barters found for this user'); // Handle case where no barters are found
     }
 
-    return barters; // Return the list of barters
+    return barters.map((barter) => this.mapBarterResponse(barter)); // Map and return the barters
   }
 
   /**
@@ -39,14 +46,10 @@ export class BartersService {
    */
   async createBarter(
     userId: string,
-    barterDetails: {
-      user2Id: string;
-      user1ItemId: string;
-      user2ItemId: string;
-    },
-  ) {
+    barterDetails: CreateBarterDto,
+  ): Promise<BarterResponseDto> {
     try {
-      return await this.prisma.barter.create({
+      const createdBarter = await this.prisma.barter.create({
         data: {
           user1_id: userId,
           user2_id: barterDetails.user2Id,
@@ -55,6 +58,7 @@ export class BartersService {
           status: BarterStatus.ongoing, // Default status
         },
       });
+      return this.mapBarterResponse(createdBarter); // Return the created barter formatted as BarterResponseDto
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new BadRequestException('Failed to create barter'); // Handle case where barter creation fails
@@ -68,10 +72,9 @@ export class BartersService {
    * @returns The updated barter object.
    * @throws NotFoundException if the barter is not found.
    */
-  async updateBarterStatus(updateDetails: {
-    barterId: string;
-    status: BarterStatus;
-  }) {
+  async updateBarterStatus(
+    updateDetails: UpdateBarterStatusDto,
+  ): Promise<BarterResponseDto> {
     const barter = await this.prisma.barter.findUnique({
       where: { id: updateDetails.barterId },
     });
@@ -80,12 +83,13 @@ export class BartersService {
       throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
     }
 
-    return await this.prisma.barter.update({
+    const updatedBarter = await this.prisma.barter.update({
       where: { id: updateDetails.barterId },
       data: {
         status: updateDetails.status,
       },
     });
+    return this.mapBarterResponse(updatedBarter); // Return updated barter formatted as BarterResponseDto
   }
 
   /**
@@ -94,7 +98,7 @@ export class BartersService {
    * @param barterId - The ID of the barter to cancel.
    * @throws NotFoundException if the barter is not found.
    */
-  async cancelBarter(barterId: string) {
+  async cancelBarter(barterId: string): Promise<void> {
     const barter = await this.prisma.barter.findUnique({
       where: { id: barterId },
     });
@@ -106,5 +110,19 @@ export class BartersService {
     await this.prisma.barter.delete({
       where: { id: barterId },
     });
+  }
+
+  /**
+   * Helper function to map the Barter object to the BarterResponseDto format
+   */
+  private mapBarterResponse(barter): BarterResponseDto {
+    return {
+      id: barter.id,
+      user1_id: barter.user1_id,
+      user2_id: barter.user2_id,
+      user1_item_id: barter.user1_item_id,
+      user2_item_id: barter.user2_item_id,
+      status: barter.status,
+    };
   }
 }
