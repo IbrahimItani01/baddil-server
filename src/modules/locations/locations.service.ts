@@ -38,3 +38,17 @@ export class LocationsService {
     }
   }
 
+  /**
+   * 📜 Get a location by ID
+   * @param id - The ID of the location to retrieve.
+   * @returns The location record.
+   * @throws NotFoundException if the location is not found.
+   */
+  async getLocationById(id: string): Promise<Location> {
+    const location = await this.prisma.location.findUnique({ where: { id } });
+    if (!location) {
+      throw new NotFoundException('Location not found'); // 🚫 Error handling for not found
+    }
+    return location;
+  }
+
