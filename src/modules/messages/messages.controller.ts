@@ -25,21 +25,36 @@ export class MessagesController {
     private readonly chatGateway: ChatGateway, // 🏗️ Injecting ChatGateway
   ) {}
 
+  /**
+   * ➕ Send a new message
+   * @param body - The message content, owner ID, and chat ID.
+   * @returns The saved message record.
+   */
+  @Post() // ➕ Endpoint to send a message
   async sendMessage(
-    @Body()
-    body: {
-      content: string;
-      owner_id: string;
-      chat_id: string;
-      status?: string;
-    },
+    @Body() body: { content: string; owner_id: string; chat_id: string },
   ) {
-    return this.messagesService.sendMessage(
-      body.content,
-      body.owner_id,
-      body.chat_id,
-      body.status || 'sent',
-    );
+    try {
+      const savedMessage = await this.messagesService.sendMessage(
+        body.content,
+        body.owner_id,
+        body.chat_id,
+        'sent',
+      );
+
+      // Emit WebSocket event
+      this.chatGateway.server.to(body.chat_id).emit('newMessage', savedMessage);
+      return {
+        status: 'success',
+        message: 'Message sent successfully',
+        data: savedMessage,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to send message: ' + error.message,
+        HttpStatus.BAD_REQUEST, // 400 Bad Request
+      );
+    }
   }
 
   @Patch(':id/status')
