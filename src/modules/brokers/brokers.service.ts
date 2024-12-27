@@ -54,12 +54,8 @@ export class BrokerService {
     }));
   }
 
-  async hireBroker(
-    userId: string,
-    brokerEmail: string,
-    targetItemId: string,
-    budget: number,
-  ) {
+  async hireBroker(userId: string, body) {
+    const { brokerEmail, budget, targetItemId } = body;
     const broker = await this.prisma.user.findUnique({
       where: { email: brokerEmail },
     });
