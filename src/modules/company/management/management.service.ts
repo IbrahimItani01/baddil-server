@@ -1,16 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/database/prisma.service';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 
 @Injectable()
 export class ManagementService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
 
+  /**
+   * ➕ Create a new subscription plan
+   * @param data - The subscription plan details including name, price, target user type ID, and criteria.
+   * @returns The created subscription plan record.
+   * @throws BadRequestException if the price is invalid.
+   */
   async createSubscriptionPlan(data: {
     name: string;
     price: number;
     targetUserTypeId: string; // Updated to handle foreign key
     criteria?: string;
   }) {
+    if (data.price <= 0) {
+      throw new BadRequestException('Price must be greater than zero'); // 🚫 Invalid price
+    }
+
     return this.prisma.subscriptionPlan.create({
       data: {
         name: data.name,
@@ -23,22 +37,46 @@ export class ManagementService {
     });
   }
 
+  /**
+   * 📜 Get all subscription plans
+   * @returns An array of subscription plans with related features and user types.
+   */
   async getSubscriptionPlans() {
     return this.prisma.subscriptionPlan.findMany({
       include: { features: true, user_type: true }, // Include related UserType
     });
   }
 
+  /**
+   * ✏️ Update a subscription plan
+   * @param id - The ID of the subscription plan to update.
+   * @param data - The updated subscription plan details.
+   * @returns The updated subscription plan record.
+   * @throws NotFoundException if the subscription plan is not found.
+   */
   async updateSubscriptionPlan(
     id: string,
     data: { name?: string; price?: number; criteria?: string },
   ) {
+    const existingPlan = await this.prisma.subscriptionPlan.findUnique({
+      where: { id },
+    });
+
+    if (!existingPlan) {
+      throw new NotFoundException(`Subscription plan with ID ${id} not found`); // 🚫 Plan not found
+    }
+
     return this.prisma.subscriptionPlan.update({
       where: { id },
       data,
     });
   }
 
+  /**
+   * ➕ Create a new category
+   * @param data - The category details including name and icon.
+   * @returns The created category record.
+   */
   async createCategory(data: { name: string; categoryIcon: string }) {
     return this.prisma.category.create({
       data: {
@@ -48,13 +86,35 @@ export class ManagementService {
     });
   }
 
+  /**
+   * 📜 Get all categories
+   * @returns An array of categories with their subcategories.
+   */
   async getCategories() {
     return this.prisma.category.findMany({
       include: { subcategories: true },
     });
   }
 
-  async updateCategory(id: string, data: { name?: string; categoryIcon?: string }) {
+  /**
+   * ✏️ Update a category
+   * @param id - The ID of the category to update.
+   * @param data - The updated category details.
+   * @returns The updated category record.
+   * @throws NotFoundException if the category is not found.
+   */
+  async updateCategory(
+    id: string,
+    data: { name?: string; categoryIcon?: string },
+  ) {
+    const existingCategory = await this.prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException(`Category with ID ${id} not found`); // 🚫 Category not found
+    }
+
     return this.prisma.category.update({
       where: { id },
       data: {
@@ -64,11 +124,41 @@ export class ManagementService {
     });
   }
 
+  /**
+   * 🗑️ Delete a category
+   * @param id - The ID of the category to delete.
+   * @returns The deleted category record.
+   * @throws NotFoundException if the category is not found.
+   */
   async deleteCategory(id: string) {
+    const existingCategory = await this.prisma.category.findUnique({
+      where: { id },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException(`Category with ID ${id} not found`); // 🚫 Category not found
+    }
+
     return this.prisma.category.delete({ where: { id } });
   }
 
+  /**
+   * ➕ Create a new subcategory
+   * @param data - The subcategory details including name and main category ID.
+   * @returns The created subcategory record.
+   * @throws NotFoundException if the main category is not found.
+   */
   async createSubcategory(data: { name: string; mainCategoryId: string }) {
+    const existingCategory = await this.prisma.category.findUnique({
+      where: { id: data.mainCategoryId },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException(
+        `Main category with ID ${data.mainCategoryId} not found`,
+      ); // 🚫 Main category not found
+    }
+
     return this.prisma.subcategory.create({
       data: {
         name: data.name,
@@ -79,6 +169,10 @@ export class ManagementService {
     });
   }
 
+  /**
+   * 📜 Get all subcategories
+   * @returns An array of subcategories with their related categories.
+   */
   async getSubcategories() {
     return this.prisma.subcategory.findMany({
       include: { category: true },
