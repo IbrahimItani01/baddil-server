@@ -52,3 +52,11 @@ export class LocationsService {
     return location;
   }
 
+  /**
+   * 📜 Get all locations
+   * @returns An array of all locations.
+   */
+  async getAllLocations(): Promise<Location[]> {
+    return this.prisma.location.findMany(); // 🔍 Fetching all locations
+  }
+}
