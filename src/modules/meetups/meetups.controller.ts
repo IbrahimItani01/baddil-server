@@ -50,4 +50,33 @@ export class MeetupsController {
     }
   }
 
+  /**
+   * 📜 Verify a meetup
+   * @param meetupId - The ID of the meetup to verify.
+   * @param userKey - The key of the user verifying the meetup.
+   * @returns The verification result.
+   */
+  @Post('verify/:meetupId') // ➕ Endpoint to verify a meetup
+  async verifyMeetup(
+    @Param('meetupId') meetupId: string,
+    @Body('userKey') userKey: string,
+  ) {
+    try {
+      const verificationResult = await this.meetupsService.verifyMeetup(
+        meetupId,
+        userKey,
+      );
+      return {
+        status: 'success',
+        message: 'Meetup verified successfully',
+        data: verificationResult,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to verify meetup: ' + error.message,
+        HttpStatus.BAD_REQUEST, // 400 Bad Request
+      );
+    }
+  }
+
 }
