@@ -20,6 +20,8 @@ import { PerformancesModule } from './modules/performances/performances.module';
 import { RatingsModule } from './modules/ratings/ratings.module'; // ⭐ Importing the Ratings module
 import { TiersModule } from './modules/tiers/tiers.module'; // 🔝 Importing the Tiers module
 import { WalletModule } from './modules/wallets/wallets.module'; // 💰 Importing the Wallet module
+import { APP_FILTER } from '@nestjs/core'; // 🚨 Importing APP_FILTER to handle errors
+import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Importing the API response exception filter
 
 @Module({
   imports: [
@@ -50,6 +52,9 @@ import { WalletModule } from './modules/wallets/wallets.module'; // 💰 Importi
     WalletModule,
   ],
   controllers: [AppController], // 🎛️ Registering the main controller of the app
-  providers: [AppService], // 🛠️ Registering the main service of the app
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: ApiResponseExceptionFilter }, // 🚨 Registering the API response exception filter
+  ], // 🛠️ Registering the main service of the app
 })
 export class AppModule {} // 📦 Defining the main application module
