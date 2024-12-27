@@ -15,6 +15,11 @@ import {
 import { ChatsService } from './chats.service'; // 💬 Importing ChatsService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import {
+  CreateChatDto,
+  GetChatByIdDto,
+  GetMessagesInChatDto,
+} from './dto/chats.dto'; // 📑 Importing DTOs
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @Controller('chats') // 📍 Base route for chat-related operations
@@ -49,7 +54,8 @@ export class ChatsController {
    */
   @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
   @Post() // ➕ Endpoint to create a chat
-  async createChat(@Body() body: { barter_id?: string; hire_id?: string }) {
+  async createChat(@Body() body: CreateChatDto) {
+    // 📝 Using DTO for validation
     // Validate that at least one of barter_id or hire_id is provided
     if (!body.barter_id && !body.hire_id) {
       throw new HttpException(
@@ -59,10 +65,7 @@ export class ChatsController {
     }
 
     try {
-      const chat = await this.chatsService.createChat(
-        body.barter_id,
-        body.hire_id,
-      ); // 🔄 Creating a new chat
+      const chat = await this.chatsService.createChat(body); // Pass the entire DTO
       return {
         status: 'success',
         message: 'Chat created successfully', // ✅ Success message
@@ -88,7 +91,7 @@ export class ChatsController {
       const userChats = await this.chatsService.getUserChats(userId); // 🔍 Fetching user chats
       return {
         status: 'success',
-        message: 'User  chats retrieved successfully', // ✅ Success message
+        message: 'User chats retrieved successfully', // ✅ Success message
         data: userChats, // 🎉 User chats data
       };
     } catch (error) {
@@ -105,11 +108,12 @@ export class ChatsController {
    */
   @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
   @Get(':id') // 📥 Endpoint to get a chat by ID
-  async getChatById(@Param('id') id: string) {
+  async getChatById(@Param() params: GetChatByIdDto) {
+    // 📝 Using DTO for validation
     try {
-      const chat = await this.chatsService.getChatById(id); // 🔍 Fetching chat by ID
+      const chat = await this.chatsService.getChatById(params); // Pass the entire DTO
       return {
-        status: 'success ',
+        status: 'success',
         message: 'Chat retrieved successfully', // ✅ Success message
         data: chat, // 🎉 Chat data
       };
@@ -128,14 +132,11 @@ export class ChatsController {
   @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
   @Get(':id/messages') // 📥 Endpoint to get messages in a chat
   async getMessagesInChat(
-    @Param('id') chatId: string, // 📜 Chat ID from the route parameters
-    @Query('status') status?: string, // 📜 Optional query parameter for message status
+    @Param() params: GetChatByIdDto, // 📝 Using DTO for validation
+    @Query() query: GetMessagesInChatDto, // 📝 Using DTO to validate query parameters
   ) {
     try {
-      const messages = await this.chatsService.getMessagesInChat(
-        chatId,
-        status,
-      ); // 🔍 Fetching messages in the chat
+      const messages = await this.chatsService.getMessagesInChat(query); // Pass DTO directly
       return {
         status: 'success',
         message: 'Messages retrieved successfully', // ✅ Success message
@@ -154,9 +155,10 @@ export class ChatsController {
    * Deletes a specific chat by its ID.
    */
   @Delete(':id') // ❌ Endpoint to delete a chat
-  async deleteChat(@Param('id') id: string) {
+  async deleteChat(@Param() params: GetChatByIdDto) {
+    // 📝 Using DTO for validation
     try {
-      await this.chatsService.deleteChat(id); // 🗑️ Deleting the chat
+      await this.chatsService.deleteChat(params); // Pass the entire DTO
       return {
         status: 'success',
         message: 'Chat deleted successfully', // ✅ Success message
