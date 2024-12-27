@@ -4,12 +4,9 @@ import { UsersService } from './users.service';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Module({
-  imports: [],  
-  controllers: [UsersController],
-  providers: [
-    UsersService,
-    PrismaService,  
-  ],
-  exports: [UsersService],  
+  imports: [], // 🌟 No additional modules are imported for now
+  controllers: [UsersController], // 🚀 Declaring the UsersController for handling routes
+  providers: [UsersService, PrismaService], // 🛠️ Providing UsersService and PrismaService for dependency injection
+  exports: [UsersService], // 📤 Exporting UsersService for use in other modules
 })
-export class UsersModule {}
+export class UsersModule {} // 🏗️ Defining the UsersModule to encapsulate user-related logic
