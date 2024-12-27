@@ -4,7 +4,12 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
-import { DisputeStatus } from '@prisma/client'; // 📜 Importing Dispute Status enum from Prisma
+import { DisputeStatus } from '@prisma/client'; // 📜 Importing DisputeStatus enum from Prisma
+import {
+  CreateDisputeDto,
+  DisputeDto,
+  ResolveDisputeDto,
+} from './dto/disputes.dto'; // 📥 Importing DTOs
 
 @Injectable()
 export class DisputesService {
@@ -16,12 +21,7 @@ export class DisputesService {
    * @returns The created dispute record.
    * @throws InternalServerErrorException if there is an error creating the dispute.
    */
-  async createDispute(data: {
-    adminId: string;
-    user1Id: string;
-    user2Id: string;
-    details: string;
-  }) {
+  async createDispute(data: CreateDisputeDto): Promise<DisputeDto> {
     try {
       return await this.prisma.dispute.create({
         data: {
@@ -44,7 +44,10 @@ export class DisputesService {
    * @param query - Optional filters for status and user ID.
    * @returns An array of disputes matching the filters.
    */
-  async getDisputes(query: { status?: DisputeStatus; userId?: string }) {
+  async getDisputes(query: {
+    status?: DisputeStatus;
+    userId?: string;
+  }): Promise<DisputeDto[]> {
     const { status, userId } = query;
     return this.prisma.dispute.findMany({
       where: {
@@ -65,7 +68,7 @@ export class DisputesService {
    * @returns The dispute record.
    * @throws NotFoundException if the dispute is not found.
    */
-  async getDispute(id: string) {
+  async getDispute(id: string): Promise<DisputeDto> {
     const dispute = await this.prisma.dispute.findUnique({
       where: { id },
       include: {
@@ -88,13 +91,16 @@ export class DisputesService {
    * @returns The updated dispute record.
    * @throws InternalServerErrorException if there is an error resolving the dispute.
    */
-  async resolveDispute(id: string) {
+  async resolveDispute(
+    id: string,
+    data: ResolveDisputeDto,
+  ): Promise<DisputeDto> {
     try {
       return await this.prisma.dispute.update({
         where: { id },
         data: {
-          status: DisputeStatus.resolved,
-          resolved_at: new Date(),
+          status: data.status,
+          resolved_at: data.resolved_at || new Date(),
         },
       });
     } catch (error) {
