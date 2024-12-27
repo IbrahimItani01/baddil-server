@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 📨 Importing DTOs for data validation
 
 @Injectable()
 export class MessagesService {
@@ -13,22 +14,16 @@ export class MessagesService {
 
   /**
    * ➕ Send a new message
-   * @param content - The content of the message.
-   * @param owner_id - The ID of the message owner.
-   * @param chat_id - The ID of the chat.
-   * @param status - The status of the message.
+   * @param sendMessageDto - DTO containing content, owner ID, chat ID, and optional status.
    * @returns The created message record.
    * @throws BadRequestException if the status is invalid.
    * @throws InternalServerErrorException if there is an error creating the message.
    */
-  async sendMessage(
-    content: string,
-    owner_id: string,
-    chat_id: string,
-    status: string,
-  ) {
+  async sendMessage(sendMessageDto: SendMessageDto) {
+    const { content, owner_id, chat_id, status } = sendMessageDto;
+
     // Validate and cast the status to MessageStatus
-    if (!Object.values(MessageStatus).includes(status as MessageStatus)) {
+    if (status && !Object.values(MessageStatus).includes(status as MessageStatus)) {
       throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
     }
 
@@ -38,7 +33,7 @@ export class MessagesService {
           content,
           owner_id,
           chat_id,
-          status: status as MessageStatus, // Cast to MessageStatus
+          status: status ? (status as MessageStatus) : 'sent', // Default status to 'sent'
         },
       });
     } catch (error) {
@@ -51,13 +46,15 @@ export class MessagesService {
   /**
    * ✏️ Update the status of a message
    * @param id - The ID of the message to update.
-   * @param status - The new status of the message.
+   * @param updateMessageStatusDto - DTO containing the new status of the message.
    * @returns The updated message record.
    * @throws BadRequestException if the status is invalid.
    * @throws NotFoundException if the message is not found.
    * @throws InternalServerErrorException if there is an error updating the message.
    */
-  async updateMessageStatus(id: string, status: string) {
+  async updateMessageStatus(id: string, updateMessageStatusDto: UpdateMessageStatusDto) {
+    const { status } = updateMessageStatusDto;
+
     // Validate and cast the status to MessageStatus
     if (!Object.values(MessageStatus).includes(status as MessageStatus)) {
       throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
