@@ -75,3 +75,24 @@ export class LocationsController {
     }
   }
 
+  /**
+   * 📜 Get all locations
+   * @returns An array of all locations.
+   */
+  @Get() // 📥 Endpoint to get all locations
+  async getAllLocations() {
+    try {
+      const locations = await this.locationsService.getAllLocations();
+      return {
+        status: 'success',
+        message: 'Locations retrieved successfully',
+        data: locations,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve locations: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
+      );
+    }
+  }
+}
