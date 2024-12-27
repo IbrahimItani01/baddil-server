@@ -4,6 +4,13 @@ import {
   BadRequestException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import {
+  CreateSubscriptionPlanDto,
+  UpdateSubscriptionPlanDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CreateSubcategoryDto,
+} from './dto/management.dto'; // 📥 Importing the DTOs
 
 @Injectable()
 export class ManagementService {
@@ -15,12 +22,7 @@ export class ManagementService {
    * @returns The created subscription plan record.
    * @throws BadRequestException if the price is invalid.
    */
-  async createSubscriptionPlan(data: {
-    name: string;
-    price: number;
-    targetUserTypeId: string; // Updated to handle foreign key
-    criteria?: string;
-  }) {
+  async createSubscriptionPlan(data: CreateSubscriptionPlanDto) {
     if (data.price <= 0) {
       throw new BadRequestException('Price must be greater than zero'); // 🚫 Invalid price
     }
@@ -31,7 +33,7 @@ export class ManagementService {
         price: data.price,
         criteria: data.criteria,
         user_type: {
-          connect: { id: data.targetUserTypeId }, // Relates to UserType by ID
+          connect: { id: data.targetUserType }, // Relates to UserType by ID
         },
       },
     });
@@ -54,10 +56,7 @@ export class ManagementService {
    * @returns The updated subscription plan record.
    * @throws NotFoundException if the subscription plan is not found.
    */
-  async updateSubscriptionPlan(
-    id: string,
-    data: { name?: string; price?: number; criteria?: string },
-  ) {
+  async updateSubscriptionPlan(id: string, data: UpdateSubscriptionPlanDto) {
     const existingPlan = await this.prisma.subscriptionPlan.findUnique({
       where: { id },
     });
@@ -77,7 +76,7 @@ export class ManagementService {
    * @param data - The category details including name and icon.
    * @returns The created category record.
    */
-  async createCategory(data: { name: string; categoryIcon: string }) {
+  async createCategory(data: CreateCategoryDto) {
     return this.prisma.category.create({
       data: {
         name: data.name,
@@ -103,10 +102,7 @@ export class ManagementService {
    * @returns The updated category record.
    * @throws NotFoundException if the category is not found.
    */
-  async updateCategory(
-    id: string,
-    data: { name?: string; categoryIcon?: string },
-  ) {
+  async updateCategory(id: string, data: UpdateCategoryDto) {
     const existingCategory = await this.prisma.category.findUnique({
       where: { id },
     });
@@ -148,7 +144,7 @@ export class ManagementService {
    * @returns The created subcategory record.
    * @throws NotFoundException if the main category is not found.
    */
-  async createSubcategory(data: { name: string; mainCategoryId: string }) {
+  async createSubcategory(data: CreateSubcategoryDto) {
     const existingCategory = await this.prisma.category.findUnique({
       where: { id: data.mainCategoryId },
     });
