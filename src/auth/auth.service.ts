@@ -15,6 +15,7 @@ import {
   getUserTypeById,
 } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
+import { RegisterDto, LoginDto } from './dto/auth.dto'; // 📦 Import DTOs
 
 @Injectable()
 export class AuthService {
@@ -33,26 +34,21 @@ export class AuthService {
 
   /**
    * Registers a new user with Firebase and the database.
-   * @param name - The user's name.
-   * @param email - The user's email.
-   * @param user_type - The user's type.
-   * @param profile_picture - Optional profile picture URL.
-   * @param password - Optional password.
-   * @param googleToken - Optional Google sign-in token.
-   * @param language - Optional preferred language.
-   * @param theme - Optional UI theme.
+   * @param registerDto - The user registration data.
    * @returns User registration details.
    */
-  async register(
-    name: string,
-    email: string,
-    user_type: string,
-    profile_picture?: string,
-    password?: string,
-    googleToken?: string,
-    language?: string,
-    theme?: string,
-  ) {
+  async register(registerDto: RegisterDto) {
+    const {
+      name,
+      email,
+      user_type,
+      profile_picture,
+      password,
+      googleToken,
+      language,
+      theme,
+    } = registerDto;
+
     const existingUser = await this.usersService.findByEmail(email); // 🔍 Check if user already exists
     if (existingUser) {
       throw new BadRequestException('Email is already registered'); // 🚫 Email conflict
@@ -80,9 +76,7 @@ export class AuthService {
           photoURL: profile_picture || undefined,
         });
       } else {
-        throw new BadRequestException(
-          'Password or Google token is required', // 🚫 Missing credentials
-        );
+        throw new BadRequestException('Password or Google token is required'); // 🚫 Missing credentials
       }
 
       const userData = {
@@ -91,7 +85,7 @@ export class AuthService {
         email,
         user_type,
         profile_picture: firebaseUser.photoURL || null,
-        password: password,
+        password,
         language,
         theme,
       };
@@ -99,11 +93,9 @@ export class AuthService {
       const user = await this.usersService.create(userData); // 🛠 Save user in the database
 
       return {
-        status: 'success',
-        message: 'Registration successful', // ✅ Registration success message
-        data: {
-          user,
-        },
+        status: 'success', // ✅ Registration success status
+        message: 'Registration successful', // 🎉 Success message
+        data: { user }, // 📊 Registered user data
       };
     } catch (error) {
       throw new BadRequestException('Registration failed', error.message); // 🚫 Registration failed
@@ -112,11 +104,12 @@ export class AuthService {
 
   /**
    * Logs in a user using Firebase authentication.
-   * @param emailOrIdToken - Email or Firebase ID token.
-   * @param password - Optional password for email login.
+   * @param loginDto - The login data (email or token, password).
    * @returns User authentication details and JWT token.
    */
-  async login(emailOrIdToken: string, password?: string) {
+  async login(loginDto: LoginDto) {
+    const { emailOrIdToken, password } = loginDto;
+
     try {
       let user;
 
