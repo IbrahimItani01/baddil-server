@@ -16,13 +16,15 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authe
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { ChatGateway } from 'src/gateways/chat.gateway'; // 📡 Importing ChatGateway for WebSocket communication
 
-@UseGuards(JwtAuthGuard, UserTypeGuard)
-@AllowedUserTypes('barterer', 'broker')
-@Controller('messages')
+@UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
+@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
+@Controller('messages') // 📍 Base route for message-related operations
 export class MessagesController {
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(
+    private readonly messagesService: MessagesService, // 🏗️ Injecting MessagesService
+    private readonly chatGateway: ChatGateway, // 🏗️ Injecting ChatGateway
+  ) {}
 
-  @Post()
   async sendMessage(
     @Body()
     body: {
