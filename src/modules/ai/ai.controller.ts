@@ -12,6 +12,7 @@ import {
 import { AIService } from './ai.service'; // 🤖 Importing AIService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 Importing DTOs
 
 /**
  * 🌐 AI Controller
@@ -50,13 +51,13 @@ export class AIController {
    * Enables or disables AI management for a specific barter.
    */
   @Patch('barters/toggle') // 🔄 Endpoint to toggle auto-trade
-  async toggleAutoTrade(@Body() body: { barterId: string; enabled: boolean }) {
-    const { barterId, enabled } = body; // 🏷️ Destructuring request body
+  async toggleAutoTrade(@Body() toggleAutoTradeDto: ToggleAutoTradeDto) {
+    // 📝 Accept DTO as parameter
     try {
-      const updatedBarter = await this.aiService.toggleAutoTrade(
-        barterId,
-        enabled,
-      ); // 🔄 Toggling auto-trade
+      // Pass the DTO directly to the service method
+      const updatedBarter =
+        await this.aiService.toggleAutoTrade(toggleAutoTradeDto); // 🔄 Toggling auto-trade
+
       return {
         success: true,
         message: 'Auto-trade updated successfully', // ✅ Success message
@@ -79,15 +80,13 @@ export class AIController {
    * Updates details or status for a specific AI-managed barter.
    */
   @Put('barters') // ✏️ Endpoint to update auto-trade
-  async updateAutoTrade(
-    @Body() updateDetails: { barterId: string; status?: string; details?: any },
-  ) {
-    const { barterId, ...rest } = updateDetails; // 🏷️ Destructuring request body
+  async updateAutoTrade(@Body() updateAutoTradeDto: UpdateAutoTradeDto) {
+    // 📝 Accept DTO as parameter
     try {
-      const updatedBarter = await this.aiService.updateAutoTrade(
-        barterId,
-        rest,
-      ); // 🔄 Updating auto-trade
+      // Pass the DTO directly to the service method
+      const updatedBarter =
+        await this.aiService.updateAutoTrade(updateAutoTradeDto); // 🔄 Updating auto-trade
+
       return {
         success: true,
         message: 'Auto-trade updated successfully', // ✅ Success message
@@ -111,6 +110,7 @@ export class AIController {
    */
   @Get('barters/:barterId/chat') // 📥 Endpoint to get chat details for a barter
   async getAutoTradeChat(@Param('barterId') barterId: string) {
+    // 📝 Accepting barterId directly from the route parameter
     try {
       const chat = await this.aiService.getAutoTradeChat(barterId); // 🔍 Fetching chat details for the specified barter
       return { success: true, data: chat }; // ✅ Successful data retrieval
