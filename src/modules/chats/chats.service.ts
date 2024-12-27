@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { MessageStatus } from '@prisma/client';
-import { PrismaService } from 'src/database/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus type from Prisma
+import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 
 @Injectable()
 export class ChatsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
 
+  /**
+   * ➕ Create Chat
+   * Creates a new chat with optional barter and hire IDs.
+   * @param barter_id - Optional ID of the barter.
+   * @param hire_id - Optional ID of the hire.
+   * @returns The created chat record.
+   */
   async createChat(barter_id?: string, hire_id?: string) {
     return await this.prisma.chat.create({
       data: {
@@ -15,19 +22,44 @@ export class ChatsService {
     });
   }
 
+  /**
+   * 📜 Get All Chats
+   * Fetches all chats, including their messages.
+   * @returns An array of all chats.
+   */
   async getAllChats() {
     return await this.prisma.chat.findMany({
-      include: { Message: true },
+      include: { Message: true }, // 📩 Including messages in the result
     });
   }
 
+  /**
+   * 📜 Get Chat by ID
+   * Fetches a specific chat by its ID, including messages.
+   * @param id - The ID of the chat to retrieve.
+   * @returns The chat record.
+   * @throws NotFoundException if the chat is not found.
+   */
   async getChatById(id: string) {
-    return await this.prisma.chat.findUnique({
+    const chat = await this.prisma.chat.findUnique({
       where: { id },
-      include: { Message: true },
+      include: { Message: true }, // 📩 Including messages in the result
     });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found'); // 🚫 Chat not found
+    }
+
+    return chat; // Return the chat record
   }
 
+  /**
+   * 📩 Get Messages in Chat
+   * Fetches messages for a specific chat, optionally filtered by status.
+   * @param chatId - The ID of the chat.
+   * @param status - Optional status to filter messages.
+   * @returns An array of messages in the chat.
+   */
   async getMessagesInChat(chatId: string, status?: string) {
     return await this.prisma.message.findMany({
       where: {
@@ -37,13 +69,33 @@ export class ChatsService {
     });
   }
 
+  /**
+   * ❌ Delete Chat
+   * Deletes a specific chat by its ID.
+   * @param id - The ID of the chat to delete.
+   * @returns The deleted chat record.
+   * @throws NotFoundException if the chat is not found.
+   */
   async deleteChat(id: string) {
+    const chat = await this.prisma.chat.findUnique({
+      where: { id },
+    });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found'); // 🚫 Chat not found
+    }
+
     return await this.prisma.chat.delete({
       where: { id },
     });
   }
 
-  // Get Message Count for a Chat
+  /**
+   * 📊 Get Message Count for a Chat
+   * Fetches the count of messages in a specific chat.
+   * @param chatId - The ID of the chat.
+   * @returns The count of messages in the chat.
+   */
   async getMessageCount(chatId: string) {
     return await this.prisma.message.count({
       where: {
@@ -52,7 +104,12 @@ export class ChatsService {
     });
   }
 
-  // Get All Chats with Unread Messages for the Current User
+  /**
+   * 📬 Get All Chats with Unread Messages for the Current User
+   * Fetches all chats for the current user that have unread messages.
+   * @param userId - The ID of the user.
+   * @returns An array of chats with unread messages.
+   */
   async getChatsWithUnreadMessages(userId: string) {
     return await this.prisma.chat.findMany({
       where: {
@@ -90,8 +147,13 @@ export class ChatsService {
     });
   }
 
+  /**
+   * 📑 Get User Chats
+   * Fetches chats where the user is either involved in a hire or barter.
+   * @param userId - The ID of the user.
+   * @returns An array of chats for the user.
+   */
   async getUserChats(userId: string) {
-    // Fetch chats where the user is either in a hire or barter
     const chats = await this.prisma.chat.findMany({
       where: {
         OR: [
@@ -132,7 +194,7 @@ export class ChatsService {
 
     return {
       status: 'success',
-      message: 'User chats fetched successfully',
+      message: 'User  chats fetched successfully',
       data: chats,
     };
   }
