@@ -11,6 +11,7 @@ import {
 import { MeetupsService } from './meetups.service'; // 📅 Importing MeetupsService for business logic
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
+import { CreateMeetupDto, VerifyMeetupDto } from './dto/meetups.dto'; // 📄 Importing DTOs
 
 @Controller('meetups') // 📍 Base route for meetup-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
@@ -20,23 +21,13 @@ export class MeetupsController {
 
   /**
    * ➕ Create a new meetup
-   * @param user1Key - The key of the first user.
-   * @param user2Key - The key of the second user.
-   * @param locationId - The ID of the location for the meetup.
+   * @param createMeetupDto - DTO containing the details of the meetup.
    * @returns The created meetup record.
    */
   @Post('create') // ➕ Endpoint to create a meetup
-  async createMeetup(
-    @Body('user1Key') user1Key: string,
-    @Body('user2Key') user2Key: string,
-    @Body('locationId') locationId: string,
-  ) {
+  async createMeetup(@Body() createMeetupDto: CreateMeetupDto) {
     try {
-      const meetup = await this.meetupsService.createMeetup(
-        user1Key,
-        user2Key,
-        locationId,
-      );
+      const meetup = await this.meetupsService.createMeetup(createMeetupDto);
       return {
         status: 'success',
         message: 'Meetup created successfully',
@@ -53,18 +44,18 @@ export class MeetupsController {
   /**
    * 📜 Verify a meetup
    * @param meetupId - The ID of the meetup to verify.
-   * @param userKey - The key of the user verifying the meetup.
+   * @param verifyMeetupDto - DTO containing the userKey to verify the meetup.
    * @returns The verification result.
    */
   @Post('verify/:meetupId') // ➕ Endpoint to verify a meetup
   async verifyMeetup(
     @Param('meetupId') meetupId: string,
-    @Body('userKey') userKey: string,
+    @Body() verifyMeetupDto: VerifyMeetupDto, // 📄 Using the VerifyMeetupDto
   ) {
     try {
       const verificationResult = await this.meetupsService.verifyMeetup(
         meetupId,
-        userKey,
+        verifyMeetupDto,
       );
       return {
         status: 'success',
