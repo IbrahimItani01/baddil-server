@@ -79,4 +79,28 @@ export class MeetupsController {
     }
   }
 
+  /**
+   * 📜 Get a meetup by ID
+   * @param meetupId - The ID of the meetup to retrieve.
+   * @returns The meetup record.
+   */
+  @Get(':meetupId') // 📥 Endpoint to get a specific meetup
+  async getMeetupById(@Param('meetupId') meetupId: string) {
+    try {
+      const meetup = await this.meetupsService.getMeetupById(meetupId);
+      if (!meetup) {
+        throw new HttpException('Meetup not found', HttpStatus.NOT_FOUND); // 404 Not Found
+      }
+      return {
+        status: 'success',
+        message: 'Meetup retrieved successfully',
+        data: meetup,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve meetup: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
+      );
+    }
+  }
 }
