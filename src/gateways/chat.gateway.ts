@@ -81,3 +81,43 @@ export class ChatGateway {
     client.join(chatId); // 🏠 Add the user to the chat room
   }
 
+  /**
+   * 📩 Handle sending a message to a chat room.
+   * ✉️ Saves the message and broadcasts it to all clients in the room.
+   * @param message - The message payload containing chatId, content, and ownerId.
+   * @param client - The connected socket instance.
+   */
+  @SubscribeMessage('sendMessage')
+  async handleSendMessage(
+    @MessageBody()
+    message: { chatId: string; content: string; ownerId: string }, // 📜 Message payload
+    @ConnectedSocket() client: Socket, // 🔗 Connected socket instance
+  ) {
+    const user = client.data.user; // 🧑‍💻 Retrieve user data from the socket
+
+    if (!user || user.sub !== message.ownerId) {
+      throw new UnauthorizedException(
+        'User  is not authorized to send this message',
+      ); // ❌ Check for valid user
+    }
+
+    try {
+      // 💾 Save the message to the database
+      const savedMessage = await this.messagesService.sendMessage(
+        message.content,
+        message.ownerId,
+        message.chatId,
+        'sent', // Default message status
+      );
+
+      // 🌍 Broadcast the new message to all clients in the chat room
+      this.server.to(message.chatId).emit('newMessage', savedMessage);
+      this.logger.log(
+        `Message sent by user ${user.sub} to chat ${message.chatId}`,
+      ); // ✅ Log successful message send
+    } catch (error) {
+      this.logger.error(`Failed to send message: ${error.message}`); // ❌ Log error if message fails to send
+      throw error; // 💥 Throw error to propagate failure
+    }
+  }
+}
