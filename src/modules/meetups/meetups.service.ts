@@ -69,3 +69,19 @@ export class MeetupsService {
     throw new BadRequestException('User  key does not match'); // 🚫 Error handling for mismatched user key
   }
 
+  /**
+   * 📜 Get a meetup by ID
+   * @param meetupId - The ID of the meetup to retrieve.
+   * @returns The meetup record.
+   * @throws NotFoundException if the meetup is not found.
+   */
+  async getMeetupById(meetupId: string): Promise<Meetup> {
+    const meetup = await this.prisma.meetup.findUnique({
+      where: { id: meetupId },
+    }); // 🔍 Fetching the meetup by ID
+    if (!meetup) {
+      throw new NotFoundException('Meetup not found'); // 🚫 Error handling for not found
+    }
+    return meetup; // Return the found meetup
+  }
+}
