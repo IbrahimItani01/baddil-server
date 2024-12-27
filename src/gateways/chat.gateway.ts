@@ -48,3 +48,16 @@ export class ChatGateway {
     }
   }
 
+  /**
+   * ⚡ Middleware for handling disconnections.
+   * 🚪 Logs when users disconnect.
+   */
+  handleDisconnect(client: Socket) {
+    const user = client.data.user;
+    if (user) {
+      this.logger.log(`User  ${user.sub} disconnected`); // 👋 Log user disconnection
+    } else {
+      this.logger.warn('A client disconnected without being authenticated'); // 🚨 Warn if user wasn't authenticated
+    }
+  }
+
