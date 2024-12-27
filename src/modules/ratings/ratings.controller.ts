@@ -12,105 +12,74 @@ import {
 import { RatingsService } from './ratings.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard';
+import { AddBrokerRatingDto, AddBarterRatingDto } from './dto/ratings.dto'; // 🧳 Importing DTOs
 
-// Applying guards to protect the routes
-@UseGuards(JwtAuthGuard, UserTypeGuard)
-@Controller('ratings') // Base route for ratings
+@UseGuards(JwtAuthGuard, UserTypeGuard) // 🔒 Applying guards for authentication and user type validation
+@Controller('ratings') // 📍 Base route for ratings
 export class RatingsController {
-  constructor(private readonly ratingsService: RatingsService) {}
+  constructor(private readonly ratingsService: RatingsService) {} // 🔧 Injecting RatingsService
 
-  /**
-   * ➕ Add a rating for a broker
-   * @param req - The request object containing user information.
-   * @param body - The body of the request containing rating details.
-   * @returns A success message and the created rating data.
-   * @throws HttpException if the rating cannot be added.
-   */
-  @AllowedUserTypes('barterer') // Only allow barterers to access this route
-  @Post('broker') // Route to add a broker rating
+  @AllowedUserTypes('barterer') // 👤 Only allow barterers to access this route
+  @Post('broker') // ➕ Route to add a broker rating
   async addBrokerRating(
-    @Request() req,
-    @Body() body: { value: number; description: string; brokerId: string },
+    @Request() req, // 📑 Request object to get user data
+    @Body() body: AddBrokerRatingDto, // 🧳 Using DTO for validation of the incoming body
   ) {
-    const userId = req.user.id; // Extracting user ID from the request
-    const { value, description, brokerId } = body; // Destructuring the body
+    const userId = req.user.id; // 🆔 Extracting user ID from the request object
 
     try {
-      const rating = await this.ratingsService.addBrokerRating(
-        userId,
-        brokerId,
-        value,
-        description,
-      );
+      const rating = await this.ratingsService.addBrokerRating(userId, body);
       return {
-        status: 'success',
-        message: 'Broker rating added successfully',
-        data: rating,
+        status: 'success', // 🎉 Success status
+        message: 'Broker rating added successfully', // 📢 Success message
+        data: rating, // 📄 Return the created rating data
       };
     } catch (error) {
       throw new HttpException(
-        error.message || 'Failed to add broker rating',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // Handling errors
+        error.message || 'Failed to add broker rating', // 🚫 Error message if failed
+        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal server error status
+      );
     }
   }
 
-  /**
-   * 🗑️ Delete a rating
-   * @param ratingId - The ID of the rating to delete.
-   * @returns A success message upon deletion.
-   * @throws HttpException if the rating cannot be deleted.
-   */
-  @AllowedUserTypes('barterer') // Only allow barterers to access this route
-  @Delete(':ratingId') // Route to delete a rating by ID
+  @AllowedUserTypes('barterer') // 👤 Only allow barterers to delete ratings
+  @Delete(':ratingId') // 🗑️ Route to delete a rating by ID
   async deleteRating(@Param('ratingId') ratingId: string) {
+    // 📑 Extracting rating ID from route params
     try {
-      await this.ratingsService.deleteRating(ratingId); // Deleting the rating
+      await this.ratingsService.deleteRating(ratingId); // 🧹 Deleting the rating from the service
       return {
-        status: 'success',
-        message: 'Rating deleted successfully',
+        status: 'success', // 🎉 Success status
+        message: 'Rating deleted successfully', // 📢 Success message
       };
     } catch (error) {
       throw new HttpException(
-        error.message || 'Failed to delete rating',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // Handling errors
+        error.message || 'Failed to delete rating', // 🚫 Error message if failed
+        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal server error status
+      );
     }
   }
 
-  /**
-   * ➕ Add a rating for a barter
-   * @param req - The request object containing user information.
-   * @param body - The body of the request containing rating details.
-   * @returns A success message and the created rating data.
-   * @throws HttpException if the rating cannot be added.
-   */
-  @AllowedUserTypes('barterer', 'broker') // Allow both barterers and brokers to access this route
-  @Post('barter') // Route to add a barter rating
+  @AllowedUserTypes('barterer', 'broker') // 👤 Allow both barterers and brokers to access this route
+  @Post('barter') // ➕ Route to add a barter rating
   async addBarterRating(
-    @Request() req,
-    @Body() body: { value: number; description: string; barterId: string },
+    @Request() req, // 📑 Request object to get user data
+    @Body() body: AddBarterRatingDto, // 🧳 Using DTO for validation of the incoming body
   ) {
-    const userId = req.user.id; // Extracting user ID from the request
-    const { value, description, barterId } = body; // Destructuring the body
+    const userId = req.user.id; // 🆔 Extracting user ID from the request object
 
     try {
-      const rating = await this.ratingsService.addBarterRating(
-        userId,
-        barterId,
-        value,
-        description,
-      );
+      const rating = await this.ratingsService.addBarterRating(userId, body);
       return {
-        status: 'success',
-        message: 'Barter rating added successfully',
-        data: rating,
+        status: 'success', // 🎉 Success status
+        message: 'Barter rating added successfully', // 📢 Success message
+        data: rating, // 📄 Return the created rating data
       };
     } catch (error) {
       throw new HttpException(
-        error.message || 'Failed to add barter rating',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      ); // Handling errors
+        error.message || 'Failed to add barter rating', // 🚫 Error message if failed
+        HttpStatus.INTERNAL_SERVER_ERROR, // ⚠️ Internal server error status
+      );
     }
   }
 }
