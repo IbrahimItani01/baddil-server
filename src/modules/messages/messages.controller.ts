@@ -8,10 +8,13 @@ import {
   Get,
   UseGuards,
   Request,
-} from '@nestjs/common';
-import { MessagesService } from './messages.service';
-import { JwtAuthGuard } from 'src/guards/jwt.guard';
-import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
+import { MessagesService } from './messages.service'; // 💬 Importing MessagesService for business logic
+import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
+import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
+import { ChatGateway } from 'src/gateways/chat.gateway'; // 📡 Importing ChatGateway for WebSocket communication
 
 @UseGuards(JwtAuthGuard, UserTypeGuard)
 @AllowedUserTypes('barterer', 'broker')
