@@ -107,8 +107,26 @@ export class MessagesController {
     }
   }
 
+  /**
+   * 📜 Get messages by user
+   * @param req - The request object containing user information.
+   * @returns An array of messages for the user.
+   */
+  @Get('user') // 📥 Endpoint to get messages by user
   async getMessagesByUser(@Request() req: any) {
-    const userId = req.user.id; 
-    return this.messagesService.getMessagesByUser(userId);
+    const userId = req.user.id;
+    try {
+      const messages = await this.messagesService.getMessagesByUser(userId);
+      return {
+        status: 'success',
+        message: 'Messages retrieved successfully',
+        data: messages,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to retrieve messages: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR, // 500 Internal Server Error
+      );
+    }
   }
 }
