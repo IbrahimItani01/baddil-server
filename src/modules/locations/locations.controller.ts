@@ -12,3 +12,9 @@ import { LocationsService } from './locations.service'; // 📍 Importing Locati
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 
+@Controller('locations') // 📍 Base route for location-related operations
+@UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
+@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
+export class LocationsController {
+  constructor(private readonly locationsService: LocationsService) {} // 🏗️ Injecting LocationsService
+
