@@ -39,3 +39,33 @@ export class MeetupsService {
     }
   }
 
+  /**
+   * 📜 Verify a meetup
+   * @param meetupId - The ID of the meetup to verify.
+   * @param userKey - The key of the user verifying the meetup.
+   * @returns The verified meetup record.
+   * @throws NotFoundException if the meetup is not found.
+   * @throws BadRequestException if the user key does not match.
+   */
+  async verifyMeetup(meetupId: string, userKey: string): Promise<Meetup> {
+    const meetup = await this.prisma.meetup.findUnique({
+      where: { id: meetupId },
+    });
+
+    if (!meetup) {
+      throw new NotFoundException('Meetup not found'); // 🚫 Error handling for not found
+    }
+
+    // Check if the userKey matches either user1_key or user2_key
+    if (userKey === meetup.user1_key || userKey === meetup.user2_key) {
+      // If both keys are verified, mark the meetup as completed
+      await this.prisma.meetup.update({
+        where: { id: meetupId },
+        data: { status: MeetupStatus.completed },
+      });
+      return meetup; // Return the verified meetup
+    }
+
+    throw new BadRequestException('User  key does not match'); // 🚫 Error handling for mismatched user key
+  }
+
