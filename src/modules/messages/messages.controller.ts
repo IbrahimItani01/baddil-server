@@ -86,11 +86,27 @@ export class MessagesController {
     }
   }
 
+  /**
+   * 🗑️ Delete a message
+   * @param id - The ID of the message to delete.
+   * @returns A success message.
+   */
+  @Delete(':id') // 🗑️ Endpoint to delete a message
   async deleteMessage(@Param('id') id: string) {
-    return this.messagesService.deleteMessage(id);
+    try {
+      await this.messagesService.deleteMessage(id);
+      return {
+        status: 'success',
+        message: 'Message deleted successfully',
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete message: ' + error.message,
+        HttpStatus.BAD_REQUEST, // 400 Bad Request
+      );
+    }
   }
 
-  @Get('user')
   async getMessagesByUser(@Request() req: any) {
     const userId = req.user.id; 
     return this.messagesService.getMessagesByUser(userId);
