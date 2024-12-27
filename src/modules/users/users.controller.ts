@@ -12,7 +12,6 @@ import {
   UploadedFile,
   HttpCode,
   HttpStatus,
-  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../guards/jwt.guard'; // 🔐 Importing the JWT guard
@@ -24,6 +23,7 @@ import {
   UpdateSettingsDto,
   DeviceTokenDto,
 } from './dto/users.dto'; // 📋 Importing DTOs
+import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
@@ -36,13 +36,15 @@ export class UsersController {
    */
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  async getMe(@Req() req: any) {
+  async getMe(@Req() req: any): Promise<ApiResponse> {
     const userId = req.user.id;
-    try {
-      return await this.usersService.findUserById(userId);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+
+    const user = await this.usersService.findUserById(userId);
+    return {
+      success: true,
+      message: 'User found',
+      data: user,
+    };
   }
 
   /**
@@ -52,13 +54,17 @@ export class UsersController {
    */
   @Put('me')
   @HttpCode(HttpStatus.OK)
-  async updateMe(@Req() req: any, @Body() updateData: UpdateUserDto) {
+  async updateMe(
+    @Req() req: any,
+    @Body() updateData: UpdateUserDto,
+  ): Promise<ApiResponse> {
     const userId = req.user.id;
-    try {
-      return await this.usersService.updateUser(userId, updateData);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+
+    await this.usersService.updateUser(userId, updateData);
+    return {
+      success: true,
+      message: 'User updated',
+    };
   }
 
   /**
@@ -68,23 +74,22 @@ export class UsersController {
    */
   @Put('me/status')
   @HttpCode(HttpStatus.OK)
-  async changeStatus(@Req() req: any, @Body() body: ChangeStatusDto) {
+  async changeStatus(
+    @Req() req: any,
+    @Body() body: ChangeStatusDto,
+  ): Promise<ApiResponse> {
     const userId = req.user.id;
     const { status } = body;
 
-    try {
-      const updatedUser = await this.usersService.changeUserStatus(
-        userId,
-        status,
-      );
-      return {
-        status: 'success',
-        message: 'User status updated successfully',
-        data: updatedUser,
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+    const updatedUser = await this.usersService.changeUserStatus(
+      userId,
+      status,
+    );
+    return {
+      success: true,
+      message: 'User status updated successfully',
+      data: updatedUser,
+    };
   }
 
   /**
@@ -97,26 +102,22 @@ export class UsersController {
   async updateSettings(
     @Req() req: any,
     @Body() settingsData: UpdateSettingsDto,
-  ) {
+  ): Promise<ApiResponse> {
     const userId = req.user.id;
 
     if (!settingsData || Object.keys(settingsData).length === 0) {
       throw new BadRequestException('No settings data provided'); // 🚫 Validation error
     }
 
-    try {
-      const updateResult = await this.usersService.updateSettings(
-        userId,
-        settingsData,
-      );
-      return {
-        status: 'success',
-        message: 'Settings updated successfully',
-        data: updateResult.data,
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+    const updateResult = await this.usersService.updateSettings(
+      userId,
+      settingsData,
+    );
+    return {
+      success: true,
+      message: 'Settings updated successfully',
+      data: updateResult.data,
+    };
   }
 
   /**
@@ -125,19 +126,15 @@ export class UsersController {
    */
   @Get('me/settings')
   @HttpCode(HttpStatus.OK)
-  async getUserSettings(@Req() req: any) {
+  async getUserSettings(@Req() req: any): Promise<ApiResponse> {
     const userId = req.user.id;
 
-    try {
-      const settings = await this.usersService.getUserSettings(userId);
-      return {
-        status: 'success',
-        message: 'User settings retrieved successfully',
-        data: settings,
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+    const settings = await this.usersService.getUserSettings(userId);
+    return {
+      success: true,
+      message: 'User settings retrieved successfully',
+      data: settings,
+    };
   }
 
   /**
@@ -147,23 +144,22 @@ export class UsersController {
    */
   @Put('me/device-token')
   @HttpCode(HttpStatus.OK)
-  async saveDeviceToken(@Req() req: any, @Body() body: DeviceTokenDto) {
+  async saveDeviceToken(
+    @Req() req: any,
+    @Body() body: DeviceTokenDto,
+  ): Promise<ApiResponse> {
     const userId = req.user.id;
     const { deviceToken } = body;
 
-    try {
-      const updatedUser = await this.usersService.updateDeviceToken(
-        userId,
-        deviceToken,
-      );
-      return {
-        status: 'success',
-        message: 'Device token updated successfully',
-        data: updatedUser,
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+    const updatedUser = await this.usersService.updateDeviceToken(
+      userId,
+      deviceToken,
+    );
+    return {
+      success: true,
+      message: 'Device token updated successfully',
+      data: updatedUser,
+    };
   }
 
   /**
@@ -172,22 +168,18 @@ export class UsersController {
    */
   @Get('me/device-token')
   @HttpCode(HttpStatus.OK)
-  async getDeviceToken(@Req() req: any) {
+  async getDeviceToken(@Req() req: any): Promise<ApiResponse> {
     const userId = req.user.id;
 
-    try {
-      const deviceToken = await this.usersService.getDeviceToken(userId);
-      if (!deviceToken) {
-        throw new NotFoundException('Device token not found'); // 🚫 Token not found
-      }
-      return {
-        status: 'success',
-        message: 'Device token retrieved successfully',
-        data: { deviceToken },
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
+    const deviceToken = await this.usersService.getDeviceToken(userId);
+    if (!deviceToken) {
+      throw new NotFoundException('Device token not found'); // 🚫 Token not found
     }
+    return {
+      success: true,
+      message: 'Device token retrieved successfully',
+      data: { deviceToken },
+    };
   }
 
   /**
@@ -196,22 +188,18 @@ export class UsersController {
    */
   @Get('me/profile-picture')
   @HttpCode(HttpStatus.OK)
-  async getProfilePicture(@Req() req: any) {
+  async getProfilePicture(@Req() req: any): Promise<ApiResponse> {
     const userId = req.user.id;
 
-    try {
-      const profilePicture = await this.usersService.getProfilePicture(userId);
-      if (!profilePicture) {
-        throw new NotFoundException('Profile picture not found'); // 🚫 Picture not found
-      }
-      return {
-        status: 'success',
-        message: 'Profile picture retrieved successfully',
-        data: { profilePicture },
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
+    const profilePicture = await this.usersService.getProfilePicture(userId);
+    if (!profilePicture) {
+      throw new NotFoundException('Profile picture not found'); // 🚫 Picture not found
     }
+    return {
+      success: true,
+      message: 'Profile picture retrieved successfully',
+      data: { profilePicture },
+    };
   }
 
   /**
@@ -225,25 +213,21 @@ export class UsersController {
   async uploadProfilePicture(
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
-  ) {
+  ): Promise<ApiResponse> {
     if (!file) {
       throw new BadRequestException('No file uploaded'); // 🚫 Validation error
     }
 
     const fileUrl = `/uploads/profile-pictures/${file.filename}`; // 📂 File path
 
-    try {
-      const updatedUser = await this.usersService.updateProfilePicture(
-        req.user.id,
-        fileUrl,
-      );
-      return {
-        status: 'success',
-        message: 'Profile picture uploaded successfully',
-        data: updatedUser,
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST); // 🚨 Error handling
-    }
+    const updatedUser = await this.usersService.updateProfilePicture(
+      req.user.id,
+      fileUrl,
+    );
+    return {
+      success: true,
+      message: 'Profile picture uploaded successfully',
+      data: updatedUser,
+    };
   }
 }
