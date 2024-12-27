@@ -15,6 +15,7 @@ import { MessagesService } from './messages.service'; // 💬 Importing Messages
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { ChatGateway } from 'src/gateways/chat.gateway'; // 📡 Importing ChatGateway for WebSocket communication
+import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 📨 Importing DTOs for data validation
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
@@ -27,23 +28,20 @@ export class MessagesController {
 
   /**
    * ➕ Send a new message
-   * @param body - The message content, owner ID, and chat ID.
+   * @param sendMessageDto - The message content, owner ID, chat ID, and optional status.
    * @returns The saved message record.
    */
   @Post() // ➕ Endpoint to send a message
-  async sendMessage(
-    @Body() body: { content: string; owner_id: string; chat_id: string },
-  ) {
+  async sendMessage(@Body() sendMessageDto: SendMessageDto) {
     try {
-      const savedMessage = await this.messagesService.sendMessage(
-        body.content,
-        body.owner_id,
-        body.chat_id,
-        'sent',
-      );
+      const savedMessage =
+        await this.messagesService.sendMessage(sendMessageDto);
 
       // Emit WebSocket event
-      this.chatGateway.server.to(body.chat_id).emit('newMessage', savedMessage);
+      this.chatGateway.server
+        .to(sendMessageDto.chat_id)
+        .emit('newMessage', savedMessage);
+
       return {
         status: 'success',
         message: 'Message sent successfully',
@@ -60,18 +58,18 @@ export class MessagesController {
   /**
    * ✏️ Update the status of a message
    * @param id - The ID of the message to update.
-   * @param body - The new status of the message.
+   * @param updateMessageStatusDto - The new status of the message.
    * @returns The updated message record.
    */
   @Patch(':id/status') // ✏️ Endpoint to update message status
   async updateMessageStatus(
     @Param('id') id: string,
-    @Body() body: { status: string },
+    @Body() updateMessageStatusDto: UpdateMessageStatusDto,
   ) {
     try {
       const updatedMessage = await this.messagesService.updateMessageStatus(
         id,
-        body.status,
+        updateMessageStatusDto,
       );
       return {
         status: 'success',
@@ -114,7 +112,7 @@ export class MessagesController {
    */
   @Get('user') // 📥 Endpoint to get messages by user
   async getMessagesByUser(@Request() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.id; // 🔍 Extracting user ID from the request
     try {
       const messages = await this.messagesService.getMessagesByUser(userId);
       return {
