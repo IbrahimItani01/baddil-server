@@ -1,30 +1,44 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/database/prisma.service';
-import { getUserTypeId } from 'src/utils/modules/users/users.utils';
+import { Injectable, InternalServerErrorException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
+import { getUserTypeId } from 'src/utils/modules/users/users.utils'; // 🔍 Importing utility function to get user type ID
 
 @Injectable()
 export class StatisticsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
 
+  /**
+   * 📊 Get user counts by user type
+   * @returns An object containing counts of admins, brokers, and barterers.
+   * @throws InternalServerErrorException if there is an error retrieving user counts.
+   */
   async getUserCounts(): Promise<{
     admins_count: number;
     brokers_count: number;
     barterers_count: number;
   }> {
-    const adminTypeId = await getUserTypeId(this.prisma, 'admin');
-    const brokerTypeId = await getUserTypeId(this.prisma, 'broker');
-    const bartererTypeId = await getUserTypeId(this.prisma, 'barterer');
+    try {
+      // Fetching user type IDs
+      const adminTypeId = await getUserTypeId(this.prisma, 'admin');
+      const brokerTypeId = await getUserTypeId(this.prisma, 'broker');
+      const bartererTypeId = await getUserTypeId(this.prisma, 'barterer');
 
-    const [adminsCount, brokersCount, barterersCount] = await Promise.all([
-      this.prisma.user.count({ where: { user_type_id: adminTypeId } }),
-      this.prisma.user.count({ where: { user_type_id: brokerTypeId } }),
-      this.prisma.user.count({ where: { user_type_id: bartererTypeId } }),
-    ]);
+      // Counting users by type concurrently
+      const [adminsCount, brokersCount, barterersCount] = await Promise.all([
+        this.prisma.user.count({ where: { user_type_id: adminTypeId } }), // Counting admins
+        this.prisma.user.count({ where: { user_type_id: brokerTypeId } }), // Counting brokers
+        this.prisma.user.count({ where: { user_type_id: bartererTypeId } }), // Counting barterers
+      ]);
 
-    return {
-      admins_count: adminsCount,
-      brokers_count: brokersCount,
-      barterers_count: barterersCount,
-    };
+      return {
+        admins_count: adminsCount, // Returning admin count
+        brokers_count: brokersCount, // Returning broker count
+        barterers_count: barterersCount, // Returning barterer count
+      };
+    } catch (error) {
+      // Handle errors gracefully
+      throw new InternalServerErrorException(
+        'Failed to retrieve user counts: ' + error.message,
+      ); // 🚫 Error handling
+    }
   }
 }
