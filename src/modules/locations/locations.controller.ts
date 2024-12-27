@@ -11,6 +11,7 @@ import {
 import { LocationsService } from './locations.service'; // 📍 Importing LocationsService for business logic
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
+import { CreateLocationDto } from './dto/locations.dto'; // 📄 Importing DTOs
 
 @Controller('locations') // 📍 Base route for location-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
@@ -20,23 +21,14 @@ export class LocationsController {
 
   /**
    * ➕ Create a new location
-   * @param name - The name of the location.
-   * @param longitude - The longitude of the location.
-   * @param latitude - The latitude of the location.
+   * @param createLocationDto - The location details including name, longitude, and latitude.
    * @returns The created location record.
    */
   @Post('create') // ➕ Endpoint to create a location
-  async createLocation(
-    @Body('name') name: string,
-    @Body('longitude') longitude: number,
-    @Body('latitude') latitude: number,
-  ) {
+  async createLocation(@Body() createLocationDto: CreateLocationDto) {
     try {
-      const location = await this.locationsService.createLocation(
-        name,
-        longitude,
-        latitude,
-      );
+      const location =
+        await this.locationsService.createLocation(createLocationDto);
       return {
         status: 'success',
         message: 'Location created successfully',
