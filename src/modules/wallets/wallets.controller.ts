@@ -23,6 +23,8 @@ import { PrismaService } from 'src/database/prisma.service'; // 🔌 Import Pris
 import { getWalletIdByUserId } from 'src/utils/modules/wallet/wallet.utils'; // 💼 Utility function to get wallet by userId
 import { CreateItemDto, UpdateItemDto } from './dto/wallets.dto'; // 📚 Import DTOs for data validation
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
+import { validate } from 'class-validator';
+import * as path from 'path';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🔒 Apply guards to secure routes
 @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
@@ -68,29 +70,51 @@ export class WalletsController {
 
   // ➕ Create a new item in the wallet with images
   @Post('items')
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @UseInterceptors(FilesInterceptor('files', 5, itemImagesUploadOptions)) // 🖼️ Handle file uploads with a max of 5 files
   async createItemWithImages(
     @Req() req: any, // 🛠️ Get the request object to access user details
-    @Body() itemData: CreateItemDto, // 📝 Use the DTO for item creation
+    @Body() rawBody: any, // 📝 Use raw body instead of strict DTO for flexibility
     @UploadedFiles() files: Express.Multer.File[], // 📸 Capture uploaded files (images)
   ): Promise<ApiResponse> {
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded'); // 🚫 Validate input: files should be present
     }
 
+    // 🛠️ Parse form-data fields
+    const itemData = new CreateItemDto(); // Create an empty instance of the DTO
+    itemData.name = rawBody.name;
+    itemData.description = rawBody.description;
+    itemData.categoryId = rawBody.categoryId;
+    itemData.subcategoryId = rawBody.subcategoryId;
+    itemData.condition = rawBody.condition;
+    itemData.locationId = rawBody.locationId;
+    itemData.value = parseFloat(rawBody.value); // 🔢 Convert string to number
+
+    // 🛠️ Validate the parsed data manually
+    const errors = await validate(itemData); // Validate the instance
+    if (errors.length > 0) {
+      throw new BadRequestException(errors); // Throw validation errors
+    }
+
+    // 🛒 Add the item to the wallet
     const newItem = await this.walletService.addItemToWallet(
       req.user.id,
       itemData,
-    ); // 🛒 Add item to wallet
+    );
 
     const userId = req.user.id;
-    req.itemId = newItem.id; // 🆔 Store itemId for later use
 
     // 💾 Save image details in the database
     const savedImages = await Promise.all(
       files.map((file) => {
-        const filePath = `/uploads/items-images/${userId}/${newItem.id}/${file.filename}`; // 📁 Save the file path
-        return this.walletService.saveItemImage(newItem.id, filePath); // 🖼️ Save each image path in the database
+        const filePath = path.join(
+          'uploads',
+          'items-images',
+          userId,
+          file.filename,
+        ); // Path relative to root
+        return this.walletService.saveItemImage(newItem.id, filePath); // Save each image path in the database
       }),
     );
 
