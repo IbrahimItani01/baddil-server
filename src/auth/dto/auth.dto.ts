@@ -2,8 +2,9 @@ import { IsString, IsEmail, IsOptional, IsEnum } from 'class-validator'; // 📦
 
 // Enum for user types (you can expand this based on your application needs)
 export enum UserTypeEnum {
-  Admin = 'admin',
-  User = 'user',
+  Broker = 'broker',
+  Barterer = 'barterer',
+
   // Add other user types here if needed
 }
 
