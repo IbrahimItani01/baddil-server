@@ -9,6 +9,7 @@ import { Server, Socket } from 'socket.io'; // 🔌 Importing Socket.IO types
 import { MessagesService } from 'src/modules/messages/messages.service'; // 💬 Importing MessagesService for message handling
 import { JwtService } from '@nestjs/jwt'; // 🔑 Importing JwtService for token management
 import { UnauthorizedException, Logger } from '@nestjs/common'; // ⚠️ Importing common exceptions and Logger
+import { SendMessageDto } from 'src/modules/messages/dto/messages.dto';
 
 /**
  * 🎤 ChatGateway handles real-time communication via WebSockets.
@@ -90,12 +91,12 @@ export class ChatGateway {
   @SubscribeMessage('sendMessage')
   async handleSendMessage(
     @MessageBody()
-    message: { chatId: string; content: string; ownerId: string }, // 📜 Message payload
+    message: SendMessageDto, // 📜 Message payload
     @ConnectedSocket() client: Socket, // 🔗 Connected socket instance
   ) {
     const user = client.data.user; // 🧑‍💻 Retrieve user data from the socket
 
-    if (!user || user.sub !== message.ownerId) {
+    if (!user || user.sub !== message.owner_id) {
       throw new UnauthorizedException(
         'User  is not authorized to send this message',
       ); // ❌ Check for valid user
@@ -103,17 +104,12 @@ export class ChatGateway {
 
     try {
       // 💾 Save the message to the database
-      const savedMessage = await this.messagesService.sendMessage(
-        message.content,
-        message.ownerId,
-        message.chatId,
-        'sent', // Default message status
-      );
+      const savedMessage = await this.messagesService.sendMessage(message);
 
       // 🌍 Broadcast the new message to all clients in the chat room
-      this.server.to(message.chatId).emit('newMessage', savedMessage);
+      this.server.to(message.chat_id).emit('newMessage', savedMessage);
       this.logger.log(
-        `Message sent by user ${user.sub} to chat ${message.chatId}`,
+        `Message sent by user ${user.sub} to chat ${message.chat_id}`,
       ); // ✅ Log successful message send
     } catch (error) {
       this.logger.error(`Failed to send message: ${error.message}`); // ❌ Log error if message fails to send
