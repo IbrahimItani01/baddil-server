@@ -2,7 +2,7 @@ import { diskStorage } from 'multer'; // 📂 Importing diskStorage to handle fi
 import * as path from 'path'; // 🛠️ Importing path to handle file extensions and paths
 import { BadRequestException } from '@nestjs/common'; // ❌ Importing BadRequestException for handling errors
 import { CustomRequest } from '../interface/custom-request.interface'; // 🔑 Importing the custom request interface to type the request object
-
+import * as fs from 'fs/promises';
 // 🖼️ File upload configuration for profile pictures
 export const fileUploadOptions = {
   // 📁 Configure storage options for uploaded files
@@ -39,13 +39,30 @@ export const fileUploadOptions = {
 export const itemImagesUploadOptions = {
   // 📁 Configure storage options for item images
   storage: diskStorage({
-    // 📍 Set dynamic destination path based on user and item
-    destination: (req, _, callback) => {
-      const customReq = req as any; // 🔄 Cast to any for flexibility
-      const userId = customReq.user.id; // 🧑‍💻 Extract the user ID
-      const itemId = customReq.itemId; // 🏷️ Get the itemId (set during item creation)
-      const uploadPath = `./uploads/items-images/${userId}/${itemId}`; // 📂 Define path as a user-specific folder with itemId
-      callback(null, uploadPath); // ✅ Accept the dynamic upload path
+    // 📍 Set dynamic destination path based on user
+    destination: async (req, _, callback) => {
+      try {
+        const customReq = req as any; // 🔄 Cast to any for flexibility
+        const userId = customReq.user.id; // 🧑‍💻 Extract the user ID
+        const uploadPath = path.join(
+          '.',
+          'uploads',
+          'items-images',
+          userId, // 📂 User-specific folder
+        );
+        console.log(uploadPath);
+        // 📂 Ensure the directory exists
+        await fs.mkdir(uploadPath, { recursive: true }); // Creates the full path if it doesn't exist
+
+        callback(null, uploadPath); // ✅ Accept the dynamic upload path
+      } catch (err) {
+        callback(
+          new BadRequestException(
+            `Failed to create directory for uploads: ${err.message}`,
+          ),
+          null,
+        ); // ❌ Return error if directory creation fails
+      }
     },
 
     // 📝 Define how the filename will be generated
