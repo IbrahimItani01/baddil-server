@@ -44,14 +44,13 @@ export class UserTypeGuard implements CanActivate {
     // Get the user from the request, which is set by JwtAuthGuard 🧑‍💻
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
     // Ensure the user has a type associated with their account ✅
-    if (!user || !user.user_type) {
+    if (!user || !user.userType) {
       throw new ForbiddenException('User type not found in request'); // 🚫 Missing user type
     }
 
     // Check if the user's type is in the list of allowed types ✅
-    if (!allowedUserTypes.includes(user.user_type)) {
+    if (!allowedUserTypes.includes(user.userType)) {
       throw new ForbiddenException(
         `Access denied: Requires one of the following user types: ${allowedUserTypes.join(
           ', ',
