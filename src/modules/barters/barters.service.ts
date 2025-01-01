@@ -49,6 +49,16 @@ export class BartersService {
     barterDetails: CreateBarterDto,
   ): Promise<BarterResponseDto> {
     try {
+      // Lookup user2_id using the provided email
+      const user2 = await this.prisma.user.findUnique({
+        where: { email: barterDetails.user2Email },
+      });
+
+      if (!user2) {
+        throw new NotFoundException(
+          `User with email ${barterDetails.user2Email} not found`,
+        );
+      }
       const createdBarter = await this.prisma.barter.create({
         data: {
           user1_id: userId,
