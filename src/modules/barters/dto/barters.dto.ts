@@ -1,12 +1,13 @@
 // src/barters/dto/barters.dto.ts
 
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsEmail } from 'class-validator';
 import { BarterStatus } from '@prisma/client'; // 📜 Importing the enum from Prisma to use for status validation
 
 export class CreateBarterDto {
-  @IsString() // 🧑‍💻 Ensuring user2Id is a string
-  @IsNotEmpty() // ❗ Ensuring user2Id is not empty
-  user2Id: string; // ID of the second user involved in the barter
+  @IsString() // 🧑‍💻 Ensuring user2Email is a string
+  @IsNotEmpty() // ❗ Ensuring user2Email is not empty
+  @IsEmail() // 📧 Ensuring user2Email is a valid email format
+  user2Email: string; // Email of the second user involved in the barter
 
   @IsString() // 📦 Ensuring user1ItemId is a string
   @IsNotEmpty() // ❗ Ensuring user1ItemId is not empty
