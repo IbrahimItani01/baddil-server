@@ -5,7 +5,6 @@ import { UserTypeGuard, AllowedUserTypes } from 'src/guards/userType.guard'; // 
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer') // Only allows "barterer" users to access this controller
 @Controller('barterers') // 📍 Base route for barterer-related operations
 export class BarterersController {
   constructor(private readonly barterersService: BarterersService) {} // 🏗️ Injecting BarterersService
@@ -16,6 +15,7 @@ export class BarterersController {
    * @param req - The request object, which includes the user information from the JWT.
    * @returns The barterer's information or an error message if the operation fails.
    */
+  @AllowedUserTypes('barterer') // Only allows "barterer" users to access this controller
   @Get() // 📥 Endpoint to get barterer information
   async getBartererInfo(@Request() req): Promise<ApiResponse> {
     // Fetch the barterer's information from the service using the user ID from the JWT
