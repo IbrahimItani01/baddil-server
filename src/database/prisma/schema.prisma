@@ -82,8 +82,10 @@ model User {
 
 // User Types Table
 model UserType {
-  id   String @id @default(uuid())
-  type String
+  id         String   @id @default(uuid())
+  type       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   users            User[]
   SubscriptionPlan SubscriptionPlan[]
@@ -93,8 +95,10 @@ model UserType {
 
 // User Statuses Table
 model UserStatus {
-  id     String @id @default(uuid())
-  status String
+  id         String   @id @default(uuid())
+  status     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   users User[]
 
@@ -127,9 +131,11 @@ enum Theme {
 
 // Tiers Table
 model Tier {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   requirement Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   users User[]
 
@@ -155,9 +161,11 @@ model SubscriptionPlan {
 }
 
 model Feature {
-  id                   String @id @default(uuid())
+  id                   String   @id @default(uuid())
   subscription_plan_id String
   feature              String
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
 
   subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
 
@@ -166,9 +174,11 @@ model Feature {
 
 // Categories Table
 model Category {
-  id            String @id @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   category_icon String
+  created_at    DateTime @default(now()) // Automatically set on creation
+  updated_at    DateTime @updatedAt // Automatically updates on record modification
 
   subcategories Subcategory[]
   Item          Item[]
@@ -192,9 +202,11 @@ model Subcategory {
 
 // Chats Table
 model Chat {
-  id        String  @id @default(uuid())
-  barter_id String? // Optional foreign key for Barter
-  hire_id   String? // Optional foreign key for Hire
+  id         String   @id @default(uuid())
+  barter_id  String? // Optional foreign key for Barter
+  hire_id    String? // Optional foreign key for Hire
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   barter  Barter?   @relation(fields: [barter_id], references: [id], onDelete: Cascade)
   hire    Hire?     @relation(fields: [hire_id], references: [id], onDelete: Cascade)
@@ -202,14 +214,16 @@ model Chat {
 
   @@map("chats")
 }
+
 // Messages Table
 model Message {
-  id        String        @id @default(uuid())
-  content   String
-  owner_id  String
-  status    MessageStatus @default(sent)
-  chat_id   String
-  timestamp DateTime      @default(now())
+  id         String        @id @default(uuid())
+  content    String
+  owner_id   String
+  status     MessageStatus @default(sent)
+  chat_id    String
+  timestamp  DateTime      @default(now())
+  updated_at DateTime      @updatedAt
 
   owner User @relation(fields: [owner_id], references: [id], onDelete: Cascade)
   chat  Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade)
@@ -221,7 +235,6 @@ enum MessageStatus {
   sent
   seen
 }
-
 
 // Wallets Table
 model Wallet {
@@ -263,9 +276,11 @@ model Item {
 }
 
 model ItemImage {
-  id      String @id @default(uuid())
-  item_id String
-  path    String
+  id         String   @id @default(uuid())
+  item_id    String
+  path       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   item Item @relation(fields: [item_id], references: [id], onDelete: Cascade)
 
@@ -301,6 +316,7 @@ model Rating {
   broker_id   String?
   barter_id   String?
   created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id], onDelete: Cascade)
   broker        User?   @relation("Broker", fields: [broker_id], references: [id], onDelete: Cascade)
@@ -346,6 +362,7 @@ model Dispute {
   status      DisputeStatus @default(ongoing)
   resolved_at DateTime?
   created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
 
   admin User @relation("AdminDispute", fields: [admin_id], references: [id], onDelete: Cascade)
   user1 User @relation("User1Dispute", fields: [user1_id], references: [id], onDelete: Cascade)
@@ -371,6 +388,7 @@ model Barter {
   meetup_id     String?
   completed_at  DateTime?
   created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
 
   user1      User     @relation("User1Barter", fields: [user1_id], references: [id], onDelete: Cascade)
   user2      User     @relation("User2Barter", fields: [user2_id], references: [id], onDelete: Cascade)
@@ -397,6 +415,7 @@ model Meetup {
   status      MeetupStatus @default(scheduled)
   location_id String
   created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
 
   location Location @relation(fields: [location_id], references: [id], onDelete: Cascade)
   Barter   Barter[]
