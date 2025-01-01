@@ -20,7 +20,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('barters') // 📍 Base route for barter-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
 export class BartersController {
   constructor(private readonly barterService: BartersService) {} // 🏗️ Injecting BartersService
 
@@ -28,6 +27,7 @@ export class BartersController {
    * 📜 Get Barters by User
    * Fetches all barters for the logged-in user.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
   @Get('/by-user') // 📥 Endpoint to get barters by user
   async getUserBarters(@Request() req: any): Promise<ApiResponse> {
     const userId = req.user.id; // 🧑‍💻 Extracting the user ID from the JWT
@@ -54,6 +54,7 @@ export class BartersController {
    * ➕ Create Barter
    * Creates a new barter between two users.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
   @Post('') // ➕ Endpoint to create a barter
   async createBarter(
     @Body() barterDetails: CreateBarterDto, // 📜 Apply DTO for validation
@@ -84,6 +85,7 @@ export class BartersController {
    * ✏️ Update Barter Status
    * Updates the status of an existing barter.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
   @Put('')
   async updateBarterStatus(
     @Body() updateDetails: UpdateBarterStatusDto, // 📜 Apply DTO for validation
@@ -102,6 +104,7 @@ export class BartersController {
    * ❌ Cancel Barter
    * Cancels an existing barter.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
   @Delete('')
   async cancelBarter(
     @Body() barterId: { barterId: string },
