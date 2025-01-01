@@ -19,7 +19,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
  * such as toggling auto-trade, fetching auto-trades, and updating trade statuses.
  */
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
 @Controller('ai') // 📍 Base route for AI-related operations
 export class AIController {
   constructor(private readonly aiService: AIService) {} // 🏗️ Injecting AIService
@@ -28,6 +27,7 @@ export class AIController {
    * 📜 Get all auto-trades
    * Fetches all barters that are handled by AI.
    */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Get('barters')
   async getAutoTrades(): Promise<ApiResponse> {
     const trades = await this.aiService.getAutoTrades(); // 🔍 Fetching auto-trades
@@ -42,6 +42,7 @@ export class AIController {
    * 🔄 Toggle auto-trade
    * Enables or disables AI management for a specific barter.
    */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Patch('barters/toggle') // 🔄 Endpoint to toggle auto-trade
   async toggleAutoTrade(
     @Body() toggleAutoTradeDto: ToggleAutoTradeDto,
@@ -62,6 +63,7 @@ export class AIController {
    * ✏️ Update auto-trade
    * Updates details or status for a specific AI-managed barter.
    */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Put('barters') // ✏️ Endpoint to update auto-trade
   async updateAutoTrade(
     @Body() updateAutoTradeDto: UpdateAutoTradeDto,
@@ -82,6 +84,7 @@ export class AIController {
    * 💬 Get auto-trade chat
    * Fetches chat details for a specific barter.
    */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Get('barters/:barterId/chat') // 📥 Endpoint to get chat details for a barter
   async getAutoTradeChat(
     @Param('barterId') barterId: string,
