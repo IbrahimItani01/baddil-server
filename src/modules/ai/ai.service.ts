@@ -70,22 +70,38 @@ export class AIService {
     const { barterId, status, details } = updateAutoTradeDto; // 🏷️ Destructuring DTO
     const data: any = {}; // Initialize data object for updates
 
-    if (status) {
-      if (!Object.values(BarterStatus).includes(status as BarterStatus)) {
-        throw new BadRequestException('Invalid barter status'); // Handle invalid status
-      }
-      data.status = status as BarterStatus; // Set the status if provided
-    }
-    if (details) {
-      data.details = details; // Set additional details if provided
-    }
-
     const barter = await this.prisma.barter.findUnique({
       where: { id: barterId },
     });
 
     if (!barter) {
       throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
+    }
+
+    // Prevent updating if the current status is "completed" or "aborted"
+    if (
+      barter.status === BarterStatus.completed ||
+      barter.status === BarterStatus.aborted
+    ) {
+      throw new BadRequestException(
+        `Cannot update a barter with status '${barter.status}'`,
+      );
+    }
+
+    if (status) {
+      if (!Object.values(BarterStatus).includes(status as BarterStatus)) {
+        throw new BadRequestException('Invalid barter status'); // Handle invalid status
+      }
+      data.status = status as BarterStatus; // Set the status if provided
+
+      // Check if the status is being set to "completed"
+      if (status === BarterStatus.completed) {
+        data.completed_at = new Date(); // Set completed_at to the current date and time
+      }
+    }
+
+    if (details) {
+      data.details = details; // Set additional details if provided
     }
 
     return await this.prisma.barter.update({
