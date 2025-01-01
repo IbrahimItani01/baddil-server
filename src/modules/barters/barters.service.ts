@@ -142,6 +142,7 @@ export class BartersService {
    * @throws NotFoundException if the barter is not found.
    */
   async updateBarterStatus(
+    userId: string,
     updateDetails: UpdateBarterStatusDto,
   ): Promise<BarterResponseDto> {
     const barter = await this.prisma.barter.findUnique({
@@ -152,12 +153,31 @@ export class BartersService {
       throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
     }
 
+    // Check if the user is involved in the barter
+    if (barter.user1_id !== userId && barter.user2_id !== userId) {
+      throw new ForbiddenException(
+        'You are not authorized to update the status of this barter',
+      );
+    }
+
+    // Prevent updates to completed or aborted barters
+    if (
+      barter.status === BarterStatus.completed ||
+      barter.status === BarterStatus.aborted
+    ) {
+      throw new BadRequestException(
+        `Cannot update status of a barter that is already ${barter.status}`,
+      );
+    }
+
+    // Update the barter status
     const updatedBarter = await this.prisma.barter.update({
       where: { id: updateDetails.barterId },
       data: {
         status: updateDetails.status,
       },
     });
+
     return this.mapBarterResponse(updatedBarter); // Return updated barter formatted as BarterResponseDto
   }
 
