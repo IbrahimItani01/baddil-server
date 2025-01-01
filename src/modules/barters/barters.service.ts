@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
@@ -26,7 +27,9 @@ export class BartersService {
    */
   async getBartersByUser(userId: string): Promise<BarterResponseDto[]> {
     const barters = await this.prisma.barter.findMany({
-      where: { user1_id: userId },
+      where: {
+        OR: [{ user1_id: userId }, { user2_id: userId }],
+      },
     });
 
     if (!barters.length) {
@@ -59,19 +62,75 @@ export class BartersService {
           `User with email ${barterDetails.user2Email} not found`,
         );
       }
+
+      // Get user1's wallet
+      const user1Wallet = await this.prisma.wallet.findFirst({
+        where: { owner_id: userId },
+      });
+
+      if (!user1Wallet) {
+        throw new NotFoundException(
+          `Wallet not found for user1 (ID: ${userId})`,
+        );
+      }
+
+      // Get user2's wallet
+      const user2Wallet = await this.prisma.wallet.findFirst({
+        where: { owner_id: user2.id },
+      });
+
+      if (!user2Wallet) {
+        throw new NotFoundException(
+          `Wallet not found for user2 (Email: ${barterDetails.user2Email})`,
+        );
+      }
+
+      // Validate user1's item
+      const user1Item = await this.prisma.item.findFirst({
+        where: {
+          id: barterDetails.user1ItemId,
+          wallet_id: user1Wallet.id, // Ensure the item is in user1's wallet
+        },
+      });
+
+      if (!user1Item) {
+        throw new BadRequestException(
+          `Item with ID ${barterDetails.user1ItemId} does not belong to user1's wallet`,
+        );
+      }
+
+      // Validate user2's item
+      const user2Item = await this.prisma.item.findFirst({
+        where: {
+          id: barterDetails.user2ItemId,
+          wallet_id: user2Wallet.id, // Ensure the item is in user2's wallet
+        },
+      });
+
+      if (!user2Item) {
+        throw new BadRequestException(
+          `Item with ID ${barterDetails.user2ItemId} does not belong to user2's wallet`,
+        );
+      }
+
+      // Create the barter with the resolved user2_id and validated items
       const createdBarter = await this.prisma.barter.create({
         data: {
           user1_id: userId,
-          user2_id: barterDetails.user2Id,
+          user2_id: user2.id, // Use the found user ID
           user1_item_id: barterDetails.user1ItemId,
           user2_item_id: barterDetails.user2ItemId,
           status: BarterStatus.ongoing, // Default status
         },
       });
+
       return this.mapBarterResponse(createdBarter); // Return the created barter formatted as BarterResponseDto
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new BadRequestException('Failed to create barter'); // Handle case where barter creation fails
+      throw new BadRequestException(
+        error instanceof NotFoundException
+          ? error.message
+          : 'Failed to create barter',
+      ); // Handle errors gracefully
     }
   }
 
