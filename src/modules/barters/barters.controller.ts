@@ -88,9 +88,12 @@ export class BartersController {
   @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
   @Put('')
   async updateBarterStatus(
+    @Request() req,
     @Body() updateDetails: UpdateBarterStatusDto, // 📜 Apply DTO for validation
   ): Promise<ApiResponse> {
+
     const updatedBarter = await this.barterService.updateBarterStatus(
+      req.user.id,
       updateDetails, // 📜 Update details
     );
     return {
