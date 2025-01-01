@@ -14,7 +14,7 @@ model Profit {
   source     ProfitSource
   date       DateTime     @default(now())
   created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
+  updated_at DateTime     @default(now()) @updatedAt
 
   @@map("profits")
 }
@@ -31,7 +31,7 @@ model Expense {
   expense_type ExpenseType
   date         DateTime    @default(now())
   created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
+  updated_at   DateTime    @default(now()) @updatedAt
 
   @@map("expenses")
 }
@@ -58,7 +58,7 @@ model User {
   subscription_id String?
   tier_id         String?
   created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  updated_at      DateTime @default(now()) @updatedAt
 
   user_type     UserType          @relation(fields: [user_type_id], references: [id], onDelete: Cascade)
   user_status   UserStatus        @relation(fields: [user_status_id], references: [id], onDelete: Cascade)
@@ -85,7 +85,7 @@ model UserType {
   id         String   @id @default(uuid())
   type       String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now()) @updatedAt
 
   users            User[]
   SubscriptionPlan SubscriptionPlan[]
@@ -98,7 +98,7 @@ model UserStatus {
   id         String   @id @default(uuid())
   status     String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now()) @updatedAt
 
   users User[]
 
@@ -112,7 +112,7 @@ model Setting {
   theme         Theme    @default(light)
   notifications Boolean  @default(true)
   created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  updated_at    DateTime @default(now()) @updatedAt
 
   users User[]
 
@@ -135,7 +135,7 @@ model Tier {
   name        String
   requirement Int
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  updated_at  DateTime @default(now()) @updatedAt
 
   users User[]
 
@@ -150,7 +150,7 @@ model SubscriptionPlan {
   target_user_type String
   criteria         String?
   created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  updated_at       DateTime @default(now()) @updatedAt
 
   user_type UserType  @relation(fields: [target_user_type], references: [id], onDelete: Cascade)
   features  Feature[]
@@ -165,7 +165,7 @@ model Feature {
   subscription_plan_id String
   feature              String
   created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
+  updated_at           DateTime @default(now()) @updatedAt
 
   subscription_plan SubscriptionPlan @relation(fields: [subscription_plan_id], references: [id], onDelete: Cascade)
 
@@ -177,8 +177,8 @@ model Category {
   id            String   @id @default(uuid())
   name          String
   category_icon String
-  created_at    DateTime @default(now()) // Automatically set on creation
-  updated_at    DateTime @updatedAt // Automatically updates on record modification
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
 
   subcategories Subcategory[]
   Item          Item[]
@@ -192,7 +192,7 @@ model Subcategory {
   name             String
   main_category_id String
   created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  updated_at       DateTime @default(now()) @updatedAt
 
   category Category @relation(fields: [main_category_id], references: [id], onDelete: Cascade)
   Item     Item[]
@@ -206,7 +206,7 @@ model Chat {
   barter_id  String? // Optional foreign key for Barter
   hire_id    String? // Optional foreign key for Hire
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now()) @updatedAt
 
   barter  Barter?   @relation(fields: [barter_id], references: [id], onDelete: Cascade)
   hire    Hire?     @relation(fields: [hire_id], references: [id], onDelete: Cascade)
@@ -223,7 +223,7 @@ model Message {
   status     MessageStatus @default(sent)
   chat_id    String
   timestamp  DateTime      @default(now())
-  updated_at DateTime      @updatedAt
+  updated_at DateTime      @default(now()) @updatedAt
 
   owner User @relation(fields: [owner_id], references: [id], onDelete: Cascade)
   chat  Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade)
@@ -241,7 +241,7 @@ model Wallet {
   id         String   @id @default(uuid())
   owner_id   String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now()) @updatedAt
 
   owner User   @relation(fields: [owner_id], references: [id], onDelete: Cascade)
   Item  Item[]
@@ -261,7 +261,7 @@ model Item {
   wallet_id      String
   value          Float
   created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
+  updated_at     DateTime      @default(now()) @updatedAt
   images         ItemImage[]
 
   category        Category    @relation(fields: [category_id], references: [id], onDelete: Cascade)
@@ -280,7 +280,7 @@ model ItemImage {
   item_id    String
   path       String
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at DateTime @default(now()) @updatedAt
 
   item Item @relation(fields: [item_id], references: [id], onDelete: Cascade)
 
@@ -300,9 +300,10 @@ model Location {
   longitude  Float
   latitude   Float
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  Item       Item[]
-  Meetup     Meetup[]
+  updated_at DateTime @default(now()) @updatedAt
+
+  Item   Item[]
+  Meetup Meetup[]
 
   @@map("locations")
 }
@@ -316,7 +317,7 @@ model Rating {
   broker_id   String?
   barter_id   String?
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  updated_at  DateTime @default(now()) @updatedAt
 
   wrote_by_user User    @relation("WroteBy", fields: [wrote_by], references: [id], onDelete: Cascade)
   broker        User?   @relation("Broker", fields: [broker_id], references: [id], onDelete: Cascade)
@@ -335,7 +336,7 @@ model Hire {
   status         HireStatus @default(pending)
   completed_at   DateTime?
   created_at     DateTime   @default(now())
-  updated_at     DateTime   @updatedAt
+  updated_at     DateTime   @default(now()) @updatedAt
 
   item   Item   @relation(fields: [target_item_id], references: [id], onDelete: Cascade)
   broker User   @relation("BrokerHire", fields: [broker_id], references: [id], onDelete: Cascade)
@@ -362,7 +363,7 @@ model Dispute {
   status      DisputeStatus @default(ongoing)
   resolved_at DateTime?
   created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
+  updated_at  DateTime      @default(now()) @updatedAt
 
   admin User @relation("AdminDispute", fields: [admin_id], references: [id], onDelete: Cascade)
   user1 User @relation("User1Dispute", fields: [user1_id], references: [id], onDelete: Cascade)
@@ -388,7 +389,7 @@ model Barter {
   meetup_id     String?
   completed_at  DateTime?
   created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
+  updated_at    DateTime     @default(now()) @updatedAt
 
   user1      User     @relation("User1Barter", fields: [user1_id], references: [id], onDelete: Cascade)
   user2      User     @relation("User2Barter", fields: [user2_id], references: [id], onDelete: Cascade)
@@ -415,7 +416,7 @@ model Meetup {
   status      MeetupStatus @default(scheduled)
   location_id String
   created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
+  updated_at  DateTime     @default(now()) @updatedAt
 
   location Location @relation(fields: [location_id], references: [id], onDelete: Cascade)
   Barter   Barter[]
