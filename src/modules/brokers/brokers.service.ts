@@ -63,26 +63,30 @@ export class BrokerService {
     }
   }
 
-  async hireBroker(userId: string, body) {
-    const { brokerEmail, budget, targetItemId } = body;
-    const broker = await this.prisma.user.findUnique({
-      where: { email: brokerEmail },
-    });
+  async hireBroker(userId: string, body: any) {
+    try {
+      const { brokerEmail, budget, targetItemId } = body;
 
-    if (!broker) {
-      throw new NotFoundException(`Broker with email ${brokerEmail} not found`); // 🚫 Broker not found
+      // Find the broker by email using the external function
+      const broker = await findUserByEmail(this.prisma, brokerEmail);
+
+      // Check if the target item is in the user's wallet
+      await checkItemInUserWallet(this.prisma, userId, targetItemId);
+
+      // Create the hire record
+      const hire = await this.prisma.hire.create({
+        data: {
+          client_id: userId,
+          broker_id: broker.id,
+          target_item_id: targetItemId,
+          budget,
+        },
+      });
+
+      return hire; // 🎉 Returning the created hire record
+    } catch (error) {
+      handleError(error, 'Failed to hire broker');
     }
-
-    const hire = await this.prisma.hire.create({
-      data: {
-        client_id: userId,
-        broker_id: broker.id,
-        target_item_id: targetItemId,
-        budget,
-      },
-    });
-
-    return hire; // 🎉 Returning the created hire record
   }
 
   async terminateBrokerContract(userId: string, brokerEmail: string) {
