@@ -133,40 +133,44 @@ export class ChatsService {
    * @returns An array of chats with unread messages.
    */
   async getChatsWithUnreadMessages(userId: string) {
-    return await this.prisma.chat.findMany({
-      where: {
-        Message: {
-          some: {
-            owner_id: {
-              not: userId, // Messages not sent by the current user
+    try {
+      return await this.prisma.chat.findMany({
+        where: {
+          Message: {
+            some: {
+              owner_id: {
+                not: userId, // Messages not sent by the current user
+              },
+              status: MessageStatus.sent, // Unread messages
             },
-            status: MessageStatus.sent, // Unread messages
           },
         },
-      },
-      select: {
-        id: true,
-        barter: {
-          select: {
-            user1_id: true,
-            user2_id: true,
-          },
-        },
-        hire: true,
-        Message: {
-          where: {
-            owner_id: {
-              not: userId,
+        select: {
+          id: true,
+          barter: {
+            select: {
+              user1_id: true,
+              user2_id: true,
             },
-            status: MessageStatus.sent,
           },
-          select: {
-            id: true,
-            content: true,
+          hire: true,
+          Message: {
+            where: {
+              owner_id: {
+                not: userId,
+              },
+              status: MessageStatus.sent,
+            },
+            select: {
+              id: true,
+              content: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      handleError(error, 'Failed to fetch chats with unread messages');
+    }
   }
 
   /**
