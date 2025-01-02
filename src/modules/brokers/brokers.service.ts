@@ -90,32 +90,35 @@ export class BrokerService {
   }
 
   async terminateBrokerContract(userId: string, brokerEmail: string) {
-    const broker = await this.usersService.findByEmail(brokerEmail);
+    try {
+      // Find the broker by email using the external function
+      const broker = await findUserByEmail(this.prisma, brokerEmail);
 
-    if (!broker) {
-      throw new NotFoundException(`Broker with email ${brokerEmail} not found`); // 🚫 Broker not found
+      // Find the active hire contract between the user and the broker
+      const hire = await this.prisma.hire.findFirst({
+        where: {
+          client_id: userId,
+          broker_id: broker.id,
+          status: { not: 'cancelled' },
+        },
+      });
+
+      if (!hire) {
+        throw new NotFoundException(
+          'No active hire contract found between the client and broker',
+        ); // 🚫 No active contract found
+      }
+
+      // Update the hire contract's status to 'cancelled'
+      const updatedHire = await this.prisma.hire.update({
+        where: { id: hire.id },
+        data: { status: 'cancelled' },
+      });
+
+      return updatedHire; // 🎉 Returning the updated hire record
+    } catch (error) {
+      handleError(error, 'Failed to terminate broker contract');
     }
-
-    const hire = await this.prisma.hire.findFirst({
-      where: {
-        client_id: userId,
-        broker_id: broker.id,
-        status: { not: 'cancelled' },
-      },
-    });
-
-    if (!hire) {
-      throw new NotFoundException(
-        'No active hire contract found between the client and broker',
-      ); // 🚫 No active contract found
-    }
-
-    const updatedHire = await this.prisma.hire.update({
-      where: { id: hire.id },
-      data: { status: 'cancelled' },
-    });
-
-    return updatedHire; // 🎉 Returning the updated hire record
   }
 
   async getHireContractStatus(userId: string, hireId: string) {
