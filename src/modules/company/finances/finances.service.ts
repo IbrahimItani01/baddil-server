@@ -113,17 +113,21 @@ export class FinancesService {
    * @throws BadRequestException if the expense creation fails.
    */
   async createExpense(data: CreateExpenseDto) {
-    if (data.amount <= 0) {
-      throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
-    }
+    try {
+      if (data.amount <= 0) {
+        throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
+      }
 
-    return this.prisma.expense.create({
-      data: {
-        amount: data.amount,
-        description: data.description,
-        expense_type: data.expenseType, // Match the field name
-      },
-    });
+      return await this.prisma.expense.create({
+        data: {
+          amount: data.amount,
+          description: data.description,
+          expense_type: data.expenseType, // Match the field name
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to create expense');
+    }
   }
 
   /**
