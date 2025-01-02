@@ -54,9 +54,14 @@ export class ChatsService {
    * @returns An array of all chats.
    */
   async getAllChats() {
-    return await this.prisma.chat.findMany({
-      include: { Message: true }, // 📩 Including messages in the result
-    });
+    try {
+      // Retrieve all chats from the database
+      return await this.prisma.chat.findMany({
+        include: { Message: true }, // 📩 Including messages in the result
+      });
+    } catch (error) {
+      handleError(error, 'Failed to retrieve chats'); // Handle errors using the utility function
+    }
   }
 
   /**
