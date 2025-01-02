@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common'; // ❌ Importing BadRequestException to handle invalid requests
+import { BadRequestException, NotFoundException } from '@nestjs/common'; // ❌ Importing BadRequestException to handle invalid requests
 import { PrismaService } from 'src/database/prisma.service'; // 🔌 Importing PrismaService to interact with the database
 
 // 🧐 Function to get UserType ID by type (string)
@@ -80,3 +80,19 @@ export const getUserStatusById = async (
   // 🔄 Return the status string (e.g., 'active', 'inactive')
   return userStatusRecord.status;
 };
+
+// 🧐 Function to get use by email
+export async function findUserByEmail(
+  prisma: PrismaService,
+  email: string,
+): Promise<any> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new NotFoundException(`User with email ${email} not found`); // 🚫 User not found
+  }
+
+  return user; // 🎉 Return the user object
+}
