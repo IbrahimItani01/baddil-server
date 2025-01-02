@@ -16,7 +16,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('meetups') // 📍 Base route for meetup-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
 export class MeetupsController {
   constructor(private readonly meetupsService: MeetupsService) {} // 🏗️ Injecting MeetupsService
 
@@ -25,6 +24,7 @@ export class MeetupsController {
    * @param createMeetupDto - DTO containing the details of the meetup.
    * @returns The created meetup record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Post('create') // ➕ Endpoint to create a meetup
   async createMeetup(
     @Body() createMeetupDto: CreateMeetupDto,
@@ -43,6 +43,7 @@ export class MeetupsController {
    * @param verifyMeetupDto - DTO containing the userKey to verify the meetup.
    * @returns The verification result.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Post('verify/:meetupId') // ➕ Endpoint to verify a meetup
   async verifyMeetup(
     @Param('meetupId') meetupId: string,
@@ -64,6 +65,7 @@ export class MeetupsController {
    * @param meetupId - The ID of the meetup to retrieve.
    * @returns The meetup record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Get(':meetupId') // 📥 Endpoint to get a specific meetup
   async getMeetupById(
     @Param('meetupId') meetupId: string,
