@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus type from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
-import {
-  CreateChatDto,
-  GetMessagesInChatDto,
-  GetChatByIdDto,
-} from './dto/chats.dto'; // 📑 Importing DTOs
+import { CreateChatDto, GetChatByIdDto } from './dto/chats.dto'; // 📑 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
+import { checkChatExists } from 'src/utils/modules/chats/chats.utils';
 
 @Injectable()
 export class ChatsService {
