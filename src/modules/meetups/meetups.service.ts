@@ -1,12 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-  BadRequestException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable, BadRequestException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { Meetup, MeetupStatus } from '@prisma/client'; // 📅 Importing Meetup and MeetupStatus types from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
-import { CreateMeetupDto,VerifyMeetupDto } from './dto/meetups.dto'; // 🧾 Importing DTOs
+import { CreateMeetupDto, VerifyMeetupDto } from './dto/meetups.dto'; // 🧾 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable()
 export class MeetupsService {
@@ -29,9 +26,7 @@ export class MeetupsService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to create meetup: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed creating a meetup');
     }
   }
 
@@ -49,25 +44,24 @@ export class MeetupsService {
   ): Promise<Meetup> {
     const { userKey } = verifyMeetupDto; // Destructure the DTO
 
-    const meetup = await this.prisma.meetup.findUnique({
-      where: { id: meetupId },
-    });
+    try {
+      // Check if the meetup exists
+      const meetup = await checkEntityExists(this.prisma, 'meetup', meetupId);
 
-    if (!meetup) {
-      throw new NotFoundException('Meetup not found'); // 🚫 Error handling for not found
+      // Check if the userKey matches either user1_key or user2_key
+      if (userKey === meetup.user1_key || userKey === meetup.user2_key) {
+        // If both keys are verified, mark the meetup as completed
+        await this.prisma.meetup.update({
+          where: { id: meetupId },
+          data: { status: MeetupStatus.completed },
+        });
+        return meetup; // Return the verified meetup
+      }
+
+      throw new BadRequestException('User key does not match'); // 🚫 Error handling for mismatched user key
+    } catch (error) {
+      handleError(error, 'Failed to verify meetup'); // Handle error with a custom message
     }
-
-    // Check if the userKey matches either user1_key or user2_key
-    if (userKey === meetup.user1_key || userKey === meetup.user2_key) {
-      // If both keys are verified, mark the meetup as completed
-      await this.prisma.meetup.update({
-        where: { id: meetupId },
-        data: { status: MeetupStatus.completed },
-      });
-      return meetup; // Return the verified meetup
-    }
-
-    throw new BadRequestException('User key does not match'); // 🚫 Error handling for mismatched user key
   }
 
   /**
@@ -77,12 +71,11 @@ export class MeetupsService {
    * @throws NotFoundException if the meetup is not found.
    */
   async getMeetupById(meetupId: string): Promise<Meetup> {
-    const meetup = await this.prisma.meetup.findUnique({
-      where: { id: meetupId },
-    }); // 🔍 Fetching the meetup by ID
-    if (!meetup) {
-      throw new NotFoundException('Meetup not found'); // 🚫 Error handling for not found
+    try {
+      const meetup = await checkEntityExists(this.prisma, 'meetup', meetupId);
+      return meetup; // Return the found meetup
+    } catch (error) {
+      handleError(error, 'failed getting meetup');
     }
-    return meetup; // Return the found meetup
   }
 }
