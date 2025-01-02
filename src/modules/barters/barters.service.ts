@@ -32,17 +32,24 @@ export class BartersService {
    * @throws NotFoundException if no barters are found for the user.
    */
   async getBartersByUser(userId: string): Promise<BarterResponseDto[]> {
-    const barters = await this.prisma.barter.findMany({
-      where: {
-        OR: [{ user1_id: userId }, { user2_id: userId }],
-      },
-    });
+    try {
+      const barters = await this.prisma.barter.findMany({
+        where: {
+          OR: [{ user1_id: userId }, { user2_id: userId }],
+        },
+      });
 
-    if (!barters.length) {
-      throw new NotFoundException('No barters found for this user'); // Handle case where no barters are found
+      if (!barters.length) {
+        throw new NotFoundException('No barters found for this user'); // Handle case where no barters are found
+      }
+
+      return barters.map((barter) => this.mapBarterResponse(barter)); // Map and return the barters
+    } catch (error) {
+      handleError(
+        error,
+        'An error occurred while retrieving barters for the user',
+      );
     }
-
-    return barters.map((barter) => this.mapBarterResponse(barter)); // Map and return the barters
   }
 
   /**
