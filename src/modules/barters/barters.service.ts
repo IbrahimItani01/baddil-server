@@ -150,17 +150,18 @@ export class BartersService {
    * @throws NotFoundException if the barter is not found.
    */
   async cancelBarter(barterId: string): Promise<void> {
-    const barter = await this.prisma.barter.findUnique({
-      where: { id: barterId },
-    });
+    try {
+      // Use utility function to find the barter
+      findBarterById(this.prisma, barterId);
 
-    if (!barter) {
-      throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
+      // Delete the barter
+      await this.prisma.barter.delete({
+        where: { id: barterId },
+      });
+    } catch (error) {
+      // Handle errors using the utility function
+      handleError(error, 'Failed to cancel the barter');
     }
-
-    await this.prisma.barter.delete({
-      where: { id: barterId },
-    });
   }
 
   /**
