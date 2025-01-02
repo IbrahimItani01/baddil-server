@@ -17,3 +17,9 @@ export async function findBarterById(
 
   return barter;
 }
+
+
+interface UpdateBarterData {
+  status?: BarterStatus;
+  details?: string;
+}
