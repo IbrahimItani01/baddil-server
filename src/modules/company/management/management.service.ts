@@ -127,21 +127,19 @@ export class ManagementService {
    * @throws NotFoundException if the category is not found.
    */
   async updateCategory(id: string, data: UpdateCategoryDto) {
-    const existingCategory = await this.prisma.category.findUnique({
-      where: { id },
-    });
+    try {
+      await checkCategoryExists(this.prisma, id);
 
-    if (!existingCategory) {
-      throw new NotFoundException(`Category with ID ${id} not found`); // 🚫 Category not found
+      return await this.prisma.category.update({
+        where: { id },
+        data: {
+          ...data,
+          category_icon: data.categoryIcon, // Map to the correct field
+        },
+      });
+    } catch (error) {
+      handleError(error, `Failed to update category with ID ${id}`);
     }
-
-    return this.prisma.category.update({
-      where: { id },
-      data: {
-        ...data,
-        category_icon: data.categoryIcon, // Map to the correct field
-      },
-    });
   }
 
   /**
