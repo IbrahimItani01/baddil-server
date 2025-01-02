@@ -136,15 +136,19 @@ export class FinancesService {
    * @returns An array of expenses matching the filters.
    */
   async getExpenses(query: GetExpensesDto) {
-    const { startDate, endDate, expenseType } = query;
-    return this.prisma.expense.findMany({
-      where: {
-        expense_type: expenseType,
-        date: {
-          gte: startDate ? new Date(startDate) : undefined, // 📅 Start date filter
-          lte: endDate ? new Date(endDate) : undefined, // 📅 End date filter
+    try {
+      const { startDate, endDate, expenseType } = query;
+      return await this.prisma.expense.findMany({
+        where: {
+          expense_type: expenseType,
+          date: {
+            gte: startDate ? new Date(startDate) : undefined, // 📅 Start date filter
+            lte: endDate ? new Date(endDate) : undefined, // 📅 End date filter
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      handleError(error, 'Failed to retrieve expenses');
+    }
   }
 }
