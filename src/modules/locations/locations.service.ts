@@ -1,11 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { Location } from '@prisma/client'; // 📍 Importing Location type from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { CreateLocationDto } from './dto/locations.dto'; // 📄 Importing DTO
+import { handleError } from 'src/utils/general/error.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable()
 export class LocationsService {
@@ -25,9 +23,7 @@ export class LocationsService {
         data: createLocationDto, // Using DTO for creating location
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to create location: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed to create location');
     }
   }
 
@@ -38,11 +34,12 @@ export class LocationsService {
    * @throws NotFoundException if the location is not found.
    */
   async getLocationById(id: string): Promise<Location> {
-    const location = await this.prisma.location.findUnique({ where: { id } });
-    if (!location) {
-      throw new NotFoundException('Location not found'); // 🚫 Error handling for not found
+    try {
+      const location = await checkEntityExists(this.prisma, 'location', id);
+      return location;
+    } catch (error) {
+      handleError(error, 'failed getting location');
     }
-    return location;
   }
 
   /**
@@ -50,6 +47,10 @@ export class LocationsService {
    * @returns An array of all locations.
    */
   async getAllLocations(): Promise<Location[]> {
-    return this.prisma.location.findMany(); // 🔍 Fetching all locations
+    try {
+      return this.prisma.location.findMany(); // 🔍 Fetching all locations
+    } catch (error) {
+      handleError(error, 'failed getting locations');
+    }
   }
 }
