@@ -13,7 +13,6 @@ import {
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('admin') // 🎯 Restricting access to admin users
 @Controller('finances') // 📍 Base route for finance-related operations
 export class FinancesController {
   constructor(private readonly financesService: FinancesService) {} // 🏗️ Injecting FinancesService
@@ -22,6 +21,7 @@ export class FinancesController {
    * ➕ Create a new profit
    * @param body - The profit details including amount and source.
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Post('profit') // ➕ Endpoint to create a profit
   async createProfit(@Body() body: CreateProfitDto): Promise<ApiResponse> {
     // Use CreateProfitDto for validation
@@ -37,6 +37,7 @@ export class FinancesController {
    * 📜 Get profits with filters
    * @param query - Filters for startDate, endDate, and source.
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get('profits') // 📥 Endpoint to get profits
   async getProfits(@Query() query: GetProfitsDto): Promise<ApiResponse> {
     // Use GetProfitsDto for validation
@@ -51,6 +52,7 @@ export class FinancesController {
   /**
    * 📊 Get profits grouped by user type
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get('profits/by-user-type') // 📥 Endpoint to get profits by user type
   async getProfitsByUserType(): Promise<ApiResponse> {
     const profitsByUserType = await this.financesService.getProfitsByUserType(); // 🔍 Fetching profits by user type
@@ -64,6 +66,7 @@ export class FinancesController {
   /**
    * 📈 Get hire-related profits (budget)
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get('profits/hire') // 📥 Endpoint to get hire-related profits
   async getHireProfits(): Promise<ApiResponse> {
     const hireProfits = await this.financesService.getHireProfits(); // 🔍 Fetching hire-related profits
@@ -78,6 +81,7 @@ export class FinancesController {
    * ➕ Create a new expense
    * @param body - The expense details including amount, description, and type.
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Post('expense') // ➕ Endpoint to create an expense
   async createExpense(@Body() body: CreateExpenseDto): Promise<ApiResponse> {
     // Use CreateExpenseDto for validation
@@ -93,6 +97,7 @@ export class FinancesController {
    * 📜 Get expenses with filters
    * @param query - Filters for startDate, endDate, and expenseType.
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get('expenses') // 📥 Endpoint to get expenses
   async getExpenses(@Query() query: GetExpensesDto): Promise<ApiResponse> {
     // Use GetExpensesDto for validation
