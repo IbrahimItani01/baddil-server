@@ -1,10 +1,7 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { CreateTierDto, UpdateTierDto } from './dto/tiers.dto'; // 🛠️ Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class TiersService {
@@ -17,56 +14,38 @@ export class TiersService {
    * @throws NotFoundException if the user is not found.
    */
   async getBartererTier(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        tier: true, // Include the tier details
-        Barter1: true, // Include barters related to the user
-      },
-    });
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          tier: true, // Include the tier details
+          Barter1: true, // Include barters related to the user
+        },
+      });
 
-    if (!user) {
-      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
+      if (!user) {
+        throw new NotFoundException('User not found'); // 🚫 Error handling for not found
+      }
+
+      const completedBarters = user.Barter1.filter(
+        (barter) => barter.status === 'completed',
+      ).length;
+
+      const tierRequirement = user.tier.requirement;
+      const progress = Math.min(
+        (completedBarters / tierRequirement) * 100,
+        100,
+      ); // Calculate progress percentage
+
+      return {
+        currentTier: user.tier.name,
+        tierRequirement: tierRequirement,
+        completedBarters,
+        progress, // Progress in percentage
+      };
+    } catch (error) {
+      handleError(error, 'failed to get barterer tier');
     }
-
-    const completedBarters = user.Barter1.filter(
-      (barter) => barter.status === 'completed',
-    ).length;
-
-    const tierRequirement = user.tier.requirement;
-    const progress = Math.min((completedBarters / tierRequirement) * 100, 100); // Calculate progress percentage
-
-    return {
-      currentTier: user.tier.name,
-      tierRequirement: tierRequirement,
-      completedBarters,
-      progress, // Progress in percentage
-    };
-  }
-
-  /**
-   * 📜 Update the user's tier based on the new tier id
-   * @param userId - The ID of the user to update.
-   * @param tierId - The ID of the new tier.
-   * @returns The updated user information.
-   * @throws NotFoundException if the user is not found.
-   */
-  async updateBartererTier(userId: string, tierId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
-    }
-
-    // Update the user's tier
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: { tier_id: tierId },
-    });
-
-    return updatedUser; // Return updated user information
   }
 
   /**
@@ -76,7 +55,11 @@ export class TiersService {
    */
   async createTier(data: CreateTierDto) {
     // 📥 Accepting CreateTierDto
-    return this.prisma.tier.create({ data });
+    try {
+      return this.prisma.tier.create({ data });
+    } catch (error) {
+      handleError(error, 'failed to create tier');
+    }
   }
 
   /**
@@ -84,7 +67,11 @@ export class TiersService {
    * @returns An array of all tiers.
    */
   async getTiers() {
-    return this.prisma.tier.findMany({ orderBy: { requirement: 'asc' } });
+    try {
+      return this.prisma.tier.findMany({ orderBy: { requirement: 'asc' } });
+    } catch (error) {
+      handleError(error, 'failed to get tiers');
+    }
   }
 
   /**
@@ -95,10 +82,14 @@ export class TiersService {
    */
   async updateTier(id: string, data: UpdateTierDto) {
     // 📥 Accepting UpdateTierDto
-    return this.prisma.tier.update({
-      where: { id },
-      data,
-    });
+    try {
+      return this.prisma.tier.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      handleError(error, 'failed to update tier');
+    }
   }
 
   /**
@@ -108,55 +99,59 @@ export class TiersService {
    * @throws NotFoundException if the user is not found.
    */
   async evaluateAndUpdateUserTier(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: { user_type: true, tier: true },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found'); // 🚫 Error handling for not found
-    }
-
-    if (user.user_type.type !== 'barterer') {
-      throw new NotFoundException(
-        'This API only applies to users of type "barterer"',
-      ); // 🚫 Error handling for user type
-    }
-
-    // Count the number of barters associated with the user
-    const barterCount = await this.prisma.barter.count({
-      where: {
-        OR: [{ user1_id: user.id }, { user2_id: user.id }],
-      },
-    });
-
-    // Get the user's current tier and all available tiers
-    const tiers = await this.prisma.tier.findMany({
-      orderBy: { requirement: 'asc' },
-    });
-    const currentTier = user.tier_id ? user.tier : null;
-
-    // Determine the next tier based on requirements
-    const nextTier = tiers.find(
-      (tier) =>
-        tier.requirement > (currentTier ? currentTier.requirement : 0) &&
-        tier.requirement <= barterCount,
-    );
-
-    if (nextTier) {
-      // Update the user's tier to the next tier
-      const updatedUser = await this.prisma.user.update({
-        where: { id: user.id },
-        data: { tier_id: nextTier.id },
-        include: { tier: true }, // Include the updated tier in the response
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { user_type: true, tier: true },
       });
-      return {
-        message: `User's tier updated to ${nextTier.name}`,
-        updatedTier: updatedUser.tier,
-      };
-    }
 
-    return { message: 'No tier update required for the user' };
+      if (!user) {
+        throw new NotFoundException('User not found'); // 🚫 Error handling for not found
+      }
+
+      if (user.user_type.type !== 'barterer') {
+        throw new NotFoundException(
+          'This API only applies to users of type "barterer"',
+        ); // 🚫 Error handling for user type
+      }
+
+      // Count the number of barters associated with the user
+      const barterCount = await this.prisma.barter.count({
+        where: {
+          OR: [{ user1_id: user.id }, { user2_id: user.id }],
+        },
+      });
+
+      // Get the user's current tier and all available tiers
+      const tiers = await this.prisma.tier.findMany({
+        orderBy: { requirement: 'asc' },
+      });
+      const currentTier = user.tier_id ? user.tier : null;
+
+      // Determine the next tier based on requirements
+      const nextTier = tiers.find(
+        (tier) =>
+          tier.requirement > (currentTier ? currentTier.requirement : 0) &&
+          tier.requirement <= barterCount,
+      );
+
+      if (nextTier) {
+        // Update the user's tier to the next tier
+        const updatedUser = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { tier_id: nextTier.id },
+          include: { tier: true }, // Include the updated tier in the response
+        });
+        return {
+          message: `User's tier updated to ${nextTier.name}`,
+          updatedTier: updatedUser.tier,
+        };
+      }
+
+      return { message: 'No tier update required for the user' };
+    } catch (error) {
+      handleError(error, 'evaluation failed');
+    }
   }
 
   /**
@@ -172,9 +167,7 @@ export class TiersService {
       });
       return { success: true, message: 'Tier deleted successfully' };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to delete tier: ' + error.message,
-      ); // 🚫 Error handling for deletion failure
+      handleError(error, 'failed to delete tier');
     }
   }
 }
