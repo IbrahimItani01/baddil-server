@@ -165,33 +165,22 @@ export class ManagementService {
    * @throws NotFoundException if the main category is not found.
    */
   async createSubcategory(data: CreateSubcategoryDto) {
-    const existingCategory = await this.prisma.category.findUnique({
-      where: { id: data.mainCategoryId },
-    });
+    try {
+      await checkCategoryExists(this.prisma, data.mainCategoryId); // Check if the main category exists
 
-    if (!existingCategory) {
-      throw new NotFoundException(
-        `Main category with ID ${data.mainCategoryId} not found`,
-      ); // 🚫 Main category not found
-    }
-
-    return this.prisma.subcategory.create({
-      data: {
-        name: data.name,
-        category: {
-          connect: { id: data.mainCategoryId }, // Relates to Category by ID
+      return await this.prisma.subcategory.create({
+        data: {
+          name: data.name,
+          category: {
+            connect: { id: data.mainCategoryId }, // Relates to Category by ID
+          },
         },
-      },
-    });
-  }
-
-  /**
-   * 📜 Get all subcategories
-   * @returns An array of subcategories with their related categories.
-   */
-  async getSubcategories() {
-    return this.prisma.subcategory.findMany({
-      include: { category: true },
-    });
+      });
+    } catch (error) {
+      handleError(
+        error,
+        `Failed to create subcategory for category ID ${data.mainCategoryId}`,
+      ); // Handling the error
+    }
   }
 }
