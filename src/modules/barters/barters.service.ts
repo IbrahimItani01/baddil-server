@@ -113,40 +113,34 @@ export class BartersService {
     userId: string,
     updateDetails: UpdateBarterStatusDto,
   ): Promise<BarterResponseDto> {
-    const barter = await this.prisma.barter.findUnique({
-      where: { id: updateDetails.barterId },
-    });
+    try {
+      // Find the barter by ID using the utility function
+      const barter = await findBarterById(this.prisma, updateDetails.barterId);
 
-    if (!barter) {
-      throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
-    }
+      // Check if the user is involved in the barter
+      if (barter.user1_id !== userId && barter.user2_id !== userId) {
+        throw new ForbiddenException(
+          'You are not authorized to update the status of this barter',
+        );
+      }
 
-    // Check if the user is involved in the barter
-    if (barter.user1_id !== userId && barter.user2_id !== userId) {
-      throw new ForbiddenException(
-        'You are not authorized to update the status of this barter',
-      );
-    }
-
-    // Prevent updates to completed or aborted barters
-    if (
-      barter.status === BarterStatus.completed ||
-      barter.status === BarterStatus.aborted
-    ) {
-      throw new BadRequestException(
-        `Cannot update status of a barter that is already ${barter.status}`,
-      );
-    }
-
-    // Update the barter status
-    const updatedBarter = await this.prisma.barter.update({
-      where: { id: updateDetails.barterId },
-      data: {
+      // Process the barter update using the utility function
+      const updateData = processBarterUpdate(barter.status, {
         status: updateDetails.status,
-      },
-    });
+      });
 
-    return this.mapBarterResponse(updatedBarter); // Return updated barter formatted as BarterResponseDto
+      // Update the barter in the database
+      const updatedBarter = await this.prisma.barter.update({
+        where: { id: updateDetails.barterId },
+        data: updateData,
+      });
+
+      // Return the updated barter formatted as a BarterResponseDto
+      return this.mapBarterResponse(updatedBarter);
+    } catch (error) {
+      // Use the handleError utility for consistent error handling
+      handleError(error, 'Failed to update barter status');
+    }
   }
 
   /**
