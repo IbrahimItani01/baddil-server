@@ -11,6 +11,8 @@ import {
   UpdateCategoryDto,
   CreateSubcategoryDto,
 } from './dto/management.dto'; // 📥 Importing the DTOs
+import { handleError } from 'src/utils/general/error.utils';
+import { checkCategoryExists } from 'src/utils/modules/company/management/management.utils';
 
 @Injectable()
 export class ManagementService {
