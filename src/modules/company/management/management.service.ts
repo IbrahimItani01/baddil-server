@@ -50,9 +50,13 @@ export class ManagementService {
    * @returns An array of subscription plans with related features and user types.
    */
   async getSubscriptionPlans() {
-    return this.prisma.subscriptionPlan.findMany({
-      include: { features: true, user_type: true }, // Include related UserType
-    });
+    try {
+      return await this.prisma.subscriptionPlan.findMany({
+        include: { features: true, user_type: true }, // Include related UserType
+      });
+    } catch (error) {
+      handleError(error, 'Failed to retrieve subscription plans');
+    }
   }
 
   /**
