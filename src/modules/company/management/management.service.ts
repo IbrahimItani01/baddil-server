@@ -25,20 +25,24 @@ export class ManagementService {
    * @throws BadRequestException if the price is invalid.
    */
   async createSubscriptionPlan(data: CreateSubscriptionPlanDto) {
-    if (data.price <= 0) {
-      throw new BadRequestException('Price must be greater than zero'); // 🚫 Invalid price
-    }
+    try {
+      if (data.price <= 0) {
+        throw new BadRequestException('Price must be greater than zero'); // 🚫 Invalid price
+      }
 
-    return this.prisma.subscriptionPlan.create({
-      data: {
-        name: data.name,
-        price: data.price,
-        criteria: data.criteria,
-        user_type: {
-          connect: { id: data.targetUserType }, // Relates to UserType by ID
+      return await this.prisma.subscriptionPlan.create({
+        data: {
+          name: data.name,
+          price: data.price,
+          criteria: data.criteria,
+          user_type: {
+            connect: { id: data.targetUserType }, // Relates to UserType by ID
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      handleError(error, 'Failed to create subscription plan');
+    }
   }
 
   /**
