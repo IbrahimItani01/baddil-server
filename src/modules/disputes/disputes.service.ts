@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { DisputeStatus } from '@prisma/client'; // 📜 Importing DisputeStatus enum from Prisma
 import {
@@ -10,6 +6,7 @@ import {
   DisputeDto,
   ResolveDisputeDto,
 } from './dto/disputes.dto'; // 📥 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class DisputesService {
@@ -33,9 +30,7 @@ export class DisputesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to create dispute: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to create dispute');
     }
   }
 
@@ -49,17 +44,25 @@ export class DisputesService {
     userId?: string;
   }): Promise<DisputeDto[]> {
     const { status, userId } = query;
-    return this.prisma.dispute.findMany({
-      where: {
-        status,
-        OR: [{ user1_id: userId }, { user2_id: userId }, { admin_id: userId }],
-      },
-      include: {
-        admin: true,
-        user1: true,
-        user2: true,
-      },
-    });
+    try {
+      return this.prisma.dispute.findMany({
+        where: {
+          status,
+          OR: [
+            { user1_id: userId },
+            { user2_id: userId },
+            { admin_id: userId },
+          ],
+        },
+        include: {
+          admin: true,
+          user1: true,
+          user2: true,
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to retrieve disputes');
+    }
   }
 
   /**
@@ -69,20 +72,24 @@ export class DisputesService {
    * @throws NotFoundException if the dispute is not found.
    */
   async getDispute(id: string): Promise<DisputeDto> {
-    const dispute = await this.prisma.dispute.findUnique({
-      where: { id },
-      include: {
-        admin: true,
-        user1: true,
-        user2: true,
-      },
-    });
+    try {
+      const dispute = await this.prisma.dispute.findUnique({
+        where: { id },
+        include: {
+          admin: true,
+          user1: true,
+          user2: true,
+        },
+      });
 
-    if (!dispute) {
-      throw new NotFoundException('Dispute not found'); // 🚫 Error handling for not found
+      if (!dispute) {
+        throw new NotFoundException('Dispute not found'); // 🚫 Error handling for not found
+      }
+
+      return dispute;
+    } catch (error) {
+      handleError(error, 'Failed to retrieve dispute');
     }
-
-    return dispute;
   }
 
   /**
@@ -104,9 +111,7 @@ export class DisputesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to resolve dispute: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to resolve dispute');
     }
   }
 }
