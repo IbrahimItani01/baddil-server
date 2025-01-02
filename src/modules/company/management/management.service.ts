@@ -67,18 +67,24 @@ export class ManagementService {
    * @throws NotFoundException if the subscription plan is not found.
    */
   async updateSubscriptionPlan(id: string, data: UpdateSubscriptionPlanDto) {
-    const existingPlan = await this.prisma.subscriptionPlan.findUnique({
-      where: { id },
-    });
+    try {
+      const existingPlan = await this.prisma.subscriptionPlan.findUnique({
+        where: { id },
+      });
 
-    if (!existingPlan) {
-      throw new NotFoundException(`Subscription plan with ID ${id} not found`); // 🚫 Plan not found
+      if (!existingPlan) {
+        throw new NotFoundException(
+          `Subscription plan with ID ${id} not found`,
+        ); // 🚫 Plan not found
+      }
+
+      return await this.prisma.subscriptionPlan.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      handleError(error, 'Failed to update subscription plan');
     }
-
-    return this.prisma.subscriptionPlan.update({
-      where: { id },
-      data,
-    });
   }
 
   /**
