@@ -149,15 +149,13 @@ export class ManagementService {
    * @throws NotFoundException if the category is not found.
    */
   async deleteCategory(id: string) {
-    const existingCategory = await this.prisma.category.findUnique({
-      where: { id },
-    });
+    try {
+      await checkCategoryExists(this.prisma, id); // Checking if category exists
 
-    if (!existingCategory) {
-      throw new NotFoundException(`Category with ID ${id} not found`); // 🚫 Category not found
+      return await this.prisma.category.delete({ where: { id } }); // Deleting the category
+    } catch (error) {
+      handleError(error, `Failed to delete category with ID ${id}`); // Handling the error
     }
-
-    return this.prisma.category.delete({ where: { id } });
   }
 
   /**
