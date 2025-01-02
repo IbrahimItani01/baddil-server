@@ -1,7 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { getUserTypeId } from 'src/utils/modules/users/users.utils'; // 🔍 Importing utility function to get user type ID
 import { UserCountsDto } from './dto/statistics.dto'; // 📥 Importing the UserCountsDto
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class StatisticsService {
@@ -13,7 +14,6 @@ export class StatisticsService {
    * @throws InternalServerErrorException if there is an error retrieving user counts.
    */
   async getUserCounts(): Promise<UserCountsDto> {
-    // 🎯 Return type is now the DTO
     try {
       // Fetching user type IDs
       const adminTypeId = await getUserTypeId(this.prisma, 'admin');
@@ -33,10 +33,7 @@ export class StatisticsService {
         barterers_count: barterersCount, // Returning barterer count
       };
     } catch (error) {
-      // Handle errors gracefully
-      throw new InternalServerErrorException(
-        'Failed to retrieve user counts: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to retrieve user counts'); // Handling error using utility
     }
   }
 }
