@@ -81,47 +81,26 @@ export class AIService {
    * @returns The updated barter object.
    */
   async updateAutoTrade(updateAutoTradeDto: UpdateAutoTradeDto) {
-    const { barterId, status, details } = updateAutoTradeDto; // 🏷️ Destructuring DTO
-    const data: any = {}; // Initialize data object for updates
+    const { barterId, status, details } = updateAutoTradeDto;
 
-    const barter = await this.prisma.barter.findUnique({
-      where: { id: barterId },
-    });
+    try {
+      // Find the current barter using the reusable function
+      const barter = await findBarterById(this.prisma, barterId);
 
-    if (!barter) {
-      throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
+      // Use the utility function to process updates
+      const updateData = processBarterUpdate(barter.status, {
+        status,
+        details,
+      });
+
+      // Update the barter
+      return await this.prisma.barter.update({
+        where: { id: barterId },
+        data: updateData,
+      });
+    } catch (error) {
+      handleError(error, 'An error occurred while updating the auto trade'); // Use the reusable error handler
     }
-
-    // Prevent updating if the current status is "completed" or "aborted"
-    if (
-      barter.status === BarterStatus.completed ||
-      barter.status === BarterStatus.aborted
-    ) {
-      throw new BadRequestException(
-        `Cannot update a barter with status '${barter.status}'`,
-      );
-    }
-
-    if (status) {
-      if (!Object.values(BarterStatus).includes(status as BarterStatus)) {
-        throw new BadRequestException('Invalid barter status'); // Handle invalid status
-      }
-      data.status = status as BarterStatus; // Set the status if provided
-
-      // Check if the status is being set to "completed"
-      if (status === BarterStatus.completed) {
-        data.completed_at = new Date(); // Set completed_at to the current date and time
-      }
-    }
-
-    if (details) {
-      data.details = details; // Set additional details if provided
-    }
-
-    return await this.prisma.barter.update({
-      where: { id: barterId },
-      data, // Update barter with new data
-    });
   }
 
   /**
@@ -131,19 +110,30 @@ export class AIService {
    * @returns The chat object related to the barter, including messages and their owners.
    */
   async getAutoTradeChat(barterId: string) {
-    const chat = await this.prisma.chat.findFirst({
-      where: { barter_id: barterId },
-      include: {
-        Message: {
-          include: { owner: true }, // Include message owners in the chat
+    try {
+      // 🔔 Check if barter exists using the reusable findBarterById function
+      await findBarterById(this.prisma, barterId);
+
+      // Find the chat associated with the barter
+      const chat = await this.prisma.chat.findFirst({
+        where: { barter_id: barterId },
+        include: {
+          Message: {
+            include: { owner: true },
+          },
         },
-      },
-    });
+      });
 
-    if (!chat) {
-      throw new NotFoundException('Chat not found for this barter'); // Handle case where chat does not exist
+      if (!chat) {
+        throw new NotFoundException('Chat not found for this barter');
+      }
+
+      return chat;
+    } catch (error) {
+      handleError(
+        error,
+        'An error occurred while retrieving the chat for the barter',
+      );
     }
-
-    return chat; // Return the chat object
   }
 }
