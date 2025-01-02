@@ -122,36 +122,44 @@ export class BrokerService {
   }
 
   async getHireContractStatus(userId: string, hireId: string) {
-    const hire = await this.prisma.hire.findUnique({
-      where: { id: hireId },
-      select: {
-        id: true,
-        status: true,
-        budget: true,
-        created_at: true,
-        completed_at: true,
-        broker: { select: { email: true } },
-        client: { select: { id: true } },
-      },
-    });
+    try {
+      // Find the hire contract by its ID
+      const hire = await this.prisma.hire.findUnique({
+        where: { id: hireId },
+        select: {
+          id: true,
+          status: true,
+          budget: true,
+          created_at: true,
+          completed_at: true,
+          broker: { select: { email: true } },
+          client: { select: { id: true } },
+        },
+      });
 
-    if (!hire) {
-      throw new NotFoundException('Hire contract not found'); // 🚫 Contract not found
+      // Check if the hire contract exists
+      if (!hire) {
+        throw new NotFoundException('Hire contract not found'); // 🚫 Contract not found
+      }
+
+      // Check if the user is authorized to view the contract
+      if (hire.client.id !== userId) {
+        throw new ForbiddenException(
+          'You do not have permission to view this hire contract',
+        ); // 🚫 Permission denied
+      }
+
+      // Return the hire contract details
+      return {
+        hireId: hire.id,
+        status: hire.status,
+        budget: hire.budget,
+        createdAt: hire.created_at,
+        completedAt: hire.completed_at,
+        brokerEmail: hire.broker.email, // 📧 Returning broker's email
+      };
+    } catch (error) {
+      handleError(error, 'Failed to retrieve hire contract status');
     }
-
-    if (hire.client.id !== userId) {
-      throw new ForbiddenException(
-        'You do not have permission to view this hire contract',
-      ); // 🚫 Permission denied
-    }
-
-    return {
-      hireId: hire.id,
-      status: hire.status,
-      budget: hire.budget,
-      createdAt: hire.created_at,
-      completedAt: hire.completed_at,
-      brokerEmail: hire.broker.email, // 📧 Returning broker's email
-    };
   }
 }
