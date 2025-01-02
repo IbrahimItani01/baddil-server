@@ -15,10 +15,8 @@ import {
 import { handleError } from 'src/utils/general/error.utils';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { checkItemInUserWallet } from 'src/utils/modules/wallet/wallet.utils';
-import {
-  findBarterById,
-  processBarterUpdate,
-} from 'src/utils/modules/barters/barters.utils';
+import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable()
 export class BartersService {
@@ -115,7 +113,11 @@ export class BartersService {
   ): Promise<BarterResponseDto> {
     try {
       // Find the barter by ID using the utility function
-      const barter = await findBarterById(this.prisma, updateDetails.barterId);
+      const barter = await checkEntityExists(
+        this.prisma,
+        'barter',
+        updateDetails.barterId,
+      );
 
       // Check if the user is involved in the barter
       if (barter.user1_id !== userId && barter.user2_id !== userId) {
@@ -152,7 +154,7 @@ export class BartersService {
   async cancelBarter(barterId: string): Promise<void> {
     try {
       // Use utility function to find the barter
-      findBarterById(this.prisma, barterId);
+      await checkEntityExists(this.prisma, 'barter', barterId);
 
       // Delete the barter
       await this.prisma.barter.delete({

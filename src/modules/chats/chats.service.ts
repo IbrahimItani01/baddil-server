@@ -7,7 +7,7 @@ import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus 
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { CreateChatDto, GetChatByIdDto } from './dto/chats.dto'; // 📑 Importing DTOs
 import { handleError } from 'src/utils/general/error.utils';
-import { checkChatExists } from 'src/utils/modules/chats/chats.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable()
 export class ChatsService {
@@ -75,7 +75,7 @@ export class ChatsService {
     try {
       const { id } = getChatByIdDto;
 
-      await checkChatExists(this.prisma, id);
+      await checkEntityExists(this.prisma, 'chat', id);
 
       const chat = await this.prisma.chat.findUnique({
         where: { id },
@@ -98,7 +98,7 @@ export class ChatsService {
     try {
       const { id } = getChatByIdDto;
 
-      await checkChatExists(this.prisma, id);
+      await checkEntityExists(this.prisma, 'chat', id);
 
       return await this.prisma.chat.delete({
         where: { id },
@@ -224,7 +224,7 @@ export class ChatsService {
         throw new NotFoundException('No chats found for the user');
       }
 
-      return chats
+      return chats;
     } catch (error) {
       handleError(error, 'Failed to fetch user chats'); // Use the handleError utility for consistent error handling
     }

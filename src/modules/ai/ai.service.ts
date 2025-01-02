@@ -1,11 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 Importing DTOs
-import {
-  findBarterById,
-  processBarterUpdate,
-} from 'src/utils/modules/barters/barters.utils';
+import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
 import { handleError } from 'src/utils/general/error.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 /**
  * ⚙️ AI Service
@@ -60,7 +58,7 @@ export class AIService {
       const { barterId, enabled } = toggleAutoTradeDto; // 🏷️ Destructuring DTO
 
       // 🔍 Find the barter using the reusable function
-      await findBarterById(this.prisma, barterId);
+      await checkEntityExists(this.prisma, 'barter', barterId);
 
       // ✅ Update the AI management status
       const updatedBarter = await this.prisma.barter.update({
@@ -85,7 +83,7 @@ export class AIService {
 
     try {
       // Find the current barter using the reusable function
-      const barter = await findBarterById(this.prisma, barterId);
+      const barter = await checkEntityExists(this.prisma, 'barter', barterId);
 
       // Use the utility function to process updates
       const updateData = processBarterUpdate(barter.status, {
@@ -112,7 +110,7 @@ export class AIService {
   async getAutoTradeChat(barterId: string) {
     try {
       // 🔔 Check if barter exists using the reusable findBarterById function
-      await findBarterById(this.prisma, barterId);
+      await checkEntityExists(this.prisma, 'barter', barterId);
 
       // Find the chat associated with the barter
       const chat = await this.prisma.chat.findFirst({
