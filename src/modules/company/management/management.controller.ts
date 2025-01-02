@@ -168,18 +168,4 @@ export class ManagementController {
       data: subcategory, // 🎉 Created subcategory data
     };
   }
-
-  /**
-   * 📜 Get all subcategories
-   */
-  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
-  @Get('subcategory') // 📥 Endpoint to get subcategories
-  async getSubcategories(): Promise<ApiResponse> {
-    const subcategories = await this.managementService.getSubcategories(); // 🔍 Fetching subcategories
-    return {
-      success: true,
-      message: 'Subcategories retrieved successfully', // ✅ Success message
-      data: subcategories, // 🎉 Subcategories data
-    };
-  }
 }
