@@ -16,7 +16,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('locations') // 📍 Base route for location-related operations
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {} // 🏗️ Injecting LocationsService
 
@@ -25,6 +24,7 @@ export class LocationsController {
    * @param createLocationDto - The location details including name, longitude, and latitude.
    * @returns The created location record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Post('create') // ➕ Endpoint to create a location
   async createLocation(
     @Body() createLocationDto: CreateLocationDto,
@@ -43,6 +43,7 @@ export class LocationsController {
    * @param id - The ID of the location to retrieve.
    * @returns The location record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Get(':id') // 📥 Endpoint to get a specific location
   async getLocationById(@Param('id') id: string): Promise<ApiResponse> {
     const location = await this.locationsService.getLocationById(id);
@@ -60,6 +61,7 @@ export class LocationsController {
    * 📜 Get all locations
    * @returns An array of all locations.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Get() // 📥 Endpoint to get all locations
   async getAllLocations(): Promise<ApiResponse> {
     const locations = await this.locationsService.getAllLocations();
