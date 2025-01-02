@@ -115,11 +115,15 @@ export class ChatsService {
    * @returns The count of messages in the chat.
    */
   async getMessageCount(chatId: string) {
-    return await this.prisma.message.count({
-      where: {
-        chat_id: chatId,
-      },
-    });
+    try {
+      return await this.prisma.message.count({
+        where: {
+          chat_id: chatId,
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to fetch message count');
+    }
   }
 
   /**
