@@ -5,7 +5,6 @@ import {
   Delete,
   Param,
   Body,
-  Query,
   UseGuards,
   Req,
   Request,
@@ -16,7 +15,6 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 
 import {
   CreateChatDto,
   GetChatByIdDto,
-  GetMessagesInChatDto,
 } from './dto/chats.dto'; // 📑 Importing DTOs
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
@@ -76,7 +74,7 @@ export class ChatsController {
 
   /**
    * 📜 Get Chat by ID
-   * Fetches a specific chat by its ID.
+   * Fetches a specific chat by its ID and its messages
    */
   @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
   @Get(':id') // 📥 Endpoint to get a chat by ID
@@ -89,28 +87,7 @@ export class ChatsController {
       data: chat, // 🎉 Chat data
     };
   }
-
-  /**
-   * 📩 Get Messages in Chat
-   * Fetches messages for a specific chat, optionally filtered by status.
-   */
-  @AllowedUserTypes('broker', 'barterer') // 🎯 Restricting access to brokers and barterers
-  @Get(':id/messages') // 📥 Endpoint to get messages in a chat
-  async getMessagesInChat(
-    @Param() params: GetChatByIdDto, // 📝 Using DTO for validation
-    @Query() query: Pick<GetMessagesInChatDto, 'status'>, // 📝 Only validate `status` in query
-  ): Promise<ApiResponse> {
-    const messages = await this.chatsService.getMessagesInChat({
-      chatId: params.id, // Use the `id` from `params`
-      ...query, // Spread the query parameters like `status`
-    });
-    return {
-      success: true,
-      message: 'Messages retrieved successfully', // ✅ Success message
-      data: messages, // 🎉 Messages data
-    };
-  }
-
+  
   /**
    * ❌ Delete Chat
    * Deletes a specific chat by its ID.
