@@ -93,12 +93,16 @@ export class ManagementService {
    * @returns The created category record.
    */
   async createCategory(data: CreateCategoryDto) {
-    return this.prisma.category.create({
-      data: {
-        name: data.name,
-        category_icon: data.categoryIcon, // Map to the correct field in Prisma schema
-      },
-    });
+    try {
+      return await this.prisma.category.create({
+        data: {
+          name: data.name,
+          category_icon: data.categoryIcon, // Map to the correct field in Prisma schema
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to create category');
+    }
   }
 
   /**
