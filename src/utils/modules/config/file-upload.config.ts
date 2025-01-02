@@ -7,20 +7,29 @@ import * as fs from 'fs/promises';
 export const fileUploadOptions = {
   // 📁 Configure storage options for uploaded files
   storage: diskStorage({
-    // 📍 Set the destination folder where files will be stored
-    destination: './uploads/profile-pictures', // Folder to store profile pictures
-    // 📝 Define how the filename will be generated
+    destination: async (req, _, callback) => {
+      try {
+        const customReq = req as any;
+        const userId = customReq.user.id;
+        const uploadPath = await ensureDynamicDirectoryExists(
+          './uploads',
+          'profile-pictures',
+          userId, // Dynamic subdirectory for user
+        ); // Use the utility function
+        callback(null, uploadPath);
+      } catch (err) {
+        callback(err, null); // Pass error to multer
+      }
+    },
     filename: (req, file, callback) => {
-      const customReq = req as unknown as CustomRequest; // 🔄 Cast req to the custom request type
-      const userId = customReq.user.id; // 🧑‍💻 Extract the user ID from the request
-      const timestamp = Date.now(); // 🕒 Generate a unique timestamp for the file name
-      const fileExtension = path.extname(file.originalname).toLowerCase(); // 🖼️ Get the file extension (jpg, png)
-      const uniqueFilename = `${userId}-profile-pic-${timestamp}${fileExtension}`; // 🏷️ Generate a unique filename with userId and timestamp
-      callback(null, uniqueFilename); // ✅ Accept the unique filename
+      const customReq = req as any;
+      const userId = customReq.user.id;
+      const timestamp = Date.now();
+      const fileExtension = path.extname(file.originalname).toLowerCase();
+      const uniqueFilename = `${userId}-profile-pic-${timestamp}${fileExtension}`;
+      callback(null, uniqueFilename);
     },
   }),
-
-  // 🧾 File filter to restrict file types
   fileFilter: (_, file, callback) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; // ✅ Define allowed image types
     if (!allowedTypes.includes(file.mimetype)) {
