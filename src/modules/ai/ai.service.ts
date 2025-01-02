@@ -1,11 +1,11 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
-import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
+import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 Importing DTOs
+import {
+  findBarterById,
+  processBarterUpdate,
+} from 'src/utils/modules/barters/barters.utils';
+import { handleError } from 'src/utils/general/error.utils';
 
 /**
  * ⚙️ AI Service
