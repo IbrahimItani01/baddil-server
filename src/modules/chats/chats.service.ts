@@ -95,18 +95,17 @@ export class ChatsService {
    * @throws NotFoundException if the chat is not found.
    */
   async deleteChat(getChatByIdDto: GetChatByIdDto) {
-    const { id } = getChatByIdDto;
-    const chat = await this.prisma.chat.findUnique({
-      where: { id },
-    });
+    try {
+      const { id } = getChatByIdDto;
 
-    if (!chat) {
-      throw new NotFoundException('Chat not found'); // 🚫 Chat not found
+      await checkChatExists(this.prisma, id);
+
+      return await this.prisma.chat.delete({
+        where: { id },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to delete chat');
     }
-
-    return await this.prisma.chat.delete({
-      where: { id },
-    });
   }
 
   /**
