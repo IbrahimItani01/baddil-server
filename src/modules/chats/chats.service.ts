@@ -21,12 +21,31 @@ export class ChatsService {
    */
   async createChat(createChatDto: CreateChatDto) {
     const { barter_id, hire_id } = createChatDto;
-    return await this.prisma.chat.create({
-      data: {
-        barter_id,
-        hire_id,
-      },
-    });
+
+    try {
+      // Validation: Ensure that one and only one of `barter_id` or `hire_id` is provided
+      if (!barter_id && !hire_id) {
+        throw new BadRequestException(
+          'Either barter_id or hire_id must be provided to create a chat',
+        );
+      }
+
+      if (barter_id && hire_id) {
+        throw new BadRequestException(
+          'A chat cannot be linked to both a barter and a hire simultaneously',
+        );
+      }
+
+      // Create the chat entry
+      return await this.prisma.chat.create({
+        data: {
+          barter_id,
+          hire_id,
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to create chat'); // Use the handleError utility for consistent error handling
+    }
   }
 
   /**
