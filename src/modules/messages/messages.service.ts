@@ -1,12 +1,9 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common'; // 📦 Importing necessary exceptions
+import { Injectable, BadRequestException } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { MessageStatus } from '@prisma/client'; // 📜 Importing MessageStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 📨 Importing DTOs for data validation
+import { handleError } from 'src/utils/general/error.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable()
 export class MessagesService {
@@ -23,9 +20,7 @@ export class MessagesService {
     const { content, owner_id, chat_id, status } = sendMessageDto;
 
     // Validate and cast the status to MessageStatus
-    if (status && !Object.values(MessageStatus).includes(status as MessageStatus)) {
-      throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
-    }
+    await this.checkStatus(status);
 
     try {
       return await this.prisma.message.create({
@@ -37,9 +32,7 @@ export class MessagesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to send message: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed sending message');
     }
   }
 
@@ -52,18 +45,16 @@ export class MessagesService {
    * @throws NotFoundException if the message is not found.
    * @throws InternalServerErrorException if there is an error updating the message.
    */
-  async updateMessageStatus(id: string, updateMessageStatusDto: UpdateMessageStatusDto) {
+  async updateMessageStatus(
+    id: string,
+    updateMessageStatusDto: UpdateMessageStatusDto,
+  ) {
     const { status } = updateMessageStatusDto;
 
     // Validate and cast the status to MessageStatus
-    if (!Object.values(MessageStatus).includes(status as MessageStatus)) {
-      throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
-    }
+    await this.checkStatus(status);
 
-    const message = await this.prisma.message.findUnique({ where: { id } });
-    if (!message) {
-      throw new NotFoundException('Message not found'); // 🚫 Error handling for not found
-    }
+    await checkEntityExists(this.prisma, 'message', id);
 
     try {
       return await this.prisma.message.update({
@@ -73,9 +64,7 @@ export class MessagesService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to update message status: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed to update message status');
     }
   }
 
@@ -87,19 +76,14 @@ export class MessagesService {
    * @throws InternalServerErrorException if there is an error deleting the message.
    */
   async deleteMessage(id: string) {
-    const message = await this.prisma.message.findUnique({ where: { id } });
-    if (!message) {
-      throw new NotFoundException('Message not found'); // 🚫 Error handling for not found
-    }
+    await checkEntityExists(this.prisma, 'message', id);
 
     try {
       return await this.prisma.message.delete({
         where: { id },
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to delete message: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed to delete message');
     }
   }
 
@@ -116,9 +100,16 @@ export class MessagesService {
         include: { chat: true }, // Include chat details
       });
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve messages: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'failed to get messages');
+    }
+  }
+
+  private async checkStatus(status: string) {
+    if (
+      status &&
+      !Object.values(MessageStatus).includes(status as MessageStatus)
+    ) {
+      throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
     }
   }
 }
