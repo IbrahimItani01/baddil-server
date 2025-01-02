@@ -3,7 +3,6 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
@@ -13,6 +12,13 @@ import {
   UpdateBarterStatusDto,
   BarterResponseDto,
 } from './dto/barters.dto'; // Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
+import { findUserByEmail } from 'src/utils/modules/users/users.utils';
+import { checkItemInUserWallet } from 'src/utils/modules/wallet/wallet.utils';
+import {
+  findBarterById,
+  processBarterUpdate,
+} from 'src/utils/modules/barters/barters.utils';
 
 @Injectable()
 export class BartersService {
