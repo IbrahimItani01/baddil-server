@@ -17,7 +17,6 @@ import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
 @Controller('messages') // 📍 Base route for message-related operations
 export class MessagesController {
   constructor(
@@ -30,6 +29,7 @@ export class MessagesController {
    * @param sendMessageDto - The message content, owner ID, chat ID, and optional status.
    * @returns The saved message record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Post() // ➕ Endpoint to send a message
   async sendMessage(
     @Body() sendMessageDto: SendMessageDto,
@@ -54,6 +54,7 @@ export class MessagesController {
    * @param updateMessageStatusDto - The new status of the message.
    * @returns The updated message record.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Patch(':id/status') // ✏️ Endpoint to update message status
   async updateMessageStatus(
     @Param('id') id: string,
@@ -75,6 +76,7 @@ export class MessagesController {
    * @param id - The ID of the message to delete.
    * @returns A success message.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting
   @Delete(':id') // 🗑️ Endpoint to delete a message
   async deleteMessage(@Param('id') id: string): Promise<ApiResponse> {
     await this.messagesService.deleteMessage(id);
@@ -86,6 +88,7 @@ export class MessagesController {
    * @param req - The request object containing user information.
    * @returns An array of messages for the user.
    */
+  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
   @Get('user') // 📥 Endpoint to get messages by user
   async getMessagesByUser(@Request() req: any): Promise<ApiResponse> {
     const userId = req.user.id; // 🔍 Extracting user ID from the request
