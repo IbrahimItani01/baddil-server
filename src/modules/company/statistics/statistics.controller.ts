@@ -5,7 +5,6 @@ import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('admin') // 🎯 Restricting access to admin users
 @Controller('statistics') // 📍 Base route for statistics-related operations
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {} // 🏗️ Injecting StatisticsService
@@ -14,6 +13,7 @@ export class StatisticsController {
    * 📜 Get User Counts
    * @returns The count of users in the system.
    */
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
   @Get('user-count') // 📥 Endpoint to get user counts
   async getUserCounts(): Promise<ApiResponse> {
     // 🎯 Returning the DTO as response type
