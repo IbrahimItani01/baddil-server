@@ -66,65 +66,24 @@ export class BartersService {
   ): Promise<BarterResponseDto> {
     try {
       // Lookup user2_id using the provided email
-      const user2 = await this.prisma.user.findUnique({
-        where: { email: barterDetails.user2Email },
-      });
+      const user2 = await findUserByEmail(
+        this.prisma,
+        barterDetails.user2Email,
+      );
 
-      if (!user2) {
-        throw new NotFoundException(
-          `User with email ${barterDetails.user2Email} not found`,
-        );
-      }
+      // Validate user1's item in their wallet
+      await checkItemInUserWallet(
+        this.prisma,
+        userId,
+        barterDetails.user1ItemId,
+      );
 
-      // Get user1's wallet
-      const user1Wallet = await this.prisma.wallet.findFirst({
-        where: { owner_id: userId },
-      });
-
-      if (!user1Wallet) {
-        throw new NotFoundException(
-          `Wallet not found for user1 (ID: ${userId})`,
-        );
-      }
-
-      // Get user2's wallet
-      const user2Wallet = await this.prisma.wallet.findFirst({
-        where: { owner_id: user2.id },
-      });
-
-      if (!user2Wallet) {
-        throw new NotFoundException(
-          `Wallet not found for user2 (Email: ${barterDetails.user2Email})`,
-        );
-      }
-
-      // Validate user1's item
-      const user1Item = await this.prisma.item.findFirst({
-        where: {
-          id: barterDetails.user1ItemId,
-          wallet_id: user1Wallet.id, // Ensure the item is in user1's wallet
-        },
-      });
-
-      if (!user1Item) {
-        throw new BadRequestException(
-          `Item with ID ${barterDetails.user1ItemId} does not belong to user1's wallet`,
-        );
-      }
-
-      // Validate user2's item
-      const user2Item = await this.prisma.item.findFirst({
-        where: {
-          id: barterDetails.user2ItemId,
-          wallet_id: user2Wallet.id, // Ensure the item is in user2's wallet
-        },
-      });
-
-      if (!user2Item) {
-        throw new BadRequestException(
-          `Item with ID ${barterDetails.user2ItemId} does not belong to user2's wallet`,
-        );
-      }
+      // Validate user2's item in their wallet
+      await checkItemInUserWallet(
+        this.prisma,
+        user2.id,
+        barterDetails.user2ItemId,
+      );
 
       // Create the barter with the resolved user2_id and validated items
       const createdBarter = await this.prisma.barter.create({
@@ -139,11 +98,7 @@ export class BartersService {
 
       return this.mapBarterResponse(createdBarter); // Return the created barter formatted as BarterResponseDto
     } catch (error) {
-      throw new BadRequestException(
-        error instanceof NotFoundException
-          ? error.message
-          : 'Failed to create barter',
-      ); // Handle errors gracefully
+      handleError(error, 'Failed to create barter');
     }
   }
 
