@@ -5,7 +5,6 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authe
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
-@AllowedUserTypes('broker') // 🎯 Restricting access to brokers
 @Controller('performance') // 📍 Base route for performance-related operations
 export class PerformancesController {
   constructor(private readonly performancesService: PerformancesService) {} // 🏗️ Injecting PerformancesService
@@ -15,6 +14,7 @@ export class PerformancesController {
    * @param req - The request object containing user information.
    * @returns The earnings data for the broker.
    */
+  @AllowedUserTypes('broker') // 🎯 Restricting access to brokers
   @Get('earnings') // 📥 Endpoint to get broker earnings
   async getBrokerEarnings(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
@@ -32,6 +32,7 @@ export class PerformancesController {
    * @param req - The request object containing user information.
    * @returns The barters data for the broker.
    */
+  @AllowedUserTypes('broker') // 🎯 Restricting access to brokers
   @Get('barters') // 📥 Endpoint to get broker barters
   async getBrokerBarters(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
@@ -50,6 +51,7 @@ export class PerformancesController {
    * @param req - The request object containing user information.
    * @returns The ratings data for the broker.
    */
+  @AllowedUserTypes('broker') // 🎯 Restricting access to brokers
   @Get('ratings') // 📥 Endpoint to get broker ratings
   async getBrokerRatings(@Request() req: any): Promise<ApiResponse> {
     const brokerId = req.user.id; // Extract broker ID from JWT
