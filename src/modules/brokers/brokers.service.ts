@@ -14,46 +14,53 @@ import { handleError } from 'src/utils/general/error.utils';
 export class BrokerService {
   constructor(
     private readonly prisma: PrismaService, // 🏗️ Injecting PrismaService
-    private readonly usersService: UsersService, // 🏗️ Injecting UsersService
   ) {}
 
   async getHiredBrokers(userId: string) {
-    const hiredBrokers = await this.prisma.hire.findMany({
-      where: { client_id: userId }, // 🔍 Filtering by user ID
-      select: {
-        id: true,
-        broker: {
-          select: {
-            id: true,
-            name: true,
-            profile_picture: true,
-            email: true,
+    try {
+      // Fetch hired brokers for the specified user
+      const hiredBrokers = await this.prisma.hire.findMany({
+        where: { client_id: userId }, // 🔍 Filtering by user ID
+        select: {
+          id: true,
+          broker: {
+            select: {
+              id: true,
+              name: true,
+              profile_picture: true,
+              email: true,
+            },
           },
+          budget: true,
+          status: true,
+          created_at: true,
+          completed_at: true,
         },
-        budget: true,
-        status: true,
-        created_at: true,
-        completed_at: true,
-      },
-    });
+      });
 
-    if (!hiredBrokers.length) {
-      throw new NotFoundException('No hired brokers found for this user'); // 🚫 No brokers found
+      // Throw an error if no hired brokers are found
+      if (!hiredBrokers.length) {
+        throw new NotFoundException('No hired brokers found for this user'); // 🚫 No brokers found
+      }
+
+      // Map and return the result in the required format
+      return hiredBrokers.map((hire) => ({
+        hireId: hire.id,
+        broker: {
+          id: hire.broker.id,
+          name: hire.broker.name,
+          profilePicture: hire.broker.profile_picture,
+          email: hire.broker.email,
+        },
+        budget: hire.budget,
+        status: hire.status,
+        createdAt: hire.created_at,
+        completedAt: hire.completed_at,
+      }));
+    } catch (error) {
+      // Handle errors using the utility function
+      handleError(error, 'Failed to retrieve hired brokers');
     }
-
-    return hiredBrokers.map((hire) => ({
-      hireId: hire.id,
-      broker: {
-        id: hire.broker.id,
-        name: hire.broker.name,
-        profilePicture: hire.broker.profile_picture,
-        email: hire.broker.email,
-      },
-      budget: hire.budget,
-      status: hire.status,
-      createdAt: hire.created_at,
-      completedAt: hire.completed_at,
-    }));
   }
 
   async hireBroker(userId: string, body) {
