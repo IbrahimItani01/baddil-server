@@ -6,6 +6,7 @@ import {
   GetProfitsDto,
   GetExpensesDto,
 } from './dto/finances.dto'; // 📜 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class FinancesService {
@@ -18,11 +19,15 @@ export class FinancesService {
    * @throws BadRequestException if the profit creation fails.
    */
   async createProfit(data: CreateProfitDto) {
-    if (data.amount <= 0) {
-      throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
-    }
+    try {
+      if (data.amount <= 0) {
+        throw new BadRequestException('Amount must be greater than zero'); // 🚫 Invalid amount
+      }
 
-    return this.prisma.profit.create({ data }); // 🔄 Creating a new profit
+      return await this.prisma.profit.create({ data }); // 🔄 Creating a new profit
+    } catch (error) {
+      handleError(error, 'Failed to create profit');
+    }
   }
 
   /**
