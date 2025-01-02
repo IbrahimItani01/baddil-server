@@ -180,48 +180,53 @@ export class ChatsService {
    * @returns An array of chats for the user.
    */
   async getUserChats(userId: string) {
-    const chats = await this.prisma.chat.findMany({
-      where: {
-        OR: [
-          // User is involved in a hire (as broker or client)
-          {
-            hire: {
-              OR: [{ broker_id: userId }, { client_id: userId }],
+    try {
+      const chats = await this.prisma.chat.findMany({
+        where: {
+          OR: [
+            // User is involved in a hire (as broker or client)
+            {
+              hire: {
+                OR: [{ broker_id: userId }, { client_id: userId }],
+              },
+            },
+            // User is involved in a barter (as user1 or user2)
+            {
+              barter: {
+                OR: [{ user1_id: userId }, { user2_id: userId }],
+              },
+            },
+          ],
+        },
+        include: {
+          barter: {
+            include: {
+              user1: true,
+              user2: true,
             },
           },
-          // User is involved in a barter (as user1 or user2)
-          {
-            barter: {
-              OR: [{ user1_id: userId }, { user2_id: userId }],
+          hire: {
+            include: {
+              broker: true,
+              client: true,
             },
           },
-        ],
-      },
-      include: {
-        barter: {
-          include: {
-            user1: true,
-            user2: true,
+          Message: {
+            include: {
+              owner: true,
+            },
           },
         },
-        hire: {
-          include: {
-            broker: true,
-            client: true,
-          },
-        },
-        Message: {
-          include: {
-            owner: true,
-          },
-        },
-      },
-    });
+      });
 
-    return {
-      status: 'success',
-      message: 'User chats fetched successfully',
-      data: chats,
-    };
+      // If no chats are found, throw a NotFoundException
+      if (!chats.length) {
+        throw new NotFoundException('No chats found for the user');
+      }
+
+      return chats
+    } catch (error) {
+      handleError(error, 'Failed to fetch user chats'); // Use the handleError utility for consistent error handling
+    }
   }
 }
