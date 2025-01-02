@@ -56,19 +56,22 @@ export class AIService {
    * @returns The updated barter object with the toggled AI management.
    */
   async toggleAutoTrade(toggleAutoTradeDto: ToggleAutoTradeDto) {
-    const { barterId, enabled } = toggleAutoTradeDto; // 🏷️ Destructuring DTO
-    const barter = await this.prisma.barter.findUnique({
-      where: { id: barterId },
-    });
+    try {
+      const { barterId, enabled } = toggleAutoTradeDto; // 🏷️ Destructuring DTO
 
-    if (!barter) {
-      throw new NotFoundException('Barter not found'); // Handle case where barter does not exist
+      // 🔍 Find the barter using the reusable function
+      await findBarterById(this.prisma, barterId);
+
+      // ✅ Update the AI management status
+      const updatedBarter = await this.prisma.barter.update({
+        where: { id: barterId },
+        data: { handled_by_ai: enabled },
+      });
+
+      return updatedBarter; // 🎉 Return the updated barter
+    } catch (error) {
+      handleError(error, 'An error occurred while retrieving auto trades'); // Use the reusable error handler
     }
-
-    return await this.prisma.barter.update({
-      where: { id: barterId },
-      data: { handled_by_ai: enabled }, // Update AI management status
-    });
   }
 
   /**
