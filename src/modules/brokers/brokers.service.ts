@@ -6,7 +6,9 @@ import {
   NotFoundException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
-import { UsersService } from '../users/users.service'; // 👤 Importing UsersService for user-related operations
+import { findUserByEmail } from 'src/utils/modules/users/users.utils';
+import { checkItemInUserWallet } from 'src/utils/modules/wallet/wallet.utils';
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class BrokerService {
