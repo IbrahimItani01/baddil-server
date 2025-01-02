@@ -72,33 +72,19 @@ export class ChatsService {
    * @throws NotFoundException if the chat is not found.
    */
   async getChatById(getChatByIdDto: GetChatByIdDto) {
-    const { id } = getChatByIdDto;
-    const chat = await this.prisma.chat.findUnique({
-      where: { id },
-      include: { Message: true }, // 📩 Including messages in the result
-    });
+    try {
+      const { id } = getChatByIdDto;
 
-    if (!chat) {
-      throw new NotFoundException('Chat not found'); // 🚫 Chat not found
+      await checkChatExists(this.prisma, id);
+
+      const chat = await this.prisma.chat.findUnique({
+        where: { id },
+        include: { Message: true }, // 📩 Including messages in the result
+      });
+      return chat; // Return the chat record
+    } catch (error) {
+      handleError(error, 'Failed to fetch chat by ID'); // Use handleError for consistent error handling
     }
-
-    return chat; // Return the chat record
-  }
-
-  /**
-   * 📩 Get Messages in Chat
-   * Fetches messages for a specific chat, optionally filtered by status.
-   * @param getMessagesInChatDto - DTO containing chatId and optional status.
-   * @returns An array of messages in the chat.
-   */
-  async getMessagesInChat(getMessagesInChatDto: GetMessagesInChatDto) {
-    const { chatId, status } = getMessagesInChatDto;
-    return await this.prisma.message.findMany({
-      where: {
-        chat_id: chatId,
-        ...(status && { status: status as MessageStatus }), // Cast status to MessageStatus
-      },
-    });
   }
 
   /**
