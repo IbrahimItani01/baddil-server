@@ -1,10 +1,10 @@
 import {
   Injectable,
-  NotFoundException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService to interact with the database
 import { AddBrokerRatingDto, AddBarterRatingDto } from './dto/ratings.dto'; // 🧳 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
+import { checkEntityExists } from 'src/utils/general/models.utils';
 
 @Injectable() // 🛠️ Marking this class as injectable for dependency injection
 export class RatingsService {
@@ -25,31 +25,23 @@ export class RatingsService {
           broker_id: brokerId, // 🧑‍💼 Broker ID
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new InternalServerErrorException('Failed to add broker rating'); // 🚫 Error handling
+      handleError(error, 'Failed to add broker rating');
     }
   }
 
   async deleteRating(ratingId: string) {
     // 🗑️ Deleting a rating by ID
     try {
-      const existingRating = await this.prisma.rating.findUnique({
-        where: { id: ratingId }, // 📑 Find the rating by ID
-      });
-
-      if (!existingRating) {
-        throw new NotFoundException('Rating not found'); // 🚫 Rating not found error
-      }
+      await checkEntityExists(this.prisma, 'rating', ratingId);
 
       await this.prisma.rating.delete({
         where: { id: ratingId }, // 🧹 Deleting the rating from the database
       });
 
       return { message: 'Rating deleted successfully' }; // 🏁 Return success message
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new InternalServerErrorException('Failed to delete rating'); // 🚫 Error handling
+      handleError(error, 'Failed to delete rating');
     }
   }
 
@@ -60,6 +52,8 @@ export class RatingsService {
     const { value, description, barterId } = body; // 📦 Destructuring the DTO to get rating details
 
     try {
+      await this.validateRatingValue(value);
+
       return await this.prisma.rating.create({
         data: {
           value, // 🌟 Rating value
@@ -68,9 +62,15 @@ export class RatingsService {
           barter_id: barterId, // 🔄 Barter ID
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new InternalServerErrorException('Failed to add barter rating'); // 🚫 Error handling
+      handleError(error, 'Failed to add barter rating');
     }
+  }
+
+  private async validateRatingValue(value: number) {
+    if (value >= 1 && value <= 5) {
+      return true;
+    }
+    throw new Error('Rating value must be between 1 and 5');
   }
 }
