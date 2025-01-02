@@ -93,13 +93,17 @@ export class FinancesService {
    * @returns The total budget from hires.
    */
   async getHireProfits() {
-    const result = await this.prisma.hire.aggregate({
-      _sum: {
-        budget: true, // Summing the budget field
-      },
-    });
+    try {
+      const result = await this.prisma.hire.aggregate({
+        _sum: {
+          budget: true, // Summing the budget field
+        },
+      });
 
-    return result._sum.budget || 0; // Return total budget or 0 if none
+      return result._sum.budget || 0; // Return total budget or 0 if none
+    } catch (error) {
+      handleError(error, 'Failed to retrieve hire profits');
+    }
   }
 
   /**
