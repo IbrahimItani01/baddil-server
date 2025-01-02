@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  InternalServerErrorException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import {
@@ -9,6 +8,7 @@ import {
   BrokerBartersDto,
   BrokerRatingsDto,
 } from './dto/performances.dto'; // 📨 Importing DTOs
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class PerformancesService {
@@ -39,9 +39,7 @@ export class PerformancesService {
         completedHires: hires.length,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve broker earnings: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to retrieve broker earnings');
     }
   }
 
@@ -67,9 +65,7 @@ export class PerformancesService {
 
       return groupedBarters; // Returning grouped barters
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve broker barters: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to retrieve broker barters');
     }
   }
 
@@ -98,9 +94,7 @@ export class PerformancesService {
         totalRatings,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to retrieve broker ratings: ' + error.message,
-      ); // 🚫 Error handling
+      handleError(error, 'Failed to retrieve broker ratings');
     }
   }
 }
