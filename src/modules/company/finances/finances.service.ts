@@ -36,16 +36,20 @@ export class FinancesService {
    * @returns An array of profits matching the filters.
    */
   async getProfits(query: GetProfitsDto) {
-    const { startDate, endDate, source } = query;
-    return this.prisma.profit.findMany({
-      where: {
-        source,
-        date: {
-          gte: startDate ? new Date(startDate) : undefined, // 📅 Start date filter
-          lte: endDate ? new Date(endDate) : undefined, // 📅 End date filter
+    try {
+      const { startDate, endDate, source } = query;
+      return await this.prisma.profit.findMany({
+        where: {
+          source,
+          date: {
+            gte: startDate ? new Date(startDate) : undefined, // 📅 Start date filter
+            lte: endDate ? new Date(endDate) : undefined, // 📅 End date filter
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      handleError(error, 'Failed to retrieve profits');
+    }
   }
 
   /**
