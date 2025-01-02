@@ -23,19 +23,30 @@ export class AIService {
    * @returns A list of barters managed by AI.
    */
   async getAutoTrades(userId?: string) {
-    const where = { handled_by_ai: true }; // 🔍 Filtering for AI-managed barters
-    if (userId) {
-      where['user1_id'] = userId; // Filter by user1_id if provided
+    try {
+      const where = { handled_by_ai: true }; // 🔍 Filtering for AI-managed barters
+      if (userId) {
+        where['user1_id'] = userId; // Filter by user1_id if provided
+      }
+
+      const barters = await this.prisma.barter.findMany({
+        where,
+        include: {
+          user1: true,
+          user2: true,
+          user1_item: true,
+          user2_item: true,
+        },
+      });
+
+      if (!barters || barters.length === 0) {
+        throw new NotFoundException('No auto trades found'); // 🚫 No records found
+      }
+
+      return barters; // 🎉 Return the list of barters
+    } catch (error) {
+      handleError(error, 'An error occurred while retrieving auto trades');
     }
-    return await this.prisma.barter.findMany({
-      where,
-      include: {
-        user1: true,
-        user2: true,
-        user1_item: true,
-        user2_item: true,
-      },
-    });
   }
 
   /**
