@@ -57,31 +57,35 @@ export class FinancesService {
    * @returns An array of profits grouped by user type.
    */
   async getProfitsByUserType() {
-    const users = await this.prisma.user.findMany({
-      select: {
-        user_type_id: true, // Fetching user type ID
-        subscription: {
-          select: {
-            price: true, // Fetching the subscription price
+    try {
+      const users = await this.prisma.user.findMany({
+        select: {
+          user_type_id: true, // Fetching user type ID
+          subscription: {
+            select: {
+              price: true, // Fetching the subscription price
+            },
           },
         },
-      },
-    });
+      });
 
-    const profitsByUserType = users.reduce((acc, user) => {
-      const userTypeId = user.user_type_id; // User type ID
-      const price = user.subscription?.price || 0; // Subscription price
+      const profitsByUserType = users.reduce((acc, user) => {
+        const userTypeId = user.user_type_id; // User type ID
+        const price = user.subscription?.price || 0; // Subscription price
 
-      if (!acc[userTypeId]) {
-        acc[userTypeId] = { totalProfit: 0, userType: userTypeId }; // Initialize if not present
-      }
+        if (!acc[userTypeId]) {
+          acc[userTypeId] = { totalProfit: 0, userType: userTypeId }; // Initialize if not present
+        }
 
-      acc[userTypeId].totalProfit += price; // Accumulate profit
-      return acc;
-    }, {});
+        acc[userTypeId].totalProfit += price; // Accumulate profit
+        return acc;
+      }, {});
 
-    // Return the results as an array
-    return Object.values(profitsByUserType);
+      // Return the results as an array
+      return Object.values(profitsByUserType);
+    } catch (error) {
+      handleError(error, 'Failed to retrieve profits by user type');
+    }
   }
 
   /**
