@@ -275,7 +275,7 @@ export class UsersService {
     profilePictureUrl: string,
   ): Promise<User> {
     try {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const user = await this.findUserById(userId);
 
       if (!user) {
         throw new NotFoundException('User not found');
@@ -283,18 +283,19 @@ export class UsersService {
 
       // 🗑️ Remove old profile picture if it exists
       if (user.profile_picture) {
+        // Convert the relative URL to an absolute file path
         const oldFilePath = path.join(
-          __dirname,
-          '..',
+          process.cwd(), // Get the root directory
           'uploads',
-          user.profile_picture,
+          user.profile_picture.replace('/uploads/', ''), // Remove the base URL part
         );
 
         if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
+          fs.unlinkSync(oldFilePath); // Delete the old profile picture
         }
       }
 
+      // Update the user's profile picture in the database
       return await this.prisma.user.update({
         where: { id: userId },
         data: { profile_picture: profilePictureUrl },
