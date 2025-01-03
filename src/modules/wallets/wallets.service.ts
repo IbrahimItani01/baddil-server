@@ -167,4 +167,27 @@ export class WalletsService {
       handleError(error, 'Failed to delete item from wallet');
     }
   }
+
+  // 📝 get the item images
+  async getItemImages(itemId: string): Promise<string[]> {
+    try {
+      const item = await this.prisma.item.findUnique({
+        where: { id: itemId },
+        include: {
+          images: true,
+        },
+      });
+
+      if (!item) {
+        throw new NotFoundException('Item not found');
+      }
+
+      // Construct URLs for the images and fix slashes
+      return item.images.map(
+        (image) => `${process.env.BASE_URL}/${image.path.replace(/\\/g, '/')}`, // Replace backslashes with forward slashes
+      );
+    } catch (error) {
+      handleError(error, 'failed to get item images');
+    }
+  }
 }
