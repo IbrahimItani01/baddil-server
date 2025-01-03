@@ -174,4 +174,14 @@ export class WalletsController {
     };
   }
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
+  @Get('items/:itemId/images')
+  async serveItemImages(@Param('itemId') itemId: string): Promise<ApiResponse> {
+    const imageUrls = await this.walletService.getItemImages(itemId);
+
+    return {
+      success: true,
+      message: 'Item images fetched successfully',
+      data: imageUrls, // Send image URLs for the frontend to display
+    };
+  }
 }
