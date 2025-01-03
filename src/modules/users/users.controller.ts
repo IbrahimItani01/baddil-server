@@ -236,7 +236,7 @@ export class UsersController {
       throw new BadRequestException('No file uploaded'); // 🚫 Validation error
     }
 
-    const fileUrl = `/uploads/profile-pictures/${req.user.id}/${file.filename}`; // 📂 File path
+    const fileUrl = `uploads/profile-pictures/${req.user.id}/${file.filename}`; // 📂 File path
 
     const updatedUser = await this.usersService.updateProfilePicture(
       req.user.id,
