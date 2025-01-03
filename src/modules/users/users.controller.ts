@@ -4,6 +4,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Res,
   Body,
   Patch,
   BadRequestException,
@@ -12,6 +13,7 @@ import {
   UploadedFile,
   HttpCode,
   HttpStatus,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../guards/jwt.guard'; // 🔐 Importing the JWT guard
@@ -24,6 +26,11 @@ import {
   DeviceTokenDto,
 } from './dto/users.dto'; // 📋 Importing DTOs
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
+import { Response } from 'express';
+import { findUserByEmail } from 'src/utils/modules/users/users.utils';
+import { PrismaService } from 'src/database/prisma.service';
+import * as mime from 'mime-types';
+import { join } from 'path';
 
 @UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
