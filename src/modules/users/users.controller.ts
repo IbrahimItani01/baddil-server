@@ -196,20 +196,7 @@ export class UsersController {
    * 🖼️ Get the current user's profile picture
    * @returns The profile picture URL
    */
-  @Get('me/profile-picture')
-  @HttpCode(HttpStatus.OK)
-  async getProfilePicture(@Req() req: any): Promise<ApiResponse> {
-    const userId = req.user.id;
-
-    const profilePicture = await this.usersService.getProfilePicture(userId);
-    if (!profilePicture) {
-      throw new NotFoundException('Profile picture not found'); // 🚫 Picture not found
-    }
-    return {
-      success: true,
-      message: 'Profile picture retrieved successfully',
-      data: { profilePicture },
-    };
+  @Get(':identifier/profile-picture')
   }
 
   /**
