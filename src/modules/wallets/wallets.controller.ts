@@ -13,6 +13,7 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+
 } from '@nestjs/common';
 import { WalletsService } from './wallets.service'; // 📦 Import WalletsService to handle business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔐 Import JwtAuthGuard to secure routes
@@ -26,8 +27,8 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { validate } from 'class-validator';
 import * as path from 'path';
 
+
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🔒 Apply guards to secure routes
-@AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
 @Controller('wallet') // 📁 Route prefix for wallet-related endpoints
 export class WalletsController {
   constructor(
@@ -36,6 +37,7 @@ export class WalletsController {
   ) {}
 
   // 🔍 Get details of a specific item by itemId
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Get('items/:itemId')
   async getItemDetails(
     @Req() req: any,
@@ -57,6 +59,7 @@ export class WalletsController {
   }
 
   // 🔍 Get all items in the wallet
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Get('items')
   async getWalletItems(@Req() req: any): Promise<ApiResponse> {
     const walletId = await getWalletIdByUserId(this.prisma, req.user.id); // 🏦 Get the walletId from userId
@@ -69,8 +72,8 @@ export class WalletsController {
   }
 
   // ➕ Create a new item in the wallet with images
-  @Post('items')
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
+  @Post('items')
   @UseInterceptors(FilesInterceptor('files', 5, itemImagesUploadOptions)) // 🖼️ Handle file uploads with a max of 5 files
   async createItemWithImages(
     @Req() req: any, // 🛠️ Get the request object to access user details
@@ -129,6 +132,7 @@ export class WalletsController {
   }
 
   // ✏️ Update an existing item in the wallet
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Put('items/:itemId')
   async updateWalletItem(
     @Req() req: any, // 🛠️ Get the request object to access user details
@@ -152,6 +156,7 @@ export class WalletsController {
   }
 
   // 🗑️ Remove an item from the wallet
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Delete('items/:itemId')
   async removeWalletItem(
     @Req() req: any,
@@ -169,4 +174,5 @@ export class WalletsController {
       message: 'Item removed successfully', // 🗑️ Return a success message
     };
   }
+  @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
 }
