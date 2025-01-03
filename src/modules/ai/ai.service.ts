@@ -177,4 +177,57 @@ export class AIService {
       );
     }
   }
+
+  /**
+   * 🔝 Recommend categories
+   * Suggests the top 3 categories and their subcategories based on the user's wallet items.
+   * @param userId - ID of the user whose wallet items are analyzed.
+   * @returns The top 3 categories with their associated subcategories.
+   */
+  async recommendCategories(userId: string) {
+    // 📥 Fetch user's wallet items and associated categories and subcategories
+    const userItems = await this.prisma.item.findMany({
+      where: {
+        wallet: { owner_id: userId }, // 🔍 Filter items by wallet owner ID
+      },
+      include: {
+        category: true, // 🗂 Include category details
+        subcategory: true, // 🗂 Include subcategory details
+      },
+    });
+
+    if (userItems.length === 0) {
+      throw new NotFoundException("No items found in the user's wallet."); // 🚫 Handle empty wallet
+    }
+
+    // 🔢 Count category occurrences
+    const categoryCounts = userItems.reduce(
+      (acc, item) => {
+        const category = item.category?.name || 'Unknown'; // 📛 Handle missing categories
+        const subcategory = item.subcategory?.name || null; // 📛 Handle missing subcategories
+
+        if (!acc[category]) {
+          acc[category] = { count: 0, subcategories: new Set<string>() }; // 🌟 Initialize accumulator entry
+        }
+
+        acc[category].count += 1; // ➕ Increment category count
+        if (subcategory) acc[category].subcategories.add(subcategory); // ➕ Add subcategory if exists
+
+        return acc; // 🔄 Return updated accumulator
+      },
+      {} as Record<string, { count: number; subcategories: Set<string> }>, // 🗂 Define accumulator structure
+    );
+
+    // 🏆 Sort categories by count and select the top 3
+    const sortedCategories = Object.entries(categoryCounts)
+      .sort(([, a], [, b]) => b.count - a.count) // 🔀 Sort by count descending
+      .slice(0, 3) // ✂ Select top 3
+      .map(([name, data]) => ({
+        name, // 📝 Category name
+        count: data.count, // 🔢 Number of items in the category
+        subcategories: Array.from(data.subcategories), // 📋 Convert subcategories to array
+      }));
+
+    return sortedCategories; // 🎉 Return top categories
+  }
 }
