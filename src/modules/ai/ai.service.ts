@@ -12,7 +12,12 @@ import { checkEntityExists } from 'src/utils/general/models.utils';
  */
 @Injectable()
 export class AIService {
-  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
+  private readonly openAiApiKey: string;
+  private readonly openAiApiUrl = 'https://api.openai.com/v1/chat/completions'; // 🌐 OpenAI endpoint
+  // 📜 Constant system prompt for OpenAI
+  private readonly SYSTEM_PROMPT =
+    'You are an assistant that provides responses in JSON format only. Ensure the JSON is always well-structured and valid for easy parsing.';
+
 
   /**
    * 🗂️ Get all auto-trades
