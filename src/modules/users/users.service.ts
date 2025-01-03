@@ -35,7 +35,7 @@ export class UsersService {
     try {
       return this.prisma.user.findFirst({ where: { email } }); // 📧 Search for a user by email
     } catch (error) {
-      throw new InternalServerErrorException('Error finding user by email'); // 🛑 Handle errors
+      handleError(error, 'failed to find user by email');
     }
   }
 
@@ -44,9 +44,7 @@ export class UsersService {
     try {
       return this.prisma.user.findFirst({ where: { firebase_uid } }); // 🔑 Search for a user by Firebase UID
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error finding user by Firebase UID',
-      );
+      handleError(error, 'failed to find user by firebase_uid');
     }
   }
 
@@ -101,7 +99,7 @@ export class UsersService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error creating user');
+      handleError(error, 'failed to create user');
     }
   }
 
@@ -126,7 +124,7 @@ export class UsersService {
         },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error finding user by ID');
+      handleError(error, 'failed to find user');
     }
   }
 
@@ -147,10 +145,7 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new BadRequestException('Failed to update user');
+      handleError(error, 'failed to update user');
     }
   }
 
@@ -178,7 +173,7 @@ export class UsersService {
         data: updateData,
       });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to update settings');
+      handleError(error, 'Failed to update settings');
     }
   }
 
@@ -190,7 +185,7 @@ export class UsersService {
         data: { device_token: deviceToken },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error updating device token');
+      handleError(error, 'Error updating device token');
     }
   }
 
@@ -208,7 +203,7 @@ export class UsersService {
 
       return user.device_token;
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching device token');
+      handleError(error, 'Error fetching device token');
     }
   }
 
@@ -223,7 +218,7 @@ export class UsersService {
 
       return await getSettingsById(this.prisma, settingsId);
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching user settings');
+      handleError(error, 'Error fetching user settings');
     }
   }
 
@@ -241,10 +236,7 @@ export class UsersService {
         data: { user_status_id: statusId },
       });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Failed to change user status');
+      handleError(error, 'failed to change user status');
     }
   }
 
@@ -262,7 +254,7 @@ export class UsersService {
 
       return user.profile_picture;
     } catch (error) {
-      throw new InternalServerErrorException('Error fetching profile picture');
+      handleError(error, 'Error fetching profile picture');
     }
   }
 
@@ -297,7 +289,7 @@ export class UsersService {
         data: { profile_picture: profilePictureUrl },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error updating profile picture');
+      handleError(error, 'failed updating profile picture');
     }
   }
 }
