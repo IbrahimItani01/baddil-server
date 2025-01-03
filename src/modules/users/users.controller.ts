@@ -197,6 +197,41 @@ export class UsersController {
    * @returns The profile picture URL
    */
   @Get(':identifier/profile-picture')
+  async serveProfilePicture(
+    @Param('identifier') identifier: string,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    let userId: string;
+
+    if (req.user?.id) {
+      userId = req.user.id;
+    } else {
+      const user = await findUserByEmail(this.prisma, identifier);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      userId = user.id;
+    }
+
+    const { url, file } = await this.usersService.getProfilePicture(userId);
+
+    // Reconstruct file path from URL
+    const filePath = join(
+      process.cwd(),
+      'uploads',
+      url.replace('/uploads/', ''),
+    );
+
+    // Determine MIME type dynamically
+    const mimeType = mime.lookup(filePath) || 'application/octet-stream'; // Default to binary if unknown
+
+    res.set({
+      'Content-Type': mimeType,
+      'Content-Disposition': `inline; filename="profile-picture${mime.extension(mimeType)}"`,
+    });
+
+    file.pipe(res); // Stream the file directly to the response
   }
 
   /**
