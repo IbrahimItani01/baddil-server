@@ -35,7 +35,10 @@ import { join } from 'path';
 @UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {} // 💉 Injecting the UsersService
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
+  ) {} // 💉 Injecting the UsersService and prismaService
 
   /**
    * 🛠️ Get current user details
