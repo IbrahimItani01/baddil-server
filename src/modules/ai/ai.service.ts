@@ -24,6 +24,38 @@ export class AIService {
     this.openAiApiKey = process.env.OPENAI_API_KEY; // 🔑 Load API key from environment
   }
 
+  /**
+   * 🌐 Utility function to call OpenAI API
+   * Sends a system prompt and user message to OpenAI and returns a response in JSON format.
+   * @param userMessage - User's query or input.
+   * @returns Parsed JSON response from OpenAI.
+   */
+  private async callOpenAiApi(userMessage: string): Promise<any> {
+    try {
+      const response = await axios.post(
+        this.openAiApiUrl,
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: this.SYSTEM_PROMPT },
+            { role: 'user', content: userMessage },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.openAiApiKey}`, // 🔐 Include API key
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      return response.data; // 🎉 Return OpenAI response
+    } catch (error) {
+      throw new Error(
+        `OpenAI API error: ${error.response?.data?.error?.message || error.message}`,
+      ); // ⚠️ Handle API errors
+    }
+  }
 
   /**
    * 🗂️ Get all auto-trades
