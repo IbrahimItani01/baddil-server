@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import axios from 'axios';
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 Importing DTOs
 import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
@@ -17,6 +18,11 @@ export class AIService {
   // 📜 Constant system prompt for OpenAI
   private readonly SYSTEM_PROMPT =
     'You are an assistant that provides responses in JSON format only. Ensure the JSON is always well-structured and valid for easy parsing.';
+
+  // 🏗️ Injecting PrismaService
+  constructor(private readonly prisma: PrismaService) {
+    this.openAiApiKey = process.env.OPENAI_API_KEY; // 🔑 Load API key from environment
+  }
 
 
   /**
