@@ -6,6 +6,7 @@ import {
   Body,
   Put,
   UseGuards,
+  Req,
 } from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
 import { AIService } from './ai.service'; // 🤖 Importing AIService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
@@ -96,5 +97,22 @@ export class AIController {
       message: 'Retrieved auto trade chat successfully',
       data: chat,
     }; // ✅ Successful data retrieval
+  }
+  
+  /**
+   * 💬 Get recommended categories
+   * Fetches top 3 recommended categories
+   */
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to specific user types
+  @Get('recommend-categories')
+  async recommendCategories(@Req() req: any): Promise<ApiResponse> {
+    const userId = req.user.id; // Extract user ID from the request
+    const recommendations = await this.aiService.recommendCategories(userId);
+
+    return {
+      success: true,
+      message: 'Recommended categories and subcategories fetched successfully',
+      data: recommendations,
+    };
   }
 }
