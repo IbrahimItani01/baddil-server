@@ -241,18 +241,29 @@ export class UsersService {
   }
 
   // 🔍 Get profile picture URL
-  async getProfilePicture(userId: string): Promise<string | null> {
+  async getProfilePicture(userId: string): Promise<{ url: string; file: any }> {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { profile_picture: true },
-      });
+      const user = await this.findUserById(userId);
 
-      if (!user) {
-        throw new NotFoundException('User not found');
+      if (!user || !user.profile_picture) {
+        throw new NotFoundException('Profile picture not found');
       }
 
-      return user.profile_picture;
+      // Construct the file path
+      const filePath = path.join(
+        process.cwd(),
+        'uploads',
+        user.profile_picture.replace('/uploads/', ''),
+      );
+      console.log(user.profile_picture);
+
+      // Create a stream to the file
+      const fileStream = fs.createReadStream(filePath);
+
+      return {
+        url: user.profile_picture,
+        file: fileStream, // Return the file stream
+      };
     } catch (error) {
       handleError(error, 'Error fetching profile picture');
     }
