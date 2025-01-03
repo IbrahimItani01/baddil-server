@@ -275,7 +275,7 @@ export class UsersService {
         const oldFilePath = path.join(
           process.cwd(), // Get the root directory
           'uploads',
-          user.profile_picture.replace('/uploads/', ''), // Remove the base URL part
+          user.profile_picture.replace('uploads/', ''), // Remove the base URL part
         );
 
         if (fs.existsSync(oldFilePath)) {
