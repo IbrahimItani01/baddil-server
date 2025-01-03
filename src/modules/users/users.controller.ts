@@ -4,7 +4,6 @@ import {
   UseGuards,
   Req,
   Put,
-  Res,
   Body,
   Patch,
   BadRequestException,
@@ -26,11 +25,9 @@ import {
   DeviceTokenDto,
 } from './dto/users.dto'; // 📋 Importing DTOs
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
-import { Response } from 'express';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
-import * as mime from 'mime-types';
-import { join } from 'path';
+
 
 @UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
@@ -200,8 +197,7 @@ export class UsersController {
   async serveProfilePicture(
     @Param('identifier') identifier: string,
     @Req() req: any,
-    @Res() res: Response,
-  ) {
+  ): Promise<ApiResponse> {
     let userId: string;
 
     if (req.user?.id) {
@@ -214,24 +210,14 @@ export class UsersController {
       userId = user.id;
     }
 
-    const { url, file } = await this.usersService.getProfilePicture(userId);
+    // Get the profile picture URL
+    const profilePictureUrl = await this.usersService.getProfilePicture(userId);
 
-    // Reconstruct file path from URL
-    const filePath = join(
-      process.cwd(),
-      'uploads',
-      url.replace('/uploads/', ''),
-    );
-
-    // Determine MIME type dynamically
-    const mimeType = mime.lookup(filePath) || 'application/octet-stream'; // Default to binary if unknown
-
-    res.set({
-      'Content-Type': mimeType,
-      'Content-Disposition': `inline; filename="profile-picture${mime.extension(mimeType)}"`,
-    });
-
-    file.pipe(res); // Stream the file directly to the response
+    return {
+      success: true,
+      message: 'Profile picture fetched successfully',
+      data: profilePictureUrl, // Send the URL to the frontend
+    };
   }
 
   /**
