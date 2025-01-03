@@ -84,49 +84,48 @@ export class WalletsController {
       throw new BadRequestException('No files uploaded'); // 🚫 Validate input: files should be present
     }
 
-    // 🛠️ Parse form-data fields
-    const itemData = new CreateItemDto(); // Create an empty instance of the DTO
-    itemData.name = rawBody.name;
-    itemData.description = rawBody.description;
-    itemData.categoryId = rawBody.categoryId;
-    itemData.subcategoryId = rawBody.subcategoryId;
-    itemData.condition = rawBody.condition;
-    itemData.locationId = rawBody.locationId;
-    itemData.value = parseFloat(rawBody.value); // 🔢 Convert string to number
+    if (files.length !== 5) {
+      throw new BadRequestException('Exactly 5 images must be uploaded'); // 🚫 Validate: Must upload exactly 5 images
+    }
 
-    // 🛠️ Validate the parsed data manually
-    const errors = await validate(itemData); // Validate the instance
+    const userId = req.user.id;
+
+    // 🛠️ Parse and validate form-data fields
+    const itemData = new CreateItemDto();
+    Object.assign(itemData, {
+      name: rawBody.name,
+      description: rawBody.description,
+      categoryId: rawBody.categoryId,
+      subcategoryId: rawBody.subcategoryId,
+      condition: rawBody.condition,
+      locationId: rawBody.locationId,
+      value: parseFloat(rawBody.value), // 🔢 Convert string to number
+    });
+
+    const errors = await validate(itemData);
     if (errors.length > 0) {
       throw new BadRequestException(errors); // Throw validation errors
     }
 
     // 🛒 Add the item to the wallet
-    const newItem = await this.walletService.addItemToWallet(
-      req.user.id,
-      itemData,
-    );
-
-    const userId = req.user.id;
+    const newItem = await this.walletService.addItemToWallet(userId, itemData);
 
     // 💾 Save image details in the database
     const savedImages = await Promise.all(
-      files.map((file) => {
-        const filePath = path.join(
-          'uploads',
-          'items-images',
-          userId,
-          file.filename,
-        ); // Path relative to root
-        return this.walletService.saveItemImage(newItem.id, filePath); // Save each image path in the database
-      }),
+      files.map((file) =>
+        this.walletService.saveItemImage(
+          newItem.id,
+          path.join('uploads', 'items-images', userId, file.filename),
+        ),
+      ),
     );
 
     return {
-      success: true, // 🎉 Success response
-      message: 'Item created and images uploaded successfully', // 📝 Success message
+      success: true,
+      message: 'Item created and 5 images uploaded successfully',
       data: {
-        item: newItem, // 🛒 Newly created item
-        images: savedImages, // 🖼️ Saved images for the item
+        item: newItem,
+        images: savedImages,
       },
     };
   }
