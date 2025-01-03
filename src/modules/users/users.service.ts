@@ -3,9 +3,10 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as path from 'path';
 import { PrismaService } from '../../database/prisma.service';
 import { User } from '@prisma/client';
 import {
@@ -18,13 +19,12 @@ import {
   getSettingsId,
   validateSettingsData,
 } from 'src/utils/modules/users/settings.utils';
-import * as fs from 'fs';
-import path from 'path';
 import {
   CreateUserDto,
   UpdateUserDto,
   UpdateSettingsDto,
 } from './dto/users.dto';
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class UsersService {
