@@ -8,6 +8,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CreateItemDto, UpdateItemDto } from './dto/wallets.dto'; // 📝 Import the DTOs
+import { handleError } from 'src/utils/general/error.utils';
 
 @Injectable()
 export class WalletsService {
@@ -32,7 +33,7 @@ export class WalletsService {
 
       return item;
     } catch (error) {
-      throw new BadRequestException('Failed to fetch item details');
+      handleError(error, 'Failed to fetch item details');
     }
   }
 
@@ -44,7 +45,7 @@ export class WalletsService {
         include: { images: true },
       });
     } catch (error) {
-      throw new BadRequestException('Failed to fetch wallet items');
+      handleError(error, 'Failed to fetch wallet items');
     }
   }
 
@@ -83,7 +84,7 @@ export class WalletsService {
 
       return newItem; // 🎉 Return the newly created item
     } catch (error) {
-      throw new BadRequestException('Failed to add item to wallet');
+      handleError(error, 'Failed to add item to wallet');
     }
   }
 
@@ -100,7 +101,7 @@ export class WalletsService {
 
       return image;
     } catch (error) {
-      throw new BadRequestException('Failed to save item image');
+      handleError(error, 'Failed to save item image');
     }
   }
 
@@ -127,7 +128,7 @@ export class WalletsService {
         data: rest,
       });
     } catch (error) {
-      throw new BadRequestException('Failed to update item in wallet');
+      handleError(error, 'Failed to update item in wallet');
     }
   }
 
@@ -163,7 +164,7 @@ export class WalletsService {
 
       return { itemId, deletedImages: imagePaths.length };
     } catch (error) {
-      throw new BadRequestException('Failed to delete item from wallet');
+      handleError(error, 'Failed to delete item from wallet');
     }
   }
 }
