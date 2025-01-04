@@ -102,7 +102,7 @@ export class AIController {
       data: chat,
     }; // ✅ Successful data retrieval
   }
-  
+
   /**
    * 💬 Get recommended categories
    * Fetches top 3 recommended categories
@@ -131,6 +131,17 @@ export class AIController {
       success: true,
       message: 'AI response generated successfully',
       data: aiResponse, // 🎉 Return the AI response
+    };
+  }
+  @AllowedUserTypes('barterer')
+  @Post('generate-price')
+  async generatePrice(@Body() body: any): Promise<ApiResponse> {
+    const { itemId } = body;
+    const price = await this.aiService.generatePrice(itemId as string);
+    return {
+      success: true,
+      message: 'Price generated successfully',
+      data: price,
     };
   }
 }
