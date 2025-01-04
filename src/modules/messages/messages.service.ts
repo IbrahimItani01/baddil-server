@@ -170,4 +170,25 @@ export class MessagesService {
       throw new BadRequestException(`Invalid status: ${status}`); // 🚫 Error handling for invalid status
     }
   }
+
+  private async callAiApi(userId: string, barterId: string): Promise<string> {
+    try {
+      const baseUrl = this.configService.get<string>('BASE_URL'); // Get BASE_URL from .env
+
+      const response = await axios.post(
+        `${baseUrl}/api/ai/respond/:${barterId}`,
+        {
+          userId,
+        },
+      );
+
+      if (response.status !== 200 || !response.data || !response.data.reply) {
+        throw new Error('Failed to get AI response');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw new Error('Error calling AI API: ' + error.message);
+    }
+  }
 }
