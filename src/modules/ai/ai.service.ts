@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
 import axios from 'axios';
@@ -10,6 +11,7 @@ import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
 import { handleError } from 'src/utils/general/error.utils';
 import { checkEntityExists } from 'src/utils/general/models.utils';
 import { HandledByAi } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * ⚙️ AI Service
@@ -25,7 +27,10 @@ export class AIService {
     'You are an assistant that provides responses in JSON format only. Ensure the JSON is always well-structured and valid for easy parsing.';
 
   // 🏗️ Injecting PrismaService
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
     this.openAiApiKey = process.env.OPENAI_API_KEY; // 🔑 Load API key from environment
   }
 
