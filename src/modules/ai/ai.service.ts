@@ -40,7 +40,7 @@ export class AIService {
    * @param userMessage - User's query or input.
    * @returns Parsed JSON response from OpenAI.
    */
-  private async callOpenAiApi(userMessage: string): Promise<any> {
+  private async callOpenAiApi(userMessage: any): Promise<any> {
     try {
       const response = await axios.post(
         this.openAiApiUrl,
@@ -418,55 +418,62 @@ export class AIService {
     return aiMessage; // Use aiMessage directly
   }
 
-  /**
-   * 🤖 Generate AI response for chat
-   * Uses OpenAI API to produce a reply based on chat history and barter context.
-   */
-  private async generateAiResponse(
-    messages: { role: string; content: string }[],
-    barterContext: {
-      user1: string;
-      user2: string;
-      item1: { name: string; condition: string; value: number };
-      item2: { name: string; condition: string; value: number };
-      status: string;
-    },
-  ): Promise<string> {
-    const openAiPayload = {
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: `You are a barter assistant AI. Always respond in JSON format for easy data extraction.
-        Include barter details in your response."`,
-        },
-        {
-          role: 'system',
-          content: `Barter context: User1 (${barterContext.user1}) is bartering "${barterContext.item1.name}" (Condition: ${barterContext.item1.condition}, Value: ${barterContext.item1.value}) 
-        with User2 (${barterContext.user2})'s "${barterContext.item2.name}" (Condition: ${barterContext.item2.condition}, Value: ${barterContext.item2.value}). Barter status is ${barterContext.status}.`,
-        },
-        ...messages.map((msg) => ({
-          role: msg.role === 'user1' ? 'user' : 'assistant',
-          content: msg.content,
-        })),
-      ],
-    };
+  async generatePrice(itemId: string) {
+    const baseUrl = this.configService.get<string>('BASE_URL');
+    await axios
+      .get(`${baseUrl}/api/items/${itemId}/images`)
+      .then((res) => {
+        return res.data.data;
+      })
+      .then(async (images) => {
+        await axios
+          .get(`${baseUrl}/api/items/${itemId}`)
+          .then((res) => {
+            return res.data.data;
+          })
+          .then(async (itemData) => {
+            // Define the pricing constraints and rules in the AI message
+            const aiMessage = `
+              visit each image URL below and study the content:
+              ${images}
+              Based on the information from the images and the following item details:
+              Name: ${itemData.name}
+              Description: ${itemData.description}
+              Condition: ${itemData.condition} (new, used, refurbished, etc.)
+              Category: ${itemData.category} (electronics, clothing, furniture, etc.)
+  
+              Please consider the following rules to generate the price for this item in BaddilCoins:
+            
+              1. **Item Condition Multipliers**:
+                 - New: 1.2x
+                 - Used: 0.8x
+                 - Refurbished: 1.0x
+             
+              2. Return only the estimated value in BaddilCoins as a number in the response like:
+              {
+                value: <the value generated in BaddilCoins>  
+              }
+            `;
 
-    const response = await fetch(this.openAiApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.openAiApiKey}`,
-      },
-      body: JSON.stringify(openAiPayload),
-    });
-
-    const data = await response.json();
-    if (!response.ok || !data.choices || !data.choices[0].message) {
-      throw new Error('Failed to fetch AI response from OpenAI');
-    }
-
-    const aiReply = data.choices[0].message.content;
-    return `${aiReply} handled by AI`; // Append "handled by AI" to the reply
+            // Call OpenAI API with the enhanced pricing message
+            try {
+              const value = JSON.parse(
+                await this.callOpenAiApi(aiMessage),
+              ).value;
+              if (value && typeof value === 'number') {
+                await this.prisma.item.update({
+                  where: { id: itemId },
+                  data: { value: value },
+                });
+              } else {
+                throw new InternalServerErrorException(
+                  'Error generating value',
+                );
+              }
+            } catch (error) {
+              handleError(error, 'Error generating value');
+            }
+          });
+      });
   }
 }
