@@ -13,7 +13,6 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
-
 } from '@nestjs/common';
 import { WalletsService } from './wallets.service'; // 📦 Import WalletsService to handle business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔐 Import JwtAuthGuard to secure routes
@@ -27,7 +26,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { validate } from 'class-validator';
 import * as path from 'path';
 
-
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🔒 Apply guards to secure routes
 @Controller('wallet') // 📁 Route prefix for wallet-related endpoints
 export class WalletsController {
@@ -39,15 +37,8 @@ export class WalletsController {
   // 🔍 Get details of a specific item by itemId
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Get('items/:itemId')
-  async getItemDetails(
-    @Req() req: any,
-    @Param('itemId') itemId: string,
-  ): Promise<ApiResponse> {
-    const walletId = await getWalletIdByUserId(this.prisma, req.user.id); // 🏦 Get the walletId from userId
-    const itemDetails = await this.walletService.getItemDetails(
-      walletId,
-      itemId,
-    ); // 🛒 Fetch item details
+  async getItemDetails(@Param('itemId') itemId: string): Promise<ApiResponse> {
+    const itemDetails = await this.walletService.getItemDetails(itemId); // 🛒 Fetch item details
     if (!itemDetails) {
       throw new HttpException('Item not found', HttpStatus.NOT_FOUND); // ❌ Item not found
     }
@@ -99,7 +90,6 @@ export class WalletsController {
       subcategoryId: rawBody.subcategoryId,
       condition: rawBody.condition,
       locationId: rawBody.locationId,
-      value: parseFloat(rawBody.value), // 🔢 Convert string to number
     });
 
     const errors = await validate(itemData);
