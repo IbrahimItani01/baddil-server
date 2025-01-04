@@ -41,7 +41,12 @@ export const seedBarters = async (prisma: PrismaClient) => {
           user2_id: user2.id.toString(),
           user1_item_id: user1Item.id.toString(),
           user2_item_id: user2Item.id.toString(),
-          handled_by_ai: faker.datatype.boolean(),
+          handled_by_ai: faker.helpers.arrayElement([
+            'user1',
+            'user2',
+            'both',
+            'none',
+          ]), // Random enum value
           status: barterStatus,
           completed_at: completedAt,
           meetup_id: meetupId ? meetupId.toString() : null,
