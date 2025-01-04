@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common'; // 📦 Importing necessary exceptions
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'; // 📦 Importing necessary exceptions
 import axios from 'axios';
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 Importing DTOs
 import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
 import { handleError } from 'src/utils/general/error.utils';
 import { checkEntityExists } from 'src/utils/general/models.utils';
+import { HandledByAi } from '@prisma/client';
 
 /**
  * ⚙️ AI Service
@@ -65,9 +70,14 @@ export class AIService {
    */
   async getAutoTrades(userId?: string) {
     try {
-      const where = { handled_by_ai: true }; // 🔍 Filtering for AI-managed barters
+      // Define initial filter for barters managed by AI
+      const where: Record<string, any> = {
+        handled_by_ai: { not: 'none' }, // Filter for any AI-managed barter (not 'none')
+      };
+
+      // Optionally filter by userId
       if (userId) {
-        where['user1_id'] = userId; // Filter by user1_id if provided
+        where.OR = [{ user1_id: userId }, { user2_id: userId }];
       }
 
       const barters = await this.prisma.barter.findMany({
