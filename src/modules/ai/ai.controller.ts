@@ -7,6 +7,7 @@ import {
   Put,
   UseGuards,
   Req,
+  Post,
 } from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
 import { AIService } from './ai.service'; // 🤖 Importing AIService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
@@ -47,11 +48,14 @@ export class AIController {
   @Patch('barters/toggle') // 🔄 Endpoint to toggle auto-trade
   async toggleAutoTrade(
     @Body() toggleAutoTradeDto: ToggleAutoTradeDto,
+    @Req() req: any,
   ): Promise<ApiResponse> {
     // 📝 Accept DTO as parameter
     // Pass the DTO directly to the service method
-    const updatedBarter =
-      await this.aiService.toggleAutoTrade(toggleAutoTradeDto); // 🔄 Toggling auto-trade
+    const updatedBarter = await this.aiService.toggleAutoTrade(
+      toggleAutoTradeDto,
+      req.user.id,
+    ); // 🔄 Toggling auto-trade
 
     return {
       success: true,
