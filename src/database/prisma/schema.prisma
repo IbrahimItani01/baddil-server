@@ -384,7 +384,7 @@ model Barter {
   user2_id      String
   user1_item_id String
   user2_item_id String
-  handled_by_ai Boolean      @default(false)
+  handled_by_ai HandledByAi  @default(none)
   status        BarterStatus @default(ongoing)
   meetup_id     String?
   completed_at  DateTime?
@@ -400,6 +400,13 @@ model Barter {
   Rating     Rating[]
 
   @@map("barters")
+}
+
+enum HandledByAi {
+  user1
+  user2
+  both
+  none
 }
 
 enum BarterStatus {
