@@ -277,6 +277,90 @@ export class AIService {
 
     return sortedCategories; // 🎉 Return top categories
   }
+
+  /**
+   * 💬 Chat on behalf of the user
+   * Automatically generates a reply in an AI-managed barter chat.
+   * @param barterId - ID of the barter whose chat will be managed by AI.
+   * @returns AI-generated chat message.
+   */
+  async chatOnBehalf(barterId: string, userId: string) {
+    // 1️⃣ Verify if the barter exists and includes the userId
+    const barter = await this.prisma.barter.findFirst({
+      where: {
+        id: barterId,
+        OR: [{ user1_id: userId }, { user2_id: userId }],
+      },
+      include: {
+        user1_item: true,
+        user2_item: true,
+        user1: true,
+        user2: true,
+      },
+    });
+
+    if (!barter) {
+      throw new NotFoundException(
+        'This barter does not exist or you do not have access.',
+      );
+    }
+
+    // 2️⃣ Check AI handling status
+    const isAiHandled =
+      (barter.handled_by_ai === 'user1' && barter.user1_id === userId) ||
+      (barter.handled_by_ai === 'user2' && barter.user2_id === userId) ||
+      barter.handled_by_ai === 'both';
+
+    if (!isAiHandled) {
+      throw new NotFoundException(
+        'AI is not handling this chat for your role in this barter.',
+      );
+    }
+
+    // 3️⃣ Fetch the last 7 messages for context
+    const chat = await this.prisma.chat.findFirst({
+      where: { barter_id: barterId },
+      include: {
+        Message: {
+          take: 7, // Fetch last 7 messages in order
+          orderBy: { timestamp: 'asc' },
+          include: { owner: true },
+        },
+      },
+    });
+
+    if (!chat) {
+      throw new NotFoundException('Chat not found for this barter.');
+    }
+
+    const messages = chat.Message.map((msg) => ({
+      role: msg.owner.id === barter.user1_id ? 'user1' : 'user2',
+      content: msg.content,
+    }));
+
+    // 4️⃣ Prepare barter context with item details
+    const barterContext = {
+      user1: barter.user1.name,
+      user2: barter.user2.name,
+      item1: {
+        name: barter.user1_item.name,
+        condition: barter.user1_item.condition.toString(), // Convert enum to string
+        value: barter.user1_item.value,
+      },
+      item2: {
+        name: barter.user2_item.name,
+        condition: barter.user2_item.condition.toString(), // Convert enum to string
+        value: barter.user2_item.value,
+      },
+      status: barter.status.toString(), // Convert enum to string
+    };
+
+    const aiMessage = await this.generateAiResponse(messages, barterContext);
+
+    // 6️⃣ AI response already includes "handled by AI", no need to append manually
+    return aiMessage; // Use aiMessage directly
+  }
+
   /**
    * 🤖 Generate AI response for chat
    * Uses OpenAI API to produce a reply based on chat history and barter context.
