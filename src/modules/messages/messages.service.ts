@@ -31,7 +31,8 @@ export class MessagesService {
     await this.checkStatus(status);
 
     try {
-      return await this.prisma.message.create({
+      // Step 1: Save the user message to the database
+      const savedMessage = await this.prisma.message.create({
         data: {
           content,
           owner_id,
@@ -39,8 +40,57 @@ export class MessagesService {
           status: status ? (status as MessageStatus) : 'sent', // Default status to 'sent'
         },
       });
+
+      // Step 2: Fetch the chat and get the corresponding barter_id
+      const chat = await this.prisma.chat.findUnique({
+        where: { id: chat_id },
+        include: {
+          barter: { include: { user1: true, user2: true } }, // Include the barter information
+        },
+      });
+
+      if (!chat) {
+        throw new Error('Chat not found');
+      }
+
+      const { user1_id, user2_id, handled_by_ai } = chat.barter;
+
+      // Step 3: Identify the other user
+      const otherUserId = owner_id === user1_id ? user2_id : user1_id;
+
+      // Step 4: Check if the other user is handling the barter by AI
+      const isAiHandled =
+        (otherUserId === user1_id && handled_by_ai === 'user1') ||
+        (otherUserId === user2_id && handled_by_ai === 'user2') ||
+        handled_by_ai === 'both';
+      let aiMessage;
+      // Step 5: If AI handling is enabled for the other user, call the AI API for response
+      if (isAiHandled) {
+        // Call the AI response API
+        const aiResponse = await this.callAiApi(otherUserId, chat.barter_id);
+
+        // Step 6: Save the AI-generated message
+        aiMessage = await this.prisma.message.create({
+          data: {
+            content: aiResponse,
+            owner_id: otherUserId, // The other user (not the sender)
+            chat_id,
+            status: 'sent',
+          },
+        });
+
+        // Step 7: Emit WebSocket event for the AI response
+      }
+
+      // Step 8: Emit WebSocket event for the user message
+      await this.chatGateway.server
+        .to(chat_id)
+        .emit('newMessage', savedMessage);
+      await this.chatGateway.server.to(chat_id).emit('newMessage', aiMessage);
+
+      return savedMessage; // Return the saved message
     } catch (error) {
-      handleError(error, 'failed sending message');
+      handleError(error, 'Failed sending message');
     }
   }
 
