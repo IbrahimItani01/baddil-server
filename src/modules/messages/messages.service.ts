@@ -4,10 +4,18 @@ import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importin
 import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 📨 Importing DTOs for data validation
 import { handleError } from 'src/utils/general/error.utils';
 import { checkEntityExists } from 'src/utils/general/models.utils';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { ChatGateway } from 'src/gateways/chat.gateway';
 
 @Injectable()
 export class MessagesService {
-  constructor(private readonly prisma: PrismaService) {} // 🏗️ Injecting PrismaService
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+    private readonly chatGateway: ChatGateway, // 🏗️ Injecting ChatGateway
+    // Inject ConfigService to access env variables
+  ) {} // 🏗️ Injecting PrismaService
 
   /**
    * ➕ Send a new message
