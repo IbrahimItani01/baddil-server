@@ -106,14 +106,51 @@ export class AIService {
    * @param toggleAutoTradeDto - DTO containing the barterId and the enabled status.
    * @returns The updated barter object with the toggled AI management.
    */
-  async toggleAutoTrade(toggleAutoTradeDto: ToggleAutoTradeDto) {
+  async toggleAutoTrade(
+    toggleAutoTradeDto: ToggleAutoTradeDto,
+    userId: string,
+  ) {
     try {
       const { barterId, enabled } = toggleAutoTradeDto; // 🏷️ Destructuring DTO
 
-      // 🔍 Find the barter using the reusable function
-      await checkEntityExists(this.prisma, 'barter', barterId);
+      // 🔍 Find the barter using a reusable function
+      const barter = await this.prisma.barter.findFirst({
+        where: {
+          id: barterId,
+          OR: [{ user1_id: userId }, { user2_id: userId }],
+        },
+      });
 
-      // ✅ Update the AI management status
+      if (!barter) {
+        throw new NotFoundException(
+          'Barter not found or you do not have access.',
+        );
+      }
+
+      // ✅ Determine the new `handled_by_ai` value
+      let newHandledByAi: HandledByAi;
+
+      if (barter.user1_id === userId) {
+        // User1 toggling
+        if (enabled) {
+          newHandledByAi = barter.handled_by_ai === 'user2' ? 'both' : 'user1'; // Add or set user1
+        } else {
+          newHandledByAi = barter.handled_by_ai === 'both' ? 'user2' : 'none'; // Remove user1
+        }
+      } else if (barter.user2_id === userId) {
+        // User2 toggling
+        if (enabled) {
+          newHandledByAi = barter.handled_by_ai === 'user1' ? 'both' : 'user2'; // Add or set user2
+        } else {
+          newHandledByAi = barter.handled_by_ai === 'both' ? 'user1' : 'none'; // Remove user2
+        }
+      } else {
+        throw new ForbiddenException(
+          'You are not authorized to toggle auto-trade for this barter.',
+        );
+      }
+
+      // ✅ Update the barter with the new `handled_by_ai` value
       const updatedBarter = await this.prisma.barter.update({
         where: { id: barterId },
         data: { handled_by_ai: enabled },
