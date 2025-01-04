@@ -12,7 +12,6 @@ import {
 import { MessagesService } from './messages.service'; // 💬 Importing MessagesService for business logic
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
-import { ChatGateway } from 'src/gateways/chat.gateway'; // 📡 Importing ChatGateway for WebSocket communication
 import { SendMessageDto, UpdateMessageStatusDto } from './dto/messages.dto'; // 📨 Importing DTOs for data validation
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
@@ -21,7 +20,6 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 export class MessagesController {
   constructor(
     private readonly messagesService: MessagesService, // 🏗️ Injecting MessagesService
-    private readonly chatGateway: ChatGateway, // 🏗️ Injecting ChatGateway
   ) {}
 
   /**
@@ -29,17 +27,13 @@ export class MessagesController {
    * @param sendMessageDto - The message content, owner ID, chat ID, and optional status.
    * @returns The saved message record.
    */
-  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
-  @Post() // ➕ Endpoint to send a message
+  @AllowedUserTypes('barterer', 'broker') // Restricting access to barterers and brokers
+  @Post() // Endpoint to send a message
   async sendMessage(
     @Body() sendMessageDto: SendMessageDto,
   ): Promise<ApiResponse> {
+    // Call the sendMessage method in the service, which already handles the WebSocket emission
     const savedMessage = await this.messagesService.sendMessage(sendMessageDto);
-
-    // Emit WebSocket event
-    this.chatGateway.server
-      .to(sendMessageDto.chat_id)
-      .emit('newMessage', savedMessage);
 
     return {
       success: true,
