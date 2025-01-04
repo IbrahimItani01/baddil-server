@@ -259,7 +259,7 @@ model Item {
   condition      ItemCondition
   location_id    String
   wallet_id      String
-  value          Float
+  value          Float         @default(0)
   created_at     DateTime      @default(now())
   updated_at     DateTime      @default(now()) @updatedAt
   images         ItemImage[]
