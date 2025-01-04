@@ -15,12 +15,11 @@ export class WalletsService {
   constructor(private readonly prisma: PrismaService) {}
 
   // 🛒 Fetch item details by walletId and itemId
-  async getItemDetails(walletId: string, itemId: string) {
+  async getItemDetails(itemId: string) {
     try {
       const item = await this.prisma.item.findFirst({
-        where: { id: itemId, wallet_id: walletId },
+        where: { id: itemId },
         include: {
-          images: true,
           category: true,
           subcategory: true,
           location: true,
@@ -74,7 +73,7 @@ export class WalletsService {
           name: itemData.name,
           description: itemData.description,
           condition: itemData.condition,
-          value: itemData.value,
+          value: 0,
           category_id: itemData.categoryId,
           subcategory_id: itemData.subcategoryId,
           location_id: itemData.locationId,
