@@ -119,4 +119,18 @@ export class AIController {
       data: recommendations,
     };
   }
+
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers and brokers only
+  @Post('respond/:barterId') // 📥 Endpoint to get AI response for a specific barter chat
+  async chatOnBehalf(
+    @Param('barterId') barterId: string, // 📍 Getting the barter ID from route params
+    @Body() body: any, // 🛠️ Accessing body to get the user ID
+  ): Promise<ApiResponse> {
+    const aiResponse = await this.aiService.chatOnBehalf(barterId, body.userId); // 🤖 Getting AI response from service
+    return {
+      success: true,
+      message: 'AI response generated successfully',
+      data: aiResponse, // 🎉 Return the AI response
+    };
+  }
 }
