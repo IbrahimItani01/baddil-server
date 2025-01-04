@@ -66,6 +66,58 @@ export class AIService {
       ); // ⚠️ Handle API errors
     }
   }
+  
+  /**
+   * 🤖 Generate AI response for chat
+   * Uses OpenAI API to produce a reply based on chat history and barter context.
+   */
+  private async generateAiResponse(
+    messages: { role: string; content: string }[],
+    barterContext: {
+      user1: string;
+      user2: string;
+      item1: { name: string; condition: string; value: number };
+      item2: { name: string; condition: string; value: number };
+      status: string;
+    },
+  ): Promise<string> {
+    const openAiPayload = {
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a barter assistant AI. Always respond in JSON format for easy data extraction.
+        Include barter details in your response."`,
+        },
+        {
+          role: 'system',
+          content: `Barter context: User1 (${barterContext.user1}) is bartering "${barterContext.item1.name}" (Condition: ${barterContext.item1.condition}, Value: ${barterContext.item1.value}) 
+        with User2 (${barterContext.user2})'s "${barterContext.item2.name}" (Condition: ${barterContext.item2.condition}, Value: ${barterContext.item2.value}). Barter status is ${barterContext.status}.`,
+        },
+        ...messages.map((msg) => ({
+          role: msg.role === 'user1' ? 'user' : 'assistant',
+          content: msg.content,
+        })),
+      ],
+    };
+
+    const response = await fetch(this.openAiApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.openAiApiKey}`,
+      },
+      body: JSON.stringify(openAiPayload),
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.choices || !data.choices[0].message) {
+      throw new Error('Failed to fetch AI response from OpenAI');
+    }
+
+    const aiReply = data.choices[0].message.content;
+    return `${aiReply} handled by AI`; // Append "handled by AI" to the reply
+  }
 
   /**
    * 🗂️ Get all auto-trades
