@@ -120,6 +120,10 @@ export class AIController {
     };
   }
 
+  /**
+   * 💬 Respond on behalf of user
+   *  Allows ai to respond on behalf of another user
+   */
   @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers and brokers only
   @Post('respond/:barterId') // 📥 Endpoint to get AI response for a specific barter chat
   async chatOnBehalf(
@@ -133,6 +137,11 @@ export class AIController {
       data: aiResponse, // 🎉 Return the AI response
     };
   }
+
+  /**
+   * 💬 Generate value for the added item
+   *  Based on item data and images ai generates a value for the item
+   */
   @AllowedUserTypes('barterer')
   @Post('generate-price')
   async generatePrice(@Body() body: any): Promise<ApiResponse> {
@@ -144,4 +153,26 @@ export class AIController {
       data: price,
     };
   }
+
+  /**
+   * 🌐 AI Controller (Partial for Barter Recommendations)
+   */
+  @AllowedUserTypes('barterer')
+  @Get('items/:itemId/recommend')
+  async recommendBarterItems(
+    @Param('itemId') itemId: string,
+    @Req() req: any,
+  ): Promise<ApiResponse> {
+    const userId = req.user.id;
+    const recommendations = await this.aiService.getBarterRecommendations(
+      userId,
+      itemId,
+    );
+    return {
+      success: true,
+      message: 'Recommended items fetched successfully',
+      data: recommendations,
+    };
+  }
+
 }
