@@ -7,6 +7,7 @@ import {
   Body,
   Request,
   UseGuards,
+  Param,
 } from '@nestjs/common'; // 📦 Importing necessary decorators and exceptions
 import { JwtAuthGuard } from 'src/guards/jwt.guard'; // 🔑 Importing JWT authentication guard
 import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard'; // 🛡️ Importing user type guards
@@ -28,10 +29,15 @@ export class BartersController {
    * Fetches all barters for the logged-in user.
    */
   @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
-  @Get('/by-user') // 📥 Endpoint to get barters by user
-  async getUserBarters(@Request() req: any): Promise<ApiResponse> {
-    const userId = req.user.id; // 🧑‍💻 Extracting the user ID from the JWT
-    const barters = await this.barterService.getBartersByUser(userId); // 🔍 Fetching barters for the user
+  @Get('/by-user/:userId?') // 📥 Endpoint to get barters by user
+  async getUserBarters(@Request() req: any,@Param() userId?:string): Promise<ApiResponse> {
+    let barters;
+    if(userId){
+      barters = await this.barterService.getBartersByUser(userId); // 🔍 Fetching barters for the user
+    }
+    else{
+      barters = await this.barterService.getBartersByUser(req.user.id); // 🔍 Fetching barters for the user
+    }
 
     // 🗂️ Map the response to BarterResponseDto
     const response: BarterResponseDto[] = barters.map((barter) => ({
