@@ -10,8 +10,10 @@ import { ToggleAutoTradeDto, UpdateAutoTradeDto } from './dto/ai.dto'; // 📦 I
 import { processBarterUpdate } from 'src/utils/modules/barters/barters.utils';
 import { handleError } from 'src/utils/general/error.utils';
 import { checkEntityExists } from 'src/utils/general/models.utils';
-import { HandledByAi } from '@prisma/client';
+import { BarterStatus, HandledByAi } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { BarterResponseDto } from '../barters/dto/barters.dto';
+import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 
 /**
  * ⚙️ AI Service
@@ -25,13 +27,14 @@ export class AIService {
   // 📜 Constant system prompt for OpenAI
   private readonly SYSTEM_PROMPT =
     'You are an assistant that provides responses in JSON format only. Ensure the JSON is always well-structured and valid for easy parsing.';
-
+  private readonly base_url: string;
   // 🏗️ Injecting PrismaService
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    this.openAiApiKey = process.env.OPENAI_API_KEY; // 🔑 Load API key from environment
+    this.openAiApiKey = this.configService.get('OPENAI_API_KEY'); // 🔑 Load API key from environment
+    this.base_url = this.configService.get('BASE_URL');
   }
 
   /**
@@ -419,15 +422,14 @@ export class AIService {
   }
 
   async generatePrice(itemId: string) {
-    const baseUrl = this.configService.get<string>('BASE_URL');
     await axios
-      .get(`${baseUrl}/api/items/${itemId}/images`)
+      .get(`${this.base_url}/api/wallet/items/${itemId}/images`)
       .then((res) => {
         return res.data.data;
       })
       .then(async (images) => {
         await axios
-          .get(`${baseUrl}/api/items/${itemId}`)
+          .get(`${this.base_url}/api/wallet/items/${itemId}`)
           .then((res) => {
             return res.data.data;
           })
