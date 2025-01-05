@@ -81,4 +81,16 @@ export class RatingsController {
     };
   }
 
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
+  @Get('broker/:brokerId') // 📍 Endpoint to get ratings for a specific broker
+  async getBrokerRatings(
+    @Param('brokerId') brokerId: string, // 📑 Extracting brokerId from route params
+  ): Promise<ApiResponse> {
+    const ratings = await this.ratingsService.getBrokerRatings(brokerId); // 🔍 Fetching ratings for the broker
+    return {
+      success: true,
+      message: 'Broker ratings retrieved successfully', // ✅ Success message
+      data: ratings, // 🎉 Returning ratings data
+    };
+  }
 }
