@@ -523,4 +523,44 @@ export class AIService {
     }
   }
 
+  async getSuccessProbability(email: string) {
+    try {
+      const { id } = await findUserByEmail(this.prisma, email);
+      const userBarters: object[] = await axios
+        .get(`${this.base_url}/api/barters/by-user/${id}`)
+        .then((response) => response.data?.data || []); // Extracting 'data' key from API response
+
+      // Extract only the 'status' field from each barter
+      const statuses = userBarters.map(
+        (barter: BarterResponseDto) => barter.status,
+      );
+      const aiMessage = `
+        Analyze the following barter statuses from previous trades by a user: ${JSON.stringify(statuses)}.
+        Possible status values are: ${JSON.stringify(BarterStatus)}.
+        
+        Based on the frequency of "completed" statuses relative to the total number of statuses provided, calculate the probability (in percentage) that a future barter with this user will be successful.
+        
+        Use this formula: (number of "completed" statuses / total number of statuses) * 100 to compute the success probability.
+        
+        Your response must be in JSON format as follows:
+        {
+          "data": <calculated percentage of success as a number>
+        }
+      `;
+
+      try {
+        const aiResponse = await this.callOpenAiApi(aiMessage);
+        const recommendedData = JSON.parse(aiResponse).data;
+        if (recommendedData) return recommendedData;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Error generating success probability',
+          error,
+        );
+      }
+    } catch (error) {
+      handleError(error, 'Failed to get success probability');
+    }
+  }
+
 }
