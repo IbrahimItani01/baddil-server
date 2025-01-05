@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Get,
 } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
@@ -66,4 +67,18 @@ export class RatingsController {
       data: rating, // 📄 Return the created rating data
     };
   }
+
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
+  @Get('barter/:barterId') // 📍 Endpoint to get ratings for a specific barter
+  async getBarterRatings(
+    @Param('barterId') barterId: string, // 📑 Extracting barterId from route params
+  ): Promise<ApiResponse> {
+    const ratings = await this.ratingsService.getBarterRatings(barterId); // 🔍 Fetching ratings for the barter
+    return {
+      success: true,
+      message: 'Barter ratings retrieved successfully', // ✅ Success message
+      data: ratings, // 🎉 Returning ratings data
+    };
+  }
+
 }
