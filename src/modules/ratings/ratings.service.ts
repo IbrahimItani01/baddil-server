@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService to interact with the database
 import { AddBrokerRatingDto, AddBarterRatingDto } from './dto/ratings.dto'; // 🧳 Importing DTOs
 import { handleError } from 'src/utils/general/error.utils';
@@ -66,7 +64,22 @@ export class RatingsService {
       handleError(error, 'Failed to add barter rating');
     }
   }
+  /**
+   * 📄 Get ratings for a specific barter
+   * Retrieves all ratings associated with the given barter ID.
+   */
+  async getBarterRatings(barterId: string) {
+    try {
+      // Fetching ratings where the barter_id matches the provided barterId
+      const ratings = await this.prisma.rating.findMany({
+        where: { barter_id: barterId },
+      });
 
+      return ratings; // Returning the ratings array
+    } catch (error) {
+      handleError(error, 'Failed to get barter ratings'); // Handling any errors
+    }
+  }
   private async validateRatingValue(value: number) {
     if (value >= 1 && value <= 5) {
       return true;
