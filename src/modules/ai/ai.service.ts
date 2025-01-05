@@ -28,6 +28,7 @@ export class AIService {
   private readonly SYSTEM_PROMPT =
     'You are an assistant that provides responses in JSON format only. Ensure the JSON is always well-structured and valid for easy parsing.';
   private readonly base_url: string;
+
   // 🏗️ Injecting PrismaService
   constructor(
     private readonly prisma: PrismaService,
@@ -69,7 +70,7 @@ export class AIService {
       ); // ⚠️ Handle API errors
     }
   }
-  
+
   /**
    * 🤖 Generate AI response for chat
    * Uses OpenAI API to produce a reply based on chat history and barter context.
@@ -421,20 +422,28 @@ export class AIService {
     return aiMessage; // Use aiMessage directly
   }
 
+  /**
+   * 💬 Generate value for an item
+   * Automatically generates a reply in an AI-managed barter chat.
+   * @param itemId - ID of the item
+   * @returns saves the value in database.
+   */
   async generatePrice(itemId: string) {
+    // 🖼️ Step 1: Fetch item images from the wallet API
     await axios
       .get(`${this.base_url}/api/wallet/items/${itemId}/images`)
       .then((res) => {
-        return res.data.data;
+        return res.data.data; // ✅ Extract 'data' from the response
       })
       .then(async (images) => {
+        // 📦 Step 2: Fetch item details from the wallet API
         await axios
           .get(`${this.base_url}/api/wallet/items/${itemId}`)
           .then((res) => {
-            return res.data.data;
+            return res.data.data; // ✅ Extract 'data' from the response
           })
           .then(async (itemData) => {
-            // Define the pricing constraints and rules in the AI message
+            // 💰 Step 3: Define AI instructions for generating the item's price
             const aiMessage = `
               visit each image URL below and study the content:
               ${images}
@@ -443,7 +452,7 @@ export class AIService {
               Description: ${itemData.description}
               Condition: ${itemData.condition} (new, used, refurbished, etc.)
               Category: ${itemData.category} (electronics, clothing, furniture, etc.)
-  
+    
               Please consider the following rules to generate the price for this item in BaddilCoins:
             
               1. **Item Condition Multipliers**:
@@ -457,22 +466,26 @@ export class AIService {
               }
             `;
 
-            // Call OpenAI API with the enhanced pricing message
+            // 📡 Step 4: Call OpenAI API with the pricing message
             try {
               const value = JSON.parse(
                 await this.callOpenAiApi(aiMessage),
-              ).value;
+              ).value; // 🧠 Parse AI response to get the generated price
+
+              // ✅ Step 5: Update the item's value in the database if a valid number is returned
               if (value && typeof value === 'number') {
                 await this.prisma.item.update({
                   where: { id: itemId },
                   data: { value: value },
                 });
               } else {
+                // 🚨 Handle errors if the value is invalid
                 throw new InternalServerErrorException(
                   'Error generating value',
                 );
               }
             } catch (error) {
+              // 🛑 Handle API call errors
               handleError(error, 'Error generating value');
             }
           });
@@ -480,60 +493,86 @@ export class AIService {
   }
 
   /**
-   * AI Service (Partial for Barter Recommendations)
+   * 💬 Filter items in user wallet
+   * Automatically generates a reply in an AI-managed barter chat.
+   * @param itemId - ID of the item the user want to barter for
+   * @param userId - ID of the active user
+   * @returns items from user wallet that can be used for bartering
    */
   async getBarterRecommendations(userId: string, itemId: string) {
     try {
+      // 🖼️ Step 1: Fetch images of the item from the wallet API
       const itemImages = await axios
         .get(`${this.base_url}/api/wallet/items/${itemId}/images`)
-        .then((response) => response.data.data); // Extracting data from the response
+        .then((response) => response.data.data); // ✅ Extract 'data' from the response
+
+      // 📦 Step 2: Fetch detailed data of the item from the wallet API
       const itemData = await axios
         .get(`${this.base_url}/api/wallet/items/${itemId}`)
-        .then((response) => response.data.data); // Extracting data from the response
+        .then((response) => response.data.data); // ✅ Extract 'data' from the response
+
+      // 🎒 Step 3: Fetch all items in the user's wallet from the wallet API
       const userItems = await axios
         .get(`${this.base_url}/api/wallet/items/user/${userId}`)
-        .then((response) => response.data.data); // Extracting data from the response
+        .then((response) => response.data.data); // ✅ Extract 'data' from the response
 
+      // 🤖 Step 4: Create a message for AI with item and user data
       const aiMessage = `
-      Study the user items he has in his wallet: ${JSON.stringify(userItems)}
-      Based on the data you studied, recommend the top 4 items from user items that have a good chance to be bartered with the item having the following data:
-      Study the item images: ${JSON.stringify(itemImages)}
-      Study the item data: ${JSON.stringify(itemData)}
-  
-      Your reply must be in JSON format in this form:
-      {
-        "data": [
-          ...the recommended items
-        ]
-      }
+        Study the user items he has in his wallet: ${JSON.stringify(userItems)}
+        Based on the data you studied, recommend the top 4 items from user items that have a good chance to be bartered with the item having the following data:
+        Study the item images: ${JSON.stringify(itemImages)}
+        Study the item data: ${JSON.stringify(itemData)}
+    
+        Your reply must be in JSON format in this form:
+        {
+          "data": [
+            ...the recommended items
+          ]
+        }
       `;
 
+      // 📡 Step 5: Call the AI service with the message and parse the response
       try {
         const aiResponse = await this.callOpenAiApi(aiMessage);
         const recommendedData = JSON.parse(aiResponse).data;
+
+        // ✅ Step 6: Return the recommended items if available
         if (recommendedData) return recommendedData;
       } catch (error) {
+        // 🚨 Handle errors if the AI service fails
         throw new InternalServerErrorException(
           'Error getting recommendations',
           error,
         );
       }
     } catch (error) {
+      // 🛑 Handle errors when fetching API data
       handleError(error, 'Failed to get barter recommendations');
     }
   }
 
+  /**
+   * 💬 Filter items in user wallet
+   * Automatically generates a reply in an AI-managed barter chat.
+   * @param email - email of the owner of the item the user want to barter for
+   * @returns success probability to barter with this user based of previous barters
+   */
   async getSuccessProbability(email: string) {
     try {
+      // 🌟 Step 1: Find the user by email using Prisma
       const { id } = await findUserByEmail(this.prisma, email);
+
+      // 🔄 Step 2: Fetch the barters associated with the user from the barters API
       const userBarters: object[] = await axios
         .get(`${this.base_url}/api/barters/by-user/${id}`)
-        .then((response) => response.data?.data || []); // Extracting 'data' key from API response
+        .then((response) => response.data?.data || []); // ✅ Extracting 'data' key from API response
 
-      // Extract only the 'status' field from each barter
+      // 📊 Step 3: Extract only the 'status' field from each barter
       const statuses = userBarters.map(
-        (barter: BarterResponseDto) => barter.status,
+        (barter: BarterResponseDto) => barter.status, // 🏷️ Mapping to get the 'status' field
       );
+
+      // 🤖 Step 4: Create a message for AI with status data and calculation instructions
       const aiMessage = `
         Analyze the following barter statuses from previous trades by a user: ${JSON.stringify(statuses)}.
         Possible status values are: ${JSON.stringify(BarterStatus)}.
@@ -549,64 +588,76 @@ export class AIService {
       `;
 
       try {
+        // 🧠 Step 5: Call the AI service with the message and parse the JSON response
         const aiResponse = await this.callOpenAiApi(aiMessage);
         const recommendedData = JSON.parse(aiResponse).data;
+
+        // ✅ Step 6: Return the success probability if it's available
         if (recommendedData) return recommendedData;
       } catch (error) {
+        // 🚨 Handle errors if the AI service fails
         throw new InternalServerErrorException(
           'Error generating success probability',
           error,
         );
       }
     } catch (error) {
+      // 🛑 Handle errors when fetching user data or barters
       handleError(error, 'Failed to get success probability');
     }
   }
 
+  /**
+   * 💬 Filter items in user wallet
+   * Automatically generates a reply in an AI-managed barter chat.
+   * @param email - email of the owner of the item the user want to barter for
+   * @returns credibility of the user
+   */
   async getCredibility(email: string) {
     try {
+      // 🌟 Step 1: Find the user by email using Prisma
       const { id } = await findUserByEmail(this.prisma, email);
 
-      // Fetch barters for the user
+      // 🔄 Step 2: Fetch the barters associated with the user from the barters API
       const userBarters: object[] = await axios
         .get(`${this.base_url}/api/barters/by-user/${id}`)
-        .then((response) => response.data?.data || []); // Extracting 'data' key from API response
+        .then((response) => response.data?.data || []); // ✅ Extracting 'data' key from API response
 
-      // Extract the barter IDs
+      // 🆔 Step 3: Extract barter IDs for the user
       const bartersIds = userBarters.map(
-        (barter: BarterResponseDto) => barter.id,
+        (barter: BarterResponseDto) => barter.id, // 📋 Mapping to get barter IDs
       );
 
-      // Fetch ratings for all barter IDs
+      // ⭐ Step 4: Fetch ratings from the database for the user's barters
       const ratings = await this.prisma.rating.findMany({
         where: {
           barter_id: {
-            in: bartersIds, // Filter ratings by the barters the user participated in
+            in: bartersIds, // 🔍 Filter ratings for relevant barter IDs
           },
         },
         select: {
-          value: true, // Only fetch the rating values
-          barter_id: true, // Also fetch the barter_id to group by
+          value: true, // 🎯 Select only the rating values
+          barter_id: true, // 🔗 Include barter ID for grouping
         },
       });
 
-      // Group ratings by barterId and calculate the average rating value for each
+      // 📊 Step 5: Group ratings by barterId and calculate average ratings
       const ratingsGroupedByBarterId = bartersIds.map((barterId) => {
         const ratingsForBarter = ratings.filter(
-          (rating) => rating.barter_id === barterId,
+          (rating) => rating.barter_id === barterId, // 🏷️ Filter ratings for each barter ID
         );
 
         const averageRating =
           ratingsForBarter.reduce((acc, rating) => acc + rating.value, 0) /
-          ratingsForBarter.length;
+          ratingsForBarter.length; // ➗ Calculate average rating
 
         return {
           barterId,
-          averageRating: isNaN(averageRating) ? 0 : averageRating, // In case of no ratings for a barterId, default to 0
+          averageRating: isNaN(averageRating) ? 0 : averageRating, // 🔢 Default to 0 if no ratings
         };
       });
 
-      // Construct the AI message with the ratings data
+      // 🧠 Step 6: Construct the AI message with ratings data
       const aiMessage = `
         Given the following ratings for each barter a user was part of, determine if this user is credible.
         
@@ -619,18 +670,22 @@ export class AIService {
         }
       `;
 
-      // Call OpenAI API
+      // 🤖 Step 7: Call the AI service with the message and parse the response
       try {
         const aiResponse = await this.callOpenAiApi(aiMessage);
         const isCredible = JSON.parse(aiResponse).data;
+
+        // ✅ Step 8: Return credibility result if available
         if (isCredible) return isCredible;
       } catch (error) {
+        // 🚨 Handle errors if the AI service fails
         throw new InternalServerErrorException(
           'Error getting recommendations',
           error,
         );
       }
     } catch (error) {
+      // 🛑 Handle errors when fetching user data or ratings
       handleError(error, 'failed to get users credibility');
     }
   }
