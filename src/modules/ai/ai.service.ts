@@ -478,4 +478,49 @@ export class AIService {
           });
       });
   }
+
+  /**
+   * AI Service (Partial for Barter Recommendations)
+   */
+  async getBarterRecommendations(userId: string, itemId: string) {
+    try {
+      const itemImages = await axios
+        .get(`${this.base_url}/api/wallet/items/${itemId}/images`)
+        .then((response) => response.data.data); // Extracting data from the response
+      const itemData = await axios
+        .get(`${this.base_url}/api/wallet/items/${itemId}`)
+        .then((response) => response.data.data); // Extracting data from the response
+      const userItems = await axios
+        .get(`${this.base_url}/api/wallet/items/user/${userId}`)
+        .then((response) => response.data.data); // Extracting data from the response
+
+      const aiMessage = `
+      Study the user items he has in his wallet: ${JSON.stringify(userItems)}
+      Based on the data you studied, recommend the top 4 items from user items that have a good chance to be bartered with the item having the following data:
+      Study the item images: ${JSON.stringify(itemImages)}
+      Study the item data: ${JSON.stringify(itemData)}
+  
+      Your reply must be in JSON format in this form:
+      {
+        "data": [
+          ...the recommended items
+        ]
+      }
+      `;
+
+      try {
+        const aiResponse = await this.callOpenAiApi(aiMessage);
+        const recommendedData = JSON.parse(aiResponse).data;
+        if (recommendedData) return recommendedData;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Error getting recommendations',
+          error,
+        );
+      }
+    } catch (error) {
+      handleError(error, 'Failed to get barter recommendations');
+    }
+  }
+
 }
