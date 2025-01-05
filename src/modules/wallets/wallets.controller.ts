@@ -174,6 +174,8 @@ export class WalletsController {
       message: 'Item removed successfully', // 🗑️ Return a success message
     };
   }
+
+  // 📈 Generate images url to display images
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Get('items/:itemId/images')
   async serveItemImages(@Param('itemId') itemId: string): Promise<ApiResponse> {
