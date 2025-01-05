@@ -40,8 +40,7 @@ export class WalletsService {
   async getWalletItems(walletId: string) {
     try {
       return await this.prisma.item.findMany({
-        where: { wallet_id: walletId },
-        include: { images: true },
+        where: { wallet_id: walletId }
       });
     } catch (error) {
       handleError(error, 'Failed to fetch wallet items');
