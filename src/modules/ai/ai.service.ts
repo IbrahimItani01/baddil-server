@@ -563,4 +563,75 @@ export class AIService {
     }
   }
 
+  async getCredibility(email: string) {
+    try {
+      const { id } = await findUserByEmail(this.prisma, email);
+
+      // Fetch barters for the user
+      const userBarters: object[] = await axios
+        .get(`${this.base_url}/api/barters/by-user/${id}`)
+        .then((response) => response.data?.data || []); // Extracting 'data' key from API response
+
+      // Extract the barter IDs
+      const bartersIds = userBarters.map(
+        (barter: BarterResponseDto) => barter.id,
+      );
+
+      // Fetch ratings for all barter IDs
+      const ratings = await this.prisma.rating.findMany({
+        where: {
+          barter_id: {
+            in: bartersIds, // Filter ratings by the barters the user participated in
+          },
+        },
+        select: {
+          value: true, // Only fetch the rating values
+          barter_id: true, // Also fetch the barter_id to group by
+        },
+      });
+
+      // Group ratings by barterId and calculate the average rating value for each
+      const ratingsGroupedByBarterId = bartersIds.map((barterId) => {
+        const ratingsForBarter = ratings.filter(
+          (rating) => rating.barter_id === barterId,
+        );
+
+        const averageRating =
+          ratingsForBarter.reduce((acc, rating) => acc + rating.value, 0) /
+          ratingsForBarter.length;
+
+        return {
+          barterId,
+          averageRating: isNaN(averageRating) ? 0 : averageRating, // In case of no ratings for a barterId, default to 0
+        };
+      });
+
+      // Construct the AI message with the ratings data
+      const aiMessage = `
+        Given the following ratings for each barter a user was part of, determine if this user is credible.
+        
+        Ratings by Barter ID for barters this user was part of:
+        ${JSON.stringify(ratingsGroupedByBarterId)} 
+        
+        Return the result in the following format:
+        {
+          "data": <boolean value (true for credible, false for not)>
+        }
+      `;
+
+      // Call OpenAI API
+      try {
+        const aiResponse = await this.callOpenAiApi(aiMessage);
+        const isCredible = JSON.parse(aiResponse).data;
+        if (isCredible) return isCredible;
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Error getting recommendations',
+          error,
+        );
+      }
+    } catch (error) {
+      handleError(error, 'failed to get users credibility');
+    }
+  }
 }
