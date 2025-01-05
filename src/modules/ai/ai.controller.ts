@@ -17,8 +17,8 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 /**
  * 🌐 AI Controller
- * This controller handles operations related to AI-managed barters,
- * such as toggling auto-trade, fetching auto-trades, and updating trade statuses.
+ * Handles AI-powered barter features like auto-trade toggling, recommendations,
+ * and credibility analysis.
  */
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @Controller('ai') // 📍 Base route for AI-related operations
@@ -27,7 +27,7 @@ export class AIController {
 
   /**
    * 📜 Get all auto-trades
-   * Fetches all barters that are handled by AI.
+   * Fetches all AI-managed barters.
    */
   @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Get('barters')
@@ -37,159 +37,166 @@ export class AIController {
       success: true,
       message: 'Auto trades retrieved successfully',
       data: trades,
-    }; // ✅ Successful data retrieval
+    }; // ✅ Returning data
   }
 
   /**
    * 🔄 Toggle auto-trade
-   * Enables or disables AI management for a specific barter.
+   * Enables or disables AI management for a barter.
    */
   @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
-  @Patch('barters/toggle') // 🔄 Endpoint to toggle auto-trade
+  @Patch('barters/toggle')
   async toggleAutoTrade(
     @Body() toggleAutoTradeDto: ToggleAutoTradeDto,
     @Req() req: any,
   ): Promise<ApiResponse> {
-    // 📝 Accept DTO as parameter
-    // Pass the DTO directly to the service method
     const updatedBarter = await this.aiService.toggleAutoTrade(
       toggleAutoTradeDto,
       req.user.id,
     ); // 🔄 Toggling auto-trade
-
     return {
       success: true,
-      message: 'Auto-trade updated successfully', // ✅ Success message
-      data: updatedBarter, // 🎉 Updated barter data
-    };
+      message: 'Auto-trade updated successfully',
+      data: updatedBarter,
+    }; // ✅ Returning updated barter
   }
 
   /**
    * ✏️ Update auto-trade
-   * Updates details or status for a specific AI-managed barter.
+   * Updates details or status for an AI-managed barter.
    */
   @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
-  @Put('barters') // ✏️ Endpoint to update auto-trade
+  @Put('barters')
   async updateAutoTrade(
     @Body() updateAutoTradeDto: UpdateAutoTradeDto,
   ): Promise<ApiResponse> {
-    // 📝 Accept DTO as parameter
-    // Pass the DTO directly to the service method
     const updatedBarter =
-      await this.aiService.updateAutoTrade(updateAutoTradeDto); // 🔄 Updating auto-trade
-
+      await this.aiService.updateAutoTrade(updateAutoTradeDto); // 🔄 Updating barter details
     return {
       success: true,
-      message: 'Auto-trade updated successfully', // ✅ Success message
-      data: updatedBarter, // 🎉 Updated barter data
-    };
+      message: 'Auto-trade updated successfully',
+      data: updatedBarter,
+    }; // ✅ Returning updated data
   }
 
   /**
    * 💬 Get auto-trade chat
-   * Fetches chat details for a specific barter.
+   * Retrieves chat details for a barter.
    */
   @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
-  @Get('barters/:barterId/chat') // 📥 Endpoint to get chat details for a barter
+  @Get('barters/:barterId/chat')
   async getAutoTradeChat(
     @Param('barterId') barterId: string,
   ): Promise<ApiResponse> {
-    // 📝 Accepting barterId directly from the route parameter
-    const chat = await this.aiService.getAutoTradeChat(barterId); // 🔍 Fetching chat details for the specified barter
+    const chat = await this.aiService.getAutoTradeChat(barterId); // 🔍 Fetching chat details
     return {
       success: true,
       message: 'Retrieved auto trade chat successfully',
       data: chat,
-    }; // ✅ Successful data retrieval
+    }; // ✅ Returning chat data
   }
 
   /**
-   * 💬 Get recommended categories
-   * Fetches top 3 recommended categories
+   * 📊 Recommend categories
+   * Fetches top 3 recommended categories and subcategories.
    */
-  @AllowedUserTypes('barterer') // 🎯 Restricting access to specific user types
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers
   @Get('recommend-categories')
   async recommendCategories(@Req() req: any): Promise<ApiResponse> {
-    const userId = req.user.id; // Extract user ID from the request
-    const recommendations = await this.aiService.recommendCategories(userId);
-
+    const userId = req.user.id; // 🔑 Extracting user ID
+    const recommendations = await this.aiService.recommendCategories(userId); // 🔍 Fetching recommendations
     return {
       success: true,
       message: 'Recommended categories and subcategories fetched successfully',
       data: recommendations,
-    };
+    }; // ✅ Returning recommendations
   }
 
   /**
-   * 💬 Respond on behalf of user
-   *  Allows ai to respond on behalf of another user
+   * 🗨️ Chat on behalf
+   * Allows AI to respond on behalf of a user.
    */
-  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers and brokers only
-  @Post('respond/:barterId') // 📥 Endpoint to get AI response for a specific barter chat
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers
+  @Post('respond/:barterId')
   async chatOnBehalf(
-    @Param('barterId') barterId: string, // 📍 Getting the barter ID from route params
-    @Body() body: any, // 🛠️ Accessing body to get the user ID
+    @Param('barterId') barterId: string,
+    @Body() body: any,
   ): Promise<ApiResponse> {
-    const aiResponse = await this.aiService.chatOnBehalf(barterId, body.userId); // 🤖 Getting AI response from service
+    const aiResponse = await this.aiService.chatOnBehalf(barterId, body.userId); // 🤖 Generating AI response
     return {
       success: true,
       message: 'AI response generated successfully',
-      data: aiResponse, // 🎉 Return the AI response
-    };
+      data: aiResponse,
+    }; // ✅ Returning AI response
   }
 
   /**
-   * 💬 Generate value for the added item
-   *  Based on item data and images ai generates a value for the item
+   * 💰 Generate item price
+   * Computes item value using AI based on item details.
    */
-  @AllowedUserTypes('barterer')
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers
   @Post('generate-price')
   async generatePrice(@Body() body: any): Promise<ApiResponse> {
     const { itemId } = body;
-    const price = await this.aiService.generatePrice(itemId as string);
+    const price = await this.aiService.generatePrice(itemId as string); // 💵 Generating price
     return {
       success: true,
       message: 'Price generated successfully',
       data: price,
-    };
+    }; // ✅ Returning item price
   }
 
   /**
-   * 🌐 AI Controller (Partial for Barter Recommendations)
+   * 🔎 Recommend barter items
+   * Suggests items for a barter based on AI analysis.
    */
-  @AllowedUserTypes('barterer')
+  @AllowedUserTypes('barterer') // 🎯 Restricting access to barterers
   @Get('items/:itemId/recommend')
   async recommendBarterItems(
     @Param('itemId') itemId: string,
     @Req() req: any,
   ): Promise<ApiResponse> {
-    const userId = req.user.id;
+    const userId = req.user.id; // 🔑 Extracting user ID
     const recommendations = await this.aiService.getBarterRecommendations(
       userId,
       itemId,
-    );
+    ); // 🔍 Fetching recommendations
     return {
       success: true,
       message: 'Recommended items fetched successfully',
       data: recommendations,
-    };
+    }; // ✅ Returning recommended items
   }
 
   /**
-   * 🔢 Get Success Probability
-   * Calculates the probability of a successful barter based on previous barter statuses.
+   * 📈 Get success probability
+   * Calculates the probability of a successful barter.
    */
-  @AllowedUserTypes('barterer', 'broker', 'admin') // Restricting access to specific user types
-  @Get('success-probability/:email') // Endpoint for getting success probability based on email
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
+  @Get('success-probability/:email')
   async getSuccessProbability(
-    @Param('email') email: string, // Accepting the email parameter from the route
+    @Param('email') email: string,
   ): Promise<ApiResponse> {
-    // Fetching success probability by passing email
-    const probability = await this.aiService.getSuccessProbability(email);
+    const probability = await this.aiService.getSuccessProbability(email); // 📊 Calculating probability
     return {
       success: true,
       message: 'Success probability calculated successfully',
-      data: probability, // Returning the calculated probability
-    };
+      data: probability,
+    }; // ✅ Returning success probability
+  }
+
+  /**
+   * 🏅 Get user credibility
+   * Checks user credibility based on past barter ratings.
+   */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
+  @Get('credibility/:email')
+  async getCredibility(@Param('email') email: string): Promise<ApiResponse> {
+    const isCredible = await this.aiService.getCredibility(email); // 🏆 Fetching credibility status
+    return {
+      success: true,
+      message: 'User credibility determined successfully',
+      data: isCredible,
+    }; // ✅ Returning credibility status
   }
 }
