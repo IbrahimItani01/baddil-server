@@ -80,6 +80,24 @@ export class RatingsService {
       handleError(error, 'Failed to get barter ratings'); // Handling any errors
     }
   }
+
+  /**
+   * 📄 Get ratings for a specific broker
+   * Retrieves all ratings associated with the given broker ID.
+   */
+  async getBrokerRatings(brokerId: string) {
+    try {
+      // Fetching ratings where the broker_id matches the provided brokerId
+      const ratings = await this.prisma.rating.findMany({
+        where: { broker_id: brokerId },
+      });
+
+      return ratings; // Returning the ratings array
+    } catch (error) {
+      handleError(error, 'Failed to get broker ratings'); // Handling any errors
+    }
+  }
+  
   private async validateRatingValue(value: number) {
     if (value >= 1 && value <= 5) {
       return true;
