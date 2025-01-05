@@ -175,4 +175,21 @@ export class AIController {
     };
   }
 
+  /**
+   * 🔢 Get Success Probability
+   * Calculates the probability of a successful barter based on previous barter statuses.
+   */
+  @AllowedUserTypes('barterer', 'broker', 'admin') // Restricting access to specific user types
+  @Get('success-probability/:email') // Endpoint for getting success probability based on email
+  async getSuccessProbability(
+    @Param('email') email: string, // Accepting the email parameter from the route
+  ): Promise<ApiResponse> {
+    // Fetching success probability by passing email
+    const probability = await this.aiService.getSuccessProbability(email);
+    return {
+      success: true,
+      message: 'Success probability calculated successfully',
+      data: probability, // Returning the calculated probability
+    };
+  }
 }
