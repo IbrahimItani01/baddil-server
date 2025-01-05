@@ -51,15 +51,26 @@ export class WalletsController {
 
   // 🔍 Get all items in the wallet
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
-  @Get('items')
-  async getWalletItems(@Req() req: any): Promise<ApiResponse> {
-    const walletId = await getWalletIdByUserId(this.prisma, req.user.id); // 🏦 Get the walletId from userId
-    const items = await this.walletService.getWalletItems(walletId); // 🛒 Fetch all wallet items
-    return {
-      success: true, // 🎉 Success response
-      message: 'Wallet items fetched successfully',
-      data: items, // 📝 Return all items in the wallet
-    };
+  @Get('items/user/:userId?')
+  async getWalletItems(@Req() req: any, @Param ('userId') userId?: string): Promise<ApiResponse> {
+    if(userId){
+      const walletId = await getWalletIdByUserId(this.prisma, userId); // 🏦 Get the walletId from userId
+      const items = await this.walletService.getWalletItems(walletId); // 🛒 Fetch all wallet items
+      return {
+        success: true, // 🎉 Success response
+        message: 'Wallet items fetched successfully',
+        data: items, // 📝 Return all items in the wallet
+      };
+    }
+    else{
+      const walletId = await getWalletIdByUserId(this.prisma, req.user.id); // 🏦 Get the walletId from userId
+      const items = await this.walletService.getWalletItems(walletId); // 🛒 Fetch all wallet items
+      return {
+        success: true, // 🎉 Success response
+        message: 'Wallet items fetched successfully',
+        data: items, // 📝 Return all items in the wallet
+      };
+    }
   }
 
   // ➕ Create a new item in the wallet with images
