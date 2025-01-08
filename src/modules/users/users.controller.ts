@@ -13,6 +13,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../guards/jwt.guard'; // 🔐 Importing the JWT guard
@@ -27,7 +28,6 @@ import {
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
-
 
 @UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
@@ -247,5 +247,22 @@ export class UsersController {
       message: 'Profile picture uploaded successfully',
       data: updatedUser,
     };
+  }
+  /**
+   * 📨 Check if email exists
+   * @param body - The email to check
+   * @returns Success or error message
+   */
+  @Post('check-email')
+  @HttpCode(HttpStatus.OK)
+  async checkEmail(@Body() body): Promise<ApiResponse> {
+    const { email } = body;
+    const user = await this.usersService.findByEmail(email);
+    if (user) {
+      return {
+        success: true,
+        message: 'Email exists in the database',
+      };
+    }
   }
 }
