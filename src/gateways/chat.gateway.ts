@@ -6,7 +6,6 @@ import {
   MessageBody,
 } from '@nestjs/websockets'; // 📡 Importing WebSocket decorators
 import { Server, Socket } from 'socket.io'; // 🔌 Importing Socket.IO types
-import { MessagesService } from 'src/modules/messages/messages.service'; // 💬 Importing MessagesService for message handling
 import { JwtService } from '@nestjs/jwt'; // 🔑 Importing JwtService for token management
 import { UnauthorizedException, Logger } from '@nestjs/common'; // ⚠️ Importing common exceptions and Logger
 import { SendMessageDto } from 'src/modules/messages/dto/messages.dto';
@@ -21,7 +20,6 @@ export class ChatGateway {
   private readonly logger = new Logger(ChatGateway.name); // 📝 Logger for better debugging
 
   constructor(
-    private readonly messagesService: MessagesService, // 💬 Injecting MessagesService
     private readonly jwtService: JwtService, // 🔑 Inject JwtService for decoding tokens
   ) {}
 
@@ -104,10 +102,9 @@ export class ChatGateway {
 
     try {
       // 💾 Save the message to the database
-      const savedMessage = await this.messagesService.sendMessage(message);
 
       // 🌍 Broadcast the new message to all clients in the chat room
-      this.server.to(message.chat_id).emit('newMessage', savedMessage);
+      this.server.to(message.chat_id).emit('newMessage', message);
       this.logger.log(
         `Message sent by user ${user.sub} to chat ${message.chat_id}`,
       ); // ✅ Log successful message send
