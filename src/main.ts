@@ -16,6 +16,8 @@ async function bootstrap() {
   // 🔄 Applying global validation pipe to validate incoming requests
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors();
+
   // 🌍 Setting a global prefix for all routes (e.g., /api)
   app.setGlobalPrefix('api');
 
