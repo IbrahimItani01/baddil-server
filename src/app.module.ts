@@ -22,6 +22,7 @@ import { TiersModule } from './modules/tiers/tiers.module'; // 🔝 Importing th
 import { WalletModule } from './modules/wallets/wallets.module'; // 💰 Importing the Wallet module
 import { APP_FILTER } from '@nestjs/core'; // 🚨 Importing APP_FILTER to handle errors
 import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Importing the API response exception filter
+import { FirebaseClientModule } from './firebase-client/firebase-client.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Imp
     RatingsModule,
     TiersModule,
     WalletModule,
+    FirebaseClientModule,
   ],
   controllers: [AppController], // 🎛️ Registering the main controller of the app
   providers: [
