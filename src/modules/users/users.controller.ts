@@ -29,7 +29,7 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
 
-@UseGuards(JwtAuthGuard) // 🔐 Applying the JWT guard to all routes in this controller
+// 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
 export class UsersController {
   constructor(
@@ -41,6 +41,7 @@ export class UsersController {
    * 🛠️ Get current user details
    * @returns Current user's details
    */
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
   async getMe(@Req() req: any): Promise<ApiResponse> {
@@ -59,6 +60,7 @@ export class UsersController {
    * @param updateData - The data to update
    * @returns Updated user details
    */
+  @UseGuards(JwtAuthGuard)
   @Put('me')
   @HttpCode(HttpStatus.OK)
   async updateMe(
@@ -79,6 +81,7 @@ export class UsersController {
    * @param body - The new status
    * @returns Success message with updated user status
    */
+  @UseGuards(JwtAuthGuard)
   @Put('me/status')
   @HttpCode(HttpStatus.OK)
   async changeStatus(
@@ -104,6 +107,7 @@ export class UsersController {
    * @param settingsData - The new settings
    * @returns Success message with updated settings
    */
+  @UseGuards(JwtAuthGuard)
   @Patch('me/settings')
   @HttpCode(HttpStatus.OK)
   async updateSettings(
@@ -131,6 +135,7 @@ export class UsersController {
    * 🔍 Get current user's settings
    * @returns Current user's settings
    */
+  @UseGuards(JwtAuthGuard)
   @Get('me/settings')
   @HttpCode(HttpStatus.OK)
   async getUserSettings(@Req() req: any): Promise<ApiResponse> {
@@ -149,6 +154,7 @@ export class UsersController {
    * @param body - The device token
    * @returns Success message with updated user data
    */
+  @UseGuards(JwtAuthGuard)
   @Put('me/device-token')
   @HttpCode(HttpStatus.OK)
   async saveDeviceToken(
@@ -173,6 +179,7 @@ export class UsersController {
    * 📱 Get the current user's device token
    * @returns The device token
    */
+  @UseGuards(JwtAuthGuard)
   @Get('me/device-token')
   @HttpCode(HttpStatus.OK)
   async getDeviceToken(@Req() req: any): Promise<ApiResponse> {
@@ -193,6 +200,7 @@ export class UsersController {
    * 🖼️ Get the current user's profile picture
    * @returns The profile picture URL
    */
+  @UseGuards(JwtAuthGuard)
   @Get(':identifier/profile-picture')
   async serveProfilePicture(
     @Param('identifier') identifier: string,
@@ -225,6 +233,7 @@ export class UsersController {
    * @param file - The uploaded file
    * @returns Success message with updated user data
    */
+  @UseGuards(JwtAuthGuard)
   @Put('me/profile-picture')
   @UseInterceptors(FileInterceptor('file', fileUploadOptions)) // 📂 Handle file upload
   @HttpCode(HttpStatus.OK)
