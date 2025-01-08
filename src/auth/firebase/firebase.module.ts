@@ -1,10 +1,14 @@
 import { Module, Global } from '@nestjs/common'; // 📦 Importing necessary decorators
 import * as admin from 'firebase-admin'; // 🔥 Importing Firebase Admin SDK
 import { ConfigService } from '@nestjs/config'; // ⚙️ Importing ConfigService for environment variables
+import { FirebaseController } from './firebase.controller';
+import { FirebaseService } from './firebase.service';
 
 @Global() // 🌍 Makes this module available globally in the application
 @Module({
   providers: [
+    FirebaseService,
+    ConfigService,
     {
       provide: 'FIREBASE_ADMIN_INJECTOR', // 🔑 This token will be used to inject Firebase Auth
       useFactory: (configService: ConfigService) => {
@@ -37,6 +41,7 @@ import { ConfigService } from '@nestjs/config'; // ⚙️ Importing ConfigServic
       inject: [ConfigService], // 🔧 Injecting ConfigService to access environment variables
     },
   ],
-  exports: ['FIREBASE_ADMIN_INJECTOR'], // 🔓 Exporting Firebase Auth for use in other modules
+  exports: ['FIREBASE_ADMIN_INJECTOR'],
+  controllers: [FirebaseController], // 🔓 Exporting Firebase Auth for use in other modules
 })
 export class FirebaseAdminModule {} // 📦 Firebase Admin Module
