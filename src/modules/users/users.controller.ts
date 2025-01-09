@@ -28,6 +28,7 @@ import {
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
+import { OptionalJwtAuthGuard } from 'src/guards/optionalJwt.guard';
 
 // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
@@ -200,8 +201,8 @@ export class UsersController {
    * 🖼️ Get the current user's profile picture
    * @returns The profile picture URL
    */
-  @UseGuards(JwtAuthGuard)
-  @Get(':identifier/profile-picture')
+  @UseGuards(OptionalJwtAuthGuard)
+  @Get('profile-picture/:identifier?')
   async serveProfilePicture(
     @Param('identifier') identifier: string,
     @Req() req: any,
