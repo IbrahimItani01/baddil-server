@@ -111,8 +111,10 @@ export class ManagementService {
    */
   async getCategories() {
     try {
-      return await this.prisma.category.findMany({
-        include: { subcategories: true },
+      return  this.prisma.category.findMany({
+        include:{
+          subcategories:true
+        }
       });
     } catch (error) {
       handleError(error, 'Failed to retrieve categories');

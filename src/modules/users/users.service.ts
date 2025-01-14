@@ -63,7 +63,7 @@ export class UsersService {
       }
   
       const {
-        id, password, firebase_uid: _, device_token, settings_id,
+         password, firebase_uid: _, device_token, settings_id,
         subscription_id, tier_id, updated_at, ...filteredUser
       } = user;
   
@@ -132,6 +132,7 @@ export class UsersService {
 
   // 🔍 Find user by ID with selected fields
   async findUserById(userId: string): Promise<Partial<User> | null> {
+    console.log(userId)
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
