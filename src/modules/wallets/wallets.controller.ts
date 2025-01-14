@@ -187,4 +187,16 @@ export class WalletsController {
       data: imageUrls, // Send image URLs for the frontend to display
     };
   }
+
+  @AllowedUserTypes('barterer')
+  @Get('items/not-owned') // 📥 Endpoint to get items not owned by the current user
+  async getItemsNotOwnedByUser(@Req() req: any): Promise<ApiResponse> {
+    const userId = req.user.id; // 🔍 Extract user ID from JWT payload
+    const items = await this.walletService.getItemsNotOwnedByUser(userId); // 🔄 Fetching items not owned by user
+    return {
+      success: true,
+      message: 'Items not owned by user retrieved successfully', // ✅ Success message
+      data: items, // 🎉 Items data
+    };
+  }
 }
