@@ -40,7 +40,7 @@ export class WalletsService {
   async getWalletItems(walletId: string) {
     try {
       return await this.prisma.item.findMany({
-        where: { wallet_id: walletId }
+        where: { wallet_id: walletId },
       });
     } catch (error) {
       handleError(error, 'Failed to fetch wallet items');
@@ -188,4 +188,32 @@ export class WalletsService {
       handleError(error, 'failed to get item images');
     }
   }
+  // 📦 Fetch all items not owned by the current user
+  async getItemsNotOwnedByUser(userId: string) {
+    try {
+      return await this.prisma.item.findMany({
+        where: {
+          wallet: {
+            owner_id: {
+              not: userId, // Filter items where the owner ID is not the current user
+            },
+          },
+        },
+        include: {
+          wallet: {
+            include: {
+              owner: {
+                select: {
+                  email: true, // Include the email of the item owner
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      handleError(error, 'Failed to fetch items not owned by the user');
+    }
+  }
+  
 }
