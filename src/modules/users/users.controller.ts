@@ -272,6 +272,7 @@ export class UsersController {
       return {
         success: true,
         message: 'Email exists in the database',
+        data: user,
       };
     }
   }
