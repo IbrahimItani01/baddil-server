@@ -22,6 +22,7 @@ import { TiersModule } from './modules/tiers/tiers.module'; // 🔝 Importing th
 import { WalletModule } from './modules/wallets/wallets.module'; // 💰 Importing the Wallet module
 import { APP_FILTER } from '@nestjs/core'; // 🚨 Importing APP_FILTER to handle errors
 import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Importing the API response exception filter
+import { ManagementModule } from './modules/company/management/management.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Imp
     MeetupsModule,
     MessagesModule,
     PerformancesModule,
+    ManagementModule,
     RatingsModule,
     TiersModule,
     WalletModule,
