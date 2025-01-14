@@ -142,21 +142,14 @@ export class AuthService {
 
         user = await this.usersService.findByFirebaseUid(firebase_uid);
       }
-
       if (!user) {
         throw new UnauthorizedException('User not found'); // 🚫 User not found
       }
-
-      const userStatus = await getUserStatusById(
+      const user_status = await getUserStatusById(
         this.prisma,
         user.user_status_id,
-      ); // 🔍 Check user status
-      if (userStatus === 'banned') {
-        throw new BadRequestException('This account is banned'); // 🚫 Banned user
-      }
-
+      );
       const user_type = await getUserTypeById(this.prisma, user.user_type_id); // 🔍 Get user type
-
       const payload = {
         sub: user.id,
         email: user.email,
@@ -170,8 +163,8 @@ export class AuthService {
         token, // 🛡 JWT token
         user: {
           name: user.name,
-          user_type: user.user_type,
-          status: user.status,
+          user_type: user_type,
+          status: user_status,
         },
       };
     } catch (error) {
