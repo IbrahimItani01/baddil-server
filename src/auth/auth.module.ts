@@ -20,7 +20,7 @@ import { PrismaService } from 'src/database/prisma.service'; // 🗄 Importing P
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // 🔑 Secret key for signing JWT
         signOptions: {
-          expiresIn: undefined, // ⏳ JWT expiration time (no time)
+          expiresIn: '3650d', // ⏳ JWT expiration time (10 years)
         },
       }),
     }),
