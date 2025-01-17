@@ -4,6 +4,7 @@ import { IsString, IsEmail, IsOptional, IsEnum } from 'class-validator'; // 📦
 export enum UserTypeEnum {
   Broker = 'broker',
   Barterer = 'barterer',
+  Admin = 'admin'
 
   // Add other user types here if needed
 }
