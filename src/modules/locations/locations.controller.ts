@@ -15,7 +15,7 @@ import { CreateLocationDto } from './dto/locations.dto'; // 📄 Importing DTOs
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
 @Controller('locations') // 📍 Base route for location-related operations
-@UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
+// @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {} // 🏗️ Injecting LocationsService
 
@@ -61,7 +61,7 @@ export class LocationsController {
    * 📜 Get all locations
    * @returns An array of all locations.
    */
-  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to barterers and brokers
+  // @AllowedUserTypes('barterer', 'broker','admin') // 🎯 Restricting access to barterers and brokers
   @Get() // 📥 Endpoint to get all locations
   async getAllLocations(): Promise<ApiResponse> {
     const locations = await this.locationsService.getAllLocations();
