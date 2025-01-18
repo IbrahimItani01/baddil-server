@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
-import { Barter, BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
+import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import {
   CreateBarterDto,
@@ -50,10 +50,49 @@ export class BartersService {
     }
   }
 
-  async getAllBarters(): Promise<Barter[]> {
-    return this.prisma.barter.findMany(); // 📜 Fetching all barters
+  async getAllBarters(): Promise<any[]> {
+    return this.prisma.barter
+      .findMany({
+        include: {
+          user1: {
+            select: {
+              email: true,
+            },
+          },
+          user2: {
+            select: {
+              email: true,
+            },
+          },
+          meetup: {
+            select: {
+              location: {
+                select: {
+                  name: true,
+                  latitude: true,
+                  longitude: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .then((barters) =>
+        barters.map((barter) => ({
+          ...barter,
+          user1_id: barter.user1?.email || null, // Replace user1_id with email
+          user2_id: barter.user2?.email || null, // Replace user2_id with email
+          location: barter.meetup?.location
+            ? {
+                name: barter.meetup.location.name,
+                latitude: barter.meetup.location.latitude,
+                longitude: barter.meetup.location.longitude,
+              }
+            : null, // Include location details if available
+        })),
+      );
   }
-
+  
   /**
    * ➕ Create Barter
    * Creates a new barter between two users.
