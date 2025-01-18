@@ -29,6 +29,7 @@ import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 import { findUserByEmail } from 'src/utils/modules/users/users.utils';
 import { PrismaService } from 'src/database/prisma.service';
 import { OptionalJwtAuthGuard } from 'src/guards/optionalJwt.guard';
+import { AllowedUserTypes, UserTypeGuard } from 'src/guards/userType.guard';
 
 // 🔐 Applying the JWT guard to all routes in this controller
 @Controller('users') // 📂 Base route for user-related operations
@@ -275,5 +276,22 @@ export class UsersController {
         data: user,
       };
     }
+  }
+
+  /**
+   * 🔍 Get all users grouped by type (Admin only)
+   * @returns Users grouped by user types
+   */
+  @UseGuards(JwtAuthGuard, UserTypeGuard)
+  @Get('users-by-type')
+  @AllowedUserTypes('admin') // 🛡 Restrict access to admins
+  @HttpCode(HttpStatus.OK)
+  async getAllUsersByType(): Promise<ApiResponse> {
+    const result = await this.usersService.findAllUsersByType();
+    return {
+      success: true,
+      message: 'Users grouped by type fetched successfully',
+      data: result,
+    };
   }
 }
