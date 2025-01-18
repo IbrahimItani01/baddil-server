@@ -28,14 +28,16 @@ export class BartersController {
    * 📜 Get Barters by User
    * Fetches all barters for the logged-in user.
    */
-  @AllowedUserTypes('barterer', 'broker') // 🎯 Restricting access to specific user types
+  @AllowedUserTypes('barterer', 'broker', 'admin') // 🎯 Restricting access to specific user types
   @Get('/by-user/:userId?') // 📥 Endpoint to get barters by user
-  async getUserBarters(@Request() req: any,@Param() userId?:string): Promise<ApiResponse> {
+  async getUserBarters(
+    @Request() req: any,
+    @Param() userId?: string,
+  ): Promise<ApiResponse> {
     let barters;
-    if(userId){
+    if (userId) {
       barters = await this.barterService.getBartersByUser(userId); // 🔍 Fetching barters for the user
-    }
-    else{
+    } else {
       barters = await this.barterService.getBartersByUser(req.user.id); // 🔍 Fetching barters for the user
     }
 
@@ -53,6 +55,20 @@ export class BartersController {
       success: true,
       message: 'Barters fetched successfully', // ✅ Success message
       data: response, // 🎉 Barters data
+    };
+  }
+
+  @AllowedUserTypes('admin') // 🎯 Restricting access to admin users
+  @Get('') // 📥 Endpoint to get all barters
+  async getAllBarters(): Promise<ApiResponse> {
+    const barters = await this.barterService.getAllBarters(); // 🔍 Fetching all barters
+
+    // 🗂️ Map the response to BarterResponseDto
+
+    return {
+      success: true,
+      message: 'All barters fetched successfully', // ✅ Success message
+      data: barters, // 🎉 All barters data
     };
   }
 
@@ -97,7 +113,6 @@ export class BartersController {
     @Request() req,
     @Body() updateDetails: UpdateBarterStatusDto, // 📜 Apply DTO for validation
   ): Promise<ApiResponse> {
-
     const updatedBarter = await this.barterService.updateBarterStatus(
       req.user.id,
       updateDetails, // 📜 Update details
