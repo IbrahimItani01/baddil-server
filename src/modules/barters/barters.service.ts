@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common'; // 📦 Importing necessary exceptions
-import { BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
+import { Barter, BarterStatus } from '@prisma/client'; // 📜 Importing BarterStatus enum from Prisma
 import { PrismaService } from 'src/database/prisma.service'; // 🗄️ Importing PrismaService for database access
 import {
   CreateBarterDto,
@@ -48,6 +48,10 @@ export class BartersService {
         'An error occurred while retrieving barters for the user',
       );
     }
+  }
+
+  async getAllBarters(): Promise<Barter[]> {
+    return this.prisma.barter.findMany(); // 📜 Fetching all barters
   }
 
   /**
