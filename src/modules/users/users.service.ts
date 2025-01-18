@@ -35,45 +35,58 @@ export class UsersService {
   async findByEmail(email: string): Promise<Partial<User> | null> {
     try {
       const user = await this.prisma.user.findFirst({ where: { email } });
-      
+
       if (!user) {
         return null;
       }
-  
+
       const {
-        id, password, firebase_uid, device_token, settings_id, 
-        subscription_id, tier_id, updated_at, ...filteredUser
+        id,
+        password,
+        firebase_uid,
+        device_token,
+        settings_id,
+        subscription_id,
+        tier_id,
+        updated_at,
+        ...filteredUser
       } = user;
-  
-      return filteredUser; 
+
+      return filteredUser;
     } catch (error) {
       handleError(error, 'failed to find user by email');
       return null;
     }
   }
-  
 
   // 🔍 Find user by Firebase UID
   async findByFirebaseUid(firebase_uid: string): Promise<Partial<User> | null> {
     try {
-      const user = await this.prisma.user.findFirst({ where: { firebase_uid } });
-  
+      const user = await this.prisma.user.findFirst({
+        where: { firebase_uid },
+      });
+
       if (!user) {
         return null;
       }
-  
+
       const {
-         password, firebase_uid: _, device_token, settings_id,
-        subscription_id, tier_id, updated_at, ...filteredUser
+        password,
+        firebase_uid: _,
+        device_token,
+        settings_id,
+        subscription_id,
+        tier_id,
+        updated_at,
+        ...filteredUser
       } = user;
-  
-      return filteredUser; 
+
+      return filteredUser;
     } catch (error) {
       handleError(error, 'failed to find user by firebase_uid');
       return null;
     }
   }
-  
 
   // 🆕 Create a new user
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -132,7 +145,7 @@ export class UsersService {
 
   // 🔍 Find user by ID with selected fields
   async findUserById(userId: string): Promise<Partial<User> | null> {
-    console.log(userId)
+    console.log(userId);
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
@@ -323,6 +336,31 @@ export class UsersService {
       });
     } catch (error) {
       handleError(error, 'failed updating profile picture');
+    }
+  }
+  // 🔍 Find all users grouped by user type
+  async findAllUsersByType(): Promise<Record<string, User[]>> {
+    try {
+      const userTypes = await this.prisma.userType.findMany(); // Get all user types
+      const result: Record<string, User[]> = {};
+
+      for (const userType of userTypes) {
+        const users = await this.prisma.user.findMany({
+          where: { user_type_id: userType.id },
+          include: {
+            user_type: true, // Include user type details
+            user_status: true, // Include user status details
+            settings: true, // Include user settings
+            subscription: true, // Include subscription details
+          },
+        });
+
+        result[userType.type] = users; // Group users by user type name
+      }
+
+      return result;
+    } catch (error) {
+      handleError(error, 'failed to find users grouped by type');
     }
   }
 }
