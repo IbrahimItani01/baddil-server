@@ -145,7 +145,6 @@ export class UsersService {
 
   // 🔍 Find user by ID with selected fields
   async findUserById(userId: string): Promise<Partial<User> | null> {
-    console.log(userId);
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
