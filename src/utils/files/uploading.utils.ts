@@ -9,7 +9,7 @@ import { BadRequestException } from '@nestjs/common';
  * @returns The constructed full path.
  */
 export function generatePath(basePath: string, ...subPaths: string[]): string {
-  return path.join(basePath, ...subPaths); // Combine basePath with subPaths
+  return path.join(basePath, ...subPaths);
 }
 
 /**
@@ -23,13 +23,11 @@ export async function ensureDynamicDirectoryExists(
   basePath: string,
   ...subPaths: string[]
 ): Promise<string> {
-  const fullPath = generatePath(basePath, ...subPaths); // Generate the path
+  const fullPath = generatePath(basePath, ...subPaths);
   try {
-    await fs.mkdir(fullPath, { recursive: true }); // Create directory if not exists
-    return fullPath; // Return the resolved path
+    await fs.mkdir(fullPath, { recursive: true });
+    return fullPath;
   } catch (err) {
-    throw new BadRequestException(
-      `Failed to create directory: ${err.message}`
-    ); // Handle errors
+    throw new BadRequestException(`Failed to create directory: ${err.message}`);
   }
 }

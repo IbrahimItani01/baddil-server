@@ -7,6 +7,6 @@ export async function checkCategoryExists(prisma: PrismaClient, id: string) {
   });
 
   if (!existingCategory) {
-    throw new NotFoundException(`Category with ID ${id} not found`); // 🚫 Category not found
+    throw new NotFoundException(`Category with ID ${id} not found`);
   }
 }

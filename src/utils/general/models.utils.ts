@@ -13,15 +13,14 @@ export async function checkEntityExists(
   model: string,
   id: string,
 ) {
-  // Dynamically get the model from PrismaService
   const entity = await prisma[model].findUnique({
-    where: { id }, // Assuming 'id' is the identifier for all models
+    where: { id },
   });
 
   if (!entity) {
     throw new NotFoundException(
       `${model.charAt(0).toUpperCase() + model.slice(1)} with ID ${id} not found`,
-    ); // 🚫 Error handling for not found
+    );
   }
 
   return entity;

@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common'; // 📦 Importing Module from NestJS to define the application module
-import { AppController } from './app.controller'; // 🎛️ Importing the main controller of the app
-import { AppService } from './app.service'; // 🛠️ Importing the main service of the app
 import { ConfigModule } from '@nestjs/config'; // ⚙️ Importing ConfigModule to handle environment variables and configurations
 import { AuthModule } from './auth/auth.module'; // 🔐 Importing authentication module
 import { FirebaseAdminModule } from './auth/firebase/firebase.module'; // 📱 Importing Firebase admin module for Firebase authentication
@@ -53,11 +51,10 @@ import { FinancesModule } from './modules/company/finances/finances.module';
     RatingsModule,
     TiersModule,
     WalletModule,
-    FinancesModule
+    FinancesModule,
   ],
-  controllers: [AppController], // 🎛️ Registering the main controller of the app
+  controllers: [],
   providers: [
-    AppService,
     { provide: APP_FILTER, useClass: ApiResponseExceptionFilter }, // 🚨 Registering the API response exception filter
   ], // 🛠️ Registering the main service of the app
 })

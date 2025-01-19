@@ -20,7 +20,7 @@ import {
 } from './dto/management.dto'; // 📁 Importing DTOs
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
 
-// @UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
+@UseGuards(JwtAuthGuard, UserTypeGuard) // 🛡️ Applying guards for authentication and user type validation
 @Controller('management') // 📍 Base route for management-related operations
 export class ManagementController {
   constructor(private readonly managementService: ManagementService) {} // 🏗️ Injecting ManagementService
@@ -106,7 +106,7 @@ export class ManagementController {
    * 📜 Get all categories
    */
   // 🎯 Restricting access to admin users
-  // @AllowedUserTypes('barterer','admin','broker')
+  @AllowedUserTypes('barterer','admin','broker')
   @Get('category') // 📥 Endpoint to get categories
   async getCategories(): Promise<ApiResponse> {
     const categories = await this.managementService.getCategories(); // 🔍 Fetching categories
