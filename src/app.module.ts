@@ -23,6 +23,7 @@ import { WalletModule } from './modules/wallets/wallets.module'; // 💰 Importi
 import { APP_FILTER } from '@nestjs/core'; // 🚨 Importing APP_FILTER to handle errors
 import { ApiResponseExceptionFilter } from './utils/api/api.filter'; // 🚨 Importing the API response exception filter
 import { ManagementModule } from './modules/company/management/management.module';
+import { FinancesModule } from './modules/company/finances/finances.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ManagementModule } from './modules/company/management/management.module
     RatingsModule,
     TiersModule,
     WalletModule,
+    FinancesModule
   ],
   controllers: [AppController], // 🎛️ Registering the main controller of the app
   providers: [
