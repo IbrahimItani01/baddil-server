@@ -89,10 +89,11 @@ export class BartersService {
                 longitude: barter.meetup.location.longitude,
               }
             : null, // Include location details if available
+          created_at: barter.created_at, // Include created_at
         })),
       );
   }
-  
+
   /**
    * ➕ Create Barter
    * Creates a new barter between two users.
