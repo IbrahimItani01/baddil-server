@@ -2,36 +2,25 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function createDatabase() {
+async function initializeDatabase() {
   try {
-    console.log('Synchronizing database schema with Prisma...');
-
-    // This will push the schema to the database
-    await prisma.$executeRaw`CREATE DATABASE IF NOT EXISTS baddil_db`; // Change to your desired database name
-    console.log('Database created or already exists.');
-
-    console.log('Applying schema...');
+    console.log('Applying migrations...');
     await prisma.$connect();
-    await prisma.$executeRaw`USE baddil_db`;
-    await prisma.$disconnect();
-
-    console.log('Schema applied. Migration complete.');
+    // Prisma assumes the database is already created; it manages tables and relations
+    console.log('Schema synchronized.');
   } catch (error) {
-    console.error(
-      'Error while creating the database or applying schema:',
-      error,
-    );
+    console.error('Error while applying migrations:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-createDatabase()
+initializeDatabase()
   .then(() => {
-    console.log('Database creation complete.');
+    console.log('Database setup complete.');
     process.exit(0);
   })
   .catch((err) => {
-    console.error('Error creating the database:', err);
+    console.error('Error setting up the database:', err);
     process.exit(1);
   });
