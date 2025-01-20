@@ -452,8 +452,8 @@ export class AIService {
               Description: ${itemData.description}
               Condition: ${itemData.condition} (new, used, refurbished, etc.)
               Category: ${itemData.category} (electronics, clothing, furniture, etc.)
-    
-              Please consider the following rules to generate the price for this item in BaddilCoins:
+               
+              Consider the following rules to generate the price for this item in BaddilCoins:
             
               1. **Item Condition Multipliers**:
                  - New: 1.2x
@@ -522,8 +522,8 @@ export class AIService {
         Based on the data you studied, recommend the top 4 items from user items that have a good chance to be bartered with the item having the following data:
         Study the item images: ${JSON.stringify(itemImages)}
         Study the item data: ${JSON.stringify(itemData)}
-    
-        Your reply must be in JSON format in this form:
+         
+        reply in JSON format in this form:
         {
           "data": [
             ...the recommended items
@@ -581,7 +581,7 @@ export class AIService {
         
         Use this formula: (number of "completed" statuses / total number of statuses) * 100 to compute the success probability.
         
-        Your response must be in JSON format as follows:
+        Respond in JSON format as follows:
         {
           "data": <calculated percentage of success as a number>
         }
