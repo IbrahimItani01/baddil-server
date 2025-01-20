@@ -30,7 +30,7 @@ export class CreateItemDto {
   locationId: string;
 
   @IsNumber() // 🔢 Ensures the value is a valid number
-  value: number;
+  value?: number|string;
 }
 
 // DTO for updating an item
