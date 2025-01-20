@@ -23,7 +23,6 @@ import { PrismaService } from 'src/database/prisma.service'; // 🔌 Import Pris
 import { getWalletIdByUserId } from 'src/utils/modules/wallet/wallet.utils'; // 💼 Utility function to get wallet by userId
 import { CreateItemDto, UpdateItemDto } from './dto/wallets.dto'; // 📚 Import DTOs for data validation
 import { ApiResponse } from 'src/utils/api/apiResponse.interface';
-import { validate } from 'class-validator';
 import * as path from 'path';
 
 @UseGuards(JwtAuthGuard, UserTypeGuard) // 🔒 Apply guards to secure routes
@@ -52,8 +51,11 @@ export class WalletsController {
   // 🔍 Get all items in the wallet
   @AllowedUserTypes('barterer') // ✅ Allow only specific user types (barterers)
   @Get('items/user/:userId?')
-  async getWalletItems(@Req() req: any, @Param ('userId') userId?: string): Promise<ApiResponse> {
-    if(userId){
+  async getWalletItems(
+    @Req() req: any,
+    @Param('userId') userId?: string,
+  ): Promise<ApiResponse> {
+    if (userId) {
       const walletId = await getWalletIdByUserId(this.prisma, userId); // 🏦 Get the walletId from userId
       const items = await this.walletService.getWalletItems(walletId); // 🛒 Fetch all wallet items
       return {
@@ -61,8 +63,7 @@ export class WalletsController {
         message: 'Wallet items fetched successfully',
         data: items, // 📝 Return all items in the wallet
       };
-    }
-    else{
+    } else {
       const walletId = await getWalletIdByUserId(this.prisma, req.user.id); // 🏦 Get the walletId from userId
       const items = await this.walletService.getWalletItems(walletId); // 🛒 Fetch all wallet items
       return {
@@ -101,12 +102,9 @@ export class WalletsController {
       subcategoryId: rawBody.subcategoryId,
       condition: rawBody.condition,
       locationId: rawBody.locationId,
+      value: rawBody.value,
     });
 
-    const errors = await validate(itemData);
-    if (errors.length > 0) {
-      throw new BadRequestException(errors); // Throw validation errors
-    }
 
     // 🛒 Add the item to the wallet
     const newItem = await this.walletService.addItemToWallet(userId, itemData);
